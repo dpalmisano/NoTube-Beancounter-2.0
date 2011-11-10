@@ -33,4 +33,9 @@ public interface ActivityLog {
     public void delete(DateTime from, DateTime to)
             throws ActivityLogException;
 
+    public void delete(DateTime from, DateTime to, String owner)
+            throws ActivityLogException;
+
+    public void delete(String owner) throws ActivityLogException;
+
 }
