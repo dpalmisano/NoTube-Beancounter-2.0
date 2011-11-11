@@ -43,6 +43,13 @@ public interface ActivityLogMapper {
             @Param("owner") String owner
     );
 
+    public List<Activity> selectActivityByQuery(
+            @Param("from") DateTime from,
+            @Param("to") DateTime to,
+            @Param("owner") String owner,
+            @Param("query") String query
+    );
+
     public List<Field> selectActivityStringFields(
             @Param("id") UUID id
     );

@@ -15,6 +15,8 @@ public class DefaultActivityLogImplTestCase {
 
     private ActivityLog activityLog;
 
+    private static final String OWNER = "test-owner";
+
     @BeforeTest
     public void setUp() {
         Properties properties = new Properties();
@@ -26,23 +28,22 @@ public class DefaultActivityLogImplTestCase {
 
     @AfterTest
     public void tearDown() throws ActivityLogException {
-        activityLog.delete("test-owner");
+        activityLog.delete(OWNER);
     }
 
     @Test
     public void simpleTest() throws ActivityLogException {
-        activityLog.delete("test-owner");
         DateTime before = new DateTime();
         for(int i=0; i < 10; i++) {
             IntegerField index = new IntegerField("index", i);
             Field fields[] = { index };
-            activityLog.log("test-owner", "just a test activity", fields);
+            activityLog.log(OWNER, "just a test activity", fields);
         }
         DateTime now = new DateTime();
         Activity activities[] = activityLog.filter(before, now);
         Assert.assertEquals(activities.length, 10);
 
-        activities = activityLog.filter(before, now, "test-owner");
+        activities = activityLog.filter(before, now, OWNER);
         Assert.assertEquals(activities.length, 10);
 
         for(Activity activity : activities) {
@@ -50,10 +51,49 @@ public class DefaultActivityLogImplTestCase {
             Assert.assertEquals(fields.length, 1);
         }
 
-        activityLog.delete("test-owner");
+        activityLog.delete(OWNER);
         activities = activityLog.filter(before, now);
         Assert.assertEquals(activities.length, 0);
     }
+
+
+    @Test
+    public void testQueryOnFields() throws ActivityLogException {
+        DateTime before = new DateTime();
+        for(int i=0; i < 10; i++) {
+            IntegerField index = new IntegerField("index", i);
+            StringField name = new StringField("name", "name" + i);
+            Field fields[] = { index, name };
+            activityLog.log(OWNER, "just a test activity", fields);
+        }
+        DateTime after = new DateTime();
+        Query query = new Query();
+        query.push(new IntegerField("index", 4), Query.Math.GT);
+        Activity activities[] = activityLog.filter(
+                before,
+                after,
+                OWNER,
+                query
+        );
+        Assert.assertEquals(5, activities.length);
+
+        query = new Query();
+        query.push(new IntegerField("index", 4), Query.Math.GT);
+        query.push(Query.Boolean.AND);
+        query.push(new StringField("name", "name5"), Query.Math.EQ);
+        activities = activityLog.filter(
+                before,
+                after,
+                OWNER,
+                query
+        );
+        Assert.assertEquals(1, activities.length);
+        Field fields[] = activityLog.getFields(
+                activities[0].getId()
+        );
+        Assert.assertEquals(2, fields.length);
+    }
+
 
     @Test
     public void testDeleteByDateRange() throws ActivityLogException, InterruptedException {
@@ -61,17 +101,16 @@ public class DefaultActivityLogImplTestCase {
         for (int i = 0; i < 10; i++) {
             IntegerField index = new IntegerField("index", i);
             Field fields[] = {index};
-            activityLog.log("test-owner", "just a test activity", fields);
+            activityLog.log(OWNER, "just a test activity", fields);
         }
-        Thread.sleep(1000);
         DateTime after = new DateTime();
         Activity activities[] = activityLog.filter(before, after,
-                "test-owner");
+                OWNER);
         Assert.assertEquals(activities.length, 10);
 
         activityLog.delete(before, after);
         activities = activityLog.filter(before, after,
-                "test-owner");
+                OWNER);
         Assert.assertEquals(activities.length, 0);
     }
 
@@ -81,16 +120,16 @@ public class DefaultActivityLogImplTestCase {
         for (int i = 0; i < 10; i++) {
             IntegerField index = new IntegerField("index", i);
             Field fields[] = {index};
-            activityLog.log("test-owner", "just a test activity", fields);
+            activityLog.log(OWNER, "just a test activity", fields);
         }
         DateTime after = new DateTime();
         Activity activities[] = activityLog.filter(before, after,
-                "test-owner");
+                OWNER);
         Assert.assertEquals(activities.length, 10);
 
-        activityLog.delete(before, after, "test-owner");
+        activityLog.delete(before, after, OWNER);
         activities = activityLog.filter(before, after,
-                "test-owner");
+                OWNER);
         Assert.assertEquals(activities.length, 0);
     }
 

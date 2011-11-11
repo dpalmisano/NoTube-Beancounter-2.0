@@ -2,10 +2,7 @@ package tv.notube.commons.alog.mybatis;
 
 import org.apache.ibatis.session.SqlSession;
 import org.joda.time.DateTime;
-import tv.notube.commons.alog.Activity;
-import tv.notube.commons.alog.Field;
-import tv.notube.commons.alog.IntegerField;
-import tv.notube.commons.alog.StringField;
+import tv.notube.commons.alog.*;
 import tv.notube.commons.alog.mybatis.mapper.ActivityLogMapper;
 
 import java.util.ArrayList;
@@ -148,4 +145,25 @@ public class ActivityLogDao extends ConfigurableDao {
         }
     }
 
+    public Activity[] selectActivityByQuery(
+            DateTime from,
+            DateTime to,
+            String owner,
+            Query query
+    ) {
+        SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
+        ActivityLogMapper mapper = session.getMapper(ActivityLogMapper.class);
+        List<Activity> activities;
+        try {
+         activities = mapper.selectActivityByQuery(
+                from,
+                to,
+                owner,
+                query.compile()
+        );
+        } finally {
+            session.close();
+        }
+        return activities.toArray(new Activity[activities.size()]);
+    }
 }

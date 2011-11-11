@@ -42,7 +42,7 @@ public class DefaultActivityLogImpl implements ActivityLog {
 
     public Activity[] filter(DateTime from, DateTime to, String owner, Query query)
             throws ActivityLogException {
-        throw new UnsupportedOperationException("NIY");
+        return dao.selectActivityByQuery(from, to, owner, query);
     }
 
     public void delete(DateTime from, DateTime to) throws ActivityLogException {
