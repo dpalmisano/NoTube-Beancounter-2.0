@@ -15,15 +15,15 @@ import java.util.UUID;
  */
 public interface ActivityLogMapper {
 
-    public void insertActivity(
-            @Param("activity") Activity activity
-    );
+    public void insertActivity(Activity activity);
 
     public void insertStringField(
+            @Param("id") UUID id,
             @Param("field") Field field
     );
 
     public void insertIntegerField(
+            @Param("id") UUID id,
             @Param("field") Field field
     );
 
@@ -59,7 +59,11 @@ public interface ActivityLogMapper {
             @Param("owner") String owner
     );
 
-    public void deleteActivityFields(
+    public void deleteActivityStringFields(
+            @Param("id") UUID activityId
+    );
+
+    public void deleteActivityIntegerFields(
             @Param("id") UUID activityId
     );
 }

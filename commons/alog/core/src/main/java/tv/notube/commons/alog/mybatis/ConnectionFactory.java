@@ -10,9 +10,13 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.type.ByteArrayTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import tv.notube.commons.alog.mybatis.handlers.JodaDateTimeTypeHandler;
+import tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler;
 import tv.notube.commons.alog.mybatis.mapper.ActivityLogMapper;
 
 import java.util.Properties;
+import java.util.UUID;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
@@ -36,7 +40,10 @@ public class ConnectionFactory {
                     new Environment("development", transactionFactory, pds);
             Configuration configuration = new Configuration(environment);
             configuration.addMapper(ActivityLogMapper.class);
-            configuration.getTypeHandlerRegistry().register(JdbcType.BLOB, new ByteArrayTypeHandler());
+            configuration.getTypeHandlerRegistry().register(DateTime.class,
+                    new JodaDateTimeTypeHandler());
+            configuration.getTypeHandlerRegistry().register(UUID.class,
+                    new UUIDTypeHandler());
             sqlMapper = new SqlSessionFactoryBuilder().build(configuration);
         }
         logger.info("SqlSession correctly instantiated");

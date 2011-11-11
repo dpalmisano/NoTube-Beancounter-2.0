@@ -3,6 +3,9 @@ package tv.notube.commons.alog;
 import org.joda.time.DateTime;
 import tv.notube.commons.alog.mybatis.ActivityLogDao;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Properties;
 import java.util.UUID;
 
 /**
@@ -13,6 +16,10 @@ import java.util.UUID;
 public class DefaultActivityLogImpl implements ActivityLog {
 
     private ActivityLogDao dao;
+
+    public DefaultActivityLogImpl(Properties properties) {
+        dao = new ActivityLogDao(properties);
+    }
 
     public void log(String owner, String description, Field... fields)
             throws ActivityLogException {
@@ -50,4 +57,14 @@ public class DefaultActivityLogImpl implements ActivityLog {
     public void delete(String owner) throws ActivityLogException {
         dao.deleteActivitiesByOwner(owner);
     }
+
+    public void export(OutputStream outputStream, DateTime from,
+                       DateTime to) throws ActivityLogException {
+        throw new UnsupportedOperationException("NIY");
+    }
+
+    public void backup(InputStream inputStream) throws ActivityLogException {
+        throw new UnsupportedOperationException("NIY");
+    }
+
 }

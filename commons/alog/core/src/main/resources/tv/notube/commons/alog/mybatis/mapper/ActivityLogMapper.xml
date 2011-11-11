@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tv.notube.commons.alog.mybatis.mapper.ActivityLogMapper">
+
+    <insert id="insertActivity" parameterType="tv.notube.commons.alog.Activity">
+        INSERT INTO activities (id, date, owner, description)
+        VALUES (#{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler},#{dateTime,javaType=org.joda.time.DateTime,jdbcType=BIGINT,typeHandler=tv.notube.commons.alog.mybatis.handlers.JodaDateTimeTypeHandler},#{owner},#{description})
+    </insert>
+
+    <insert id="insertIntegerField" parameterType="map">
+        INSERT INTO integerfield (id, name, value)
+        VALUES (#{id,javaType=java.util.UUID,jdbcType=VARCHAR,
+        typeHandler=tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler},#{field.name},#{field.value})
+    </insert>
+
+    <insert id="insertStringField" parameterType="map">
+        INSERT INTO stringfield (id, name, value)
+        VALUES (#{id,javaType=java.util.UUID,jdbcType=VARCHAR,
+        typeHandler=tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler},#{field.name},#{field.value})
+    </insert>
+
+    <select id="selectActivityByOwner" parameterType="map"
+            resultMap="activityRM">
+        SELECT *
+        FROM activities
+        WHERE owner = #{owner}
+    </select>
+
+    <delete id="deleteActivitiesByOwner" parameterType="map">
+        DELETE FROM activities
+        WHERE owner = #{owner}
+    </delete>
+
+    <delete id="deleteActivityStringFields" parameterType="map">
+        DELETE FROM stringfield
+        WHERE id = #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler}
+    </delete>
+
+    <delete id="deleteActivityIntegerFields" parameterType="map">
+        DELETE FROM integerfield
+        WHERE id = #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler}
+    </delete>
+
+    <resultMap id="activityRM" type="tv.notube.commons.alog.Activity">
+        <constructor>
+            <idArg column="id" javaType="java.util.UUID"
+                   typeHandler="tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler"/>
+            <arg column="date" javaType="org.joda.time.DateTime"
+                    typeHandler="tv.notube.commons.alog.mybatis.handlers.JodaDateTimeTypeHandler"/>
+            <arg column="owner" javaType="java.lang.String"/>
+            <arg column="description" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+
+    <!--
+   <resultMap id="fieldRM" type="tv.notube.kvs.storage.Field">
+        <result property="name" column="field" />
+        <result property="value" column="value" />
+    </resultMap>
+    -->
+
+</mapper>

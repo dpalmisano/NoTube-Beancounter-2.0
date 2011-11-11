@@ -28,12 +28,12 @@ public class ActivityLogDao extends ConfigurableDao {
         ActivityLogMapper mapper = session.getMapper(ActivityLogMapper.class);
         try {
             mapper.insertActivity(activity);
-            for(Field field : fields) {
-                if(field instanceof StringField) {
-                mapper.insertStringField(field);
+            for (Field field : fields) {
+                if (field instanceof StringField) {
+                    mapper.insertStringField(activity.getId(), field);
                     continue;
-                } else if(field instanceof IntegerField) {
-                mapper.insertIntegerField(field);
+                } else if (field instanceof IntegerField) {
+                    mapper.insertIntegerField(activity.getId(), field);
                     continue;
                 }
                 throw new IllegalArgumentException("Field with type: '" +
@@ -97,10 +97,11 @@ public class ActivityLogDao extends ConfigurableDao {
     public void deleteActivitiesByDateRange(DateTime from, DateTime to) {
         SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
         ActivityLogMapper mapper = session.getMapper(ActivityLogMapper.class);
-        Activity[] activities = selectActivityByDateRange(from, to);
+        List<Activity> activities = mapper.selectActivityByDateRange(from, to);
         try {
             for(Activity activity : activities) {
-                mapper.deleteActivityFields(activity.getId());
+                mapper.deleteActivityStringFields(activity.getId());
+                mapper.deleteActivityIntegerFields(activity.getId());
             }
             mapper.deleteActivitiesByDateRange(from, to);
         } finally {
@@ -112,10 +113,11 @@ public class ActivityLogDao extends ConfigurableDao {
     public void deleteActivitiesByOwner(String owner) {
         SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
         ActivityLogMapper mapper = session.getMapper(ActivityLogMapper.class);
-        Activity[] activities = selectActivityByOwner(owner);
+        List<Activity> activities = mapper.selectActivityByOwner(owner);
         try {
             for(Activity activity : activities) {
-                mapper.deleteActivityFields(activity.getId());
+                mapper.deleteActivityStringFields(activity.getId());
+                mapper.deleteActivityIntegerFields(activity.getId());
             }
             mapper.deleteActivitiesByOwner(owner);
         } finally {
@@ -127,32 +129,21 @@ public class ActivityLogDao extends ConfigurableDao {
     public void deleteActivitiesByDateRangeAndOwner(DateTime from, DateTime to, String owner) {
         SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
         ActivityLogMapper mapper = session.getMapper(ActivityLogMapper.class);
-        Activity activities[] = selectActivityByDateRangeAndOwner(
+        List<Activity> activities = mapper.selectActivityByDateRangeAndOwner(
                 from,
                 to,
                 owner
         );
         try {
             for(Activity activity : activities) {
-                mapper.deleteActivityFields(activity.getId());
+                mapper.deleteActivityStringFields(activity.getId());
+                mapper.deleteActivityIntegerFields(activity.getId());
             }
             mapper.deleteActivitiesByDateRangeAndOwner(from, to, owner);
         } finally {
             session.commit();
             session.close();
         }
-    }
-
-    private void deleteActivityFields(UUID activityId) {
-        SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
-        ActivityLogMapper mapper = session.getMapper(ActivityLogMapper.class);
-        try {
-            mapper.deleteActivityFields(activityId);
-        } finally {
-            session.commit();
-            session.close();
-        }
-
     }
 
 }

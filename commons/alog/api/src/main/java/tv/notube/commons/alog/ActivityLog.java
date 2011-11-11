@@ -2,6 +2,8 @@ package tv.notube.commons.alog;
 
 import org.joda.time.DateTime;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 
 /**
@@ -37,5 +39,10 @@ public interface ActivityLog {
             throws ActivityLogException;
 
     public void delete(String owner) throws ActivityLogException;
+
+    public void export(OutputStream outputStream, DateTime from, DateTime to
+    ) throws ActivityLogException;
+
+    public void backup(InputStream inputStream) throws ActivityLogException;
 
 }

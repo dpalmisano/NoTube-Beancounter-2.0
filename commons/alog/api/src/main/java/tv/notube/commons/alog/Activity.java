@@ -19,6 +19,13 @@ public class Activity {
 
     private String description;
 
+    public Activity(UUID id, DateTime dateTime, String owner, String description) {
+        this.id = id;
+        this.dateTime = dateTime;
+        this.owner = owner;
+        this.description = description;
+    }
+
     public Activity(String owner, String description) {
         this.id = UUID.randomUUID();
         this.dateTime = new DateTime();
