@@ -29,9 +29,47 @@
         WHERE owner = #{owner}
     </select>
 
+    <select id="selectActivityByDateRange" parameterType="map"
+            resultMap="activityRM">
+        SELECT *
+        FROM activities
+        WHERE date &gt;= #{from} AND date &lt;= #{to}
+    </select>
+
+    <select id="selectActivityStringFields" parameterType="map"
+            resultMap="stringFieldRM">
+        SELECT name, value
+        FROM stringfield
+        WHERE id = #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler}
+    </select>
+
+    <select id="selectActivityIntegerFields" parameterType="map"
+            resultMap="integerFieldRM">
+        SELECT name, value
+        FROM integerfield
+        WHERE id = #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler}
+    </select>
+
+    <select id="selectActivityByDateRangeAndOwner" parameterType="map"
+            resultMap="activityRM">
+        SELECT *
+        FROM activities
+        WHERE date &gt;= #{from} AND date &lt;= #{to} AND owner = #{owner}
+    </select>
+
     <delete id="deleteActivitiesByOwner" parameterType="map">
         DELETE FROM activities
         WHERE owner = #{owner}
+    </delete>
+
+    <delete id="deleteActivitiesByDateRange" parameterType="map">
+        DELETE FROM activities
+        WHERE date &gt;= #{from} AND date &lt;= #{to}
+    </delete>
+
+    <delete id="deleteActivitiesByDateRangeAndOwner" parameterType="map">
+        DELETE FROM activities
+        WHERE date &gt;= #{from} AND date &lt;= #{to} AND owner = #{owner}
     </delete>
 
     <delete id="deleteActivityStringFields" parameterType="map">
@@ -55,11 +93,18 @@
         </constructor>
     </resultMap>
 
-    <!--
-   <resultMap id="fieldRM" type="tv.notube.kvs.storage.Field">
-        <result property="name" column="field" />
-        <result property="value" column="value" />
+    <resultMap id="integerFieldRM" type="tv.notube.commons.alog.IntegerField">
+       <constructor>
+           <arg column="name" javaType="java.lang.String"/>
+           <arg column="value" javaType="java.lang.Integer"/>
+       </constructor>
     </resultMap>
-    -->
+
+   <resultMap id="stringFieldRM" type="tv.notube.commons.alog.StringField">
+       <constructor>
+           <arg column="name" javaType="java.lang.String"/>
+           <arg column="value" javaType="java.lang.String"/>
+       </constructor>
+    </resultMap>
 
 </mapper>

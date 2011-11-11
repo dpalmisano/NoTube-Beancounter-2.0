@@ -8,6 +8,7 @@ import tv.notube.commons.alog.IntegerField;
 import tv.notube.commons.alog.StringField;
 import tv.notube.commons.alog.mybatis.mapper.ActivityLogMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
@@ -49,9 +50,10 @@ public class ActivityLogDao extends ConfigurableDao {
     public Field[] selectActivityFields(UUID activityId) {
         SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
         ActivityLogMapper mapper = session.getMapper(ActivityLogMapper.class);
-        List<Field> fields;
+        List<Field> fields = new ArrayList<Field>();
         try {
-            fields = mapper.selectActivityFields(activityId);
+            fields.addAll(mapper.selectActivityStringFields(activityId));
+            fields.addAll(mapper.selectActivityIntegerFields(activityId));
         } finally {
             session.close();
         }

@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 import tv.notube.commons.alog.Activity;
 import tv.notube.commons.alog.Field;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +43,13 @@ public interface ActivityLogMapper {
             @Param("owner") String owner
     );
 
-    public List<Field> selectActivityFields(UUID id);
+    public List<Field> selectActivityStringFields(
+            @Param("id") UUID id
+    );
+
+    public List<Field> selectActivityIntegerFields(
+            @Param("id") UUID activityId
+    );
 
     public void deleteActivitiesByDateRange(
             @Param("from") DateTime from,
@@ -66,4 +73,5 @@ public interface ActivityLogMapper {
     public void deleteActivityIntegerFields(
             @Param("id") UUID activityId
     );
+
 }
