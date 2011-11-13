@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * put class description here
+ * Main library class, implementing various methods
+ * to access the <a href="http://alchemyapi.com">AlchemyAPI</a> Web APIs.
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */

@@ -3,7 +3,8 @@ package tv.notube.commons.alchemyapi;
 import java.net.URI;
 
 /**
- * put class description here
+ * This class models a generic entities identifiable from
+ * <a href="http://alchemyapi.com">AlchemyAPI</a>.
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */

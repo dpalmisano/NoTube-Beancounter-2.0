@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * put class description here
+ * This class models an <a href="http://alchemyapi.com"></a>
+ * responses.
+ *
+ * @see {@link AlchemyAPI}
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */

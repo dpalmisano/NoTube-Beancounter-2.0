@@ -1,7 +1,7 @@
 package tv.notube.commons.alchemyapi;
 
 /**
- * put class description here
+ * Most generic exception to wrap {@link AlchemyAPI} errors.
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */

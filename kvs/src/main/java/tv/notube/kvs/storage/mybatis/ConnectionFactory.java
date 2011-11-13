@@ -39,5 +39,4 @@ public class ConnectionFactory {
         logger.info("SqlSession correctly instantiated");
         return sqlMapper;
     }
-
 }

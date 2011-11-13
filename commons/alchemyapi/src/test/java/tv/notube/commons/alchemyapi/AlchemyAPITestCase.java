@@ -6,7 +6,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 /**
- * put class description here
+ * Main reference class for {@link AlchemyAPI}.
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */

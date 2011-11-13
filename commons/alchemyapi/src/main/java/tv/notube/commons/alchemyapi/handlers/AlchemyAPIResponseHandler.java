@@ -15,7 +15,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * put class description here
+ * {@link ResponseHandler} implementation to handle <i>HTTP</i> responses
+ * and wrap them with {@link AlchemyAPIResponse}.
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */

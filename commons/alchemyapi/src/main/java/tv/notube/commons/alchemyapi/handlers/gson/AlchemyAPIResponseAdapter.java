@@ -11,7 +11,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * put class description here
+ * {@link JsonDeserializer} implementation to deserialize
+ * {@link AlchemyAPIResponse} from <i>JSON</i>
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
