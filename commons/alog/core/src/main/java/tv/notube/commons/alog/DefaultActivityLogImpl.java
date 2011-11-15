@@ -41,6 +41,10 @@ public class DefaultActivityLogImpl implements ActivityLog {
         return dao.selectActivityByDateOwnerAndQuery(to, owner, query);
     }
 
+    public Activity[] filter(DateTime to, String owner) throws ActivityLogException {
+        return dao.selectActivityByDateOwner(to, owner);
+    }
+
     public Activity[] filter(DateTime from, DateTime to, String owner)
             throws ActivityLogException {
         return dao.selectActivityByDateRangeAndOwner(from, to, owner);

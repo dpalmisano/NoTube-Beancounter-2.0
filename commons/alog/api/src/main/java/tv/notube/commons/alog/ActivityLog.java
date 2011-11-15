@@ -23,6 +23,9 @@ public interface ActivityLog {
     public Activity[] filter(DateTime to, String owner, Query query)
         throws ActivityLogException;
 
+    public Activity[] filter(DateTime to, String owner)
+        throws ActivityLogException;
+
     public Activity[] filter(
             DateTime from,
             DateTime to,

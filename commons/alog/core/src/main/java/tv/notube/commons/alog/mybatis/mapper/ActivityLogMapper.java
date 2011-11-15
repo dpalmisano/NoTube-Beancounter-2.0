@@ -73,6 +73,11 @@ public interface ActivityLogMapper {
             @Param("query") String query
     );
 
+    public List<Activity> selectActivityByOwnerWithStartDate(
+            @Param("to") DateTime to,
+            @Param("owner") String owner
+    );
+
     public List<Field> selectActivityStringFields(
             @Param("id") UUID id
     );
@@ -127,4 +132,5 @@ public interface ActivityLogMapper {
     public void deleteActivitySerializedFields(
             @Param("id") UUID id
     );
+
 }

@@ -113,6 +113,13 @@
         WHERE activities.date &lt;= #{to} AND owner = #{owner} AND (${query})
     </select>
 
+    <select id="selectActivityByOwnerWithStartDate" parameterType="map"
+            resultMap="activityRM">
+        SELECT activities.id as id, activities.date as date, activities.owner as owner, activities.description as description
+        FROM activities
+        WHERE activities.date &lt;= #{to} AND owner = #{owner}
+    </select>
+
     <delete id="deleteActivitiesByOwner" parameterType="map">
         DELETE FROM activities
         WHERE owner = #{owner}

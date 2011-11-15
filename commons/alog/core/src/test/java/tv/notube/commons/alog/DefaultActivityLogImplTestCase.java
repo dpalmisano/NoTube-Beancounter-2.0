@@ -23,7 +23,7 @@ public class DefaultActivityLogImplTestCase {
     private static final String OWNER = "test-owner";
 
     @BeforeTest
-    public void setUp() {
+    public void setUp() throws ActivityLogException {
         Properties properties = new Properties();
         properties.setProperty("url", "jdbc:mysql://127.0.0.1:3306/alog");
         properties.setProperty("username", "alog");
@@ -55,7 +55,6 @@ public class DefaultActivityLogImplTestCase {
             Field[] fields = activityLog.getFields(activity.getId());
             Assert.assertEquals(fields.length, 1);
         }
-
         activityLog.delete(OWNER);
         activities = activityLog.filter(before, now);
         Assert.assertEquals(activities.length, 0);
@@ -96,29 +95,41 @@ public class DefaultActivityLogImplTestCase {
                 activities[0].getId()
         );
         Assert.assertEquals(2, fields.length);
+
+        activityLog.delete(OWNER);
+        activities = activityLog.filter(before, after);
+        Assert.assertEquals(activities.length, 0);
     }
 
     @Test
     public void testQueryOnFieldsWithDate() throws ActivityLogException {
+        DateTime before = new DateTime();
         for(int i=0; i < 10; i++) {
             IntegerField index = new IntegerField("index", i);
             StringField name = new StringField("name", "name" + i);
             Field fields[] = { index, name };
             activityLog.log(OWNER, "just a test activity", fields);
         }
-        DateTime after = new DateTime();
         Query query = new Query();
         query.push(new IntegerField("index", 4), Query.Math.GT);
+        DateTime after = new DateTime();
         Activity activities[] = activityLog.filter(
                 after,
                 OWNER,
                 query
         );
+        Assert.assertEquals(5, activities.length);
+        activities = activityLog.filter(after, OWNER);
         Assert.assertEquals(10, activities.length);
+
+        activityLog.delete(OWNER);
+        activities = activityLog.filter(before, after);
+        Assert.assertEquals(activities.length, 0);
     }
 
     @Test
-    public void testOnSimpleFields() throws MalformedURLException, ActivityLogException {
+    public void testOnSimpleFields()
+            throws MalformedURLException, ActivityLogException {
         DateTime before = new DateTime();
         DatetimeField dateTimeField = new DatetimeField(
                 "date",
@@ -140,14 +151,19 @@ public class DefaultActivityLogImplTestCase {
         activityLog.delete(OWNER);
         activities = activityLog.filter(before, after, OWNER);
         Assert.assertEquals(0, activities.length);
+
+        activityLog.delete(OWNER);
+        activities = activityLog.filter(before, after);
+        Assert.assertEquals(activities.length, 0);
     }
 
     @Test
-    public void testDeleteByDateRange() throws ActivityLogException, InterruptedException {
+    public void testDeleteByDateRange()
+            throws ActivityLogException, InterruptedException {
         DateTime before = new DateTime();
         for (int i = 0; i < 10; i++) {
             IntegerField index = new IntegerField("index", i);
-            Field fields[] = { index };
+            Field fields[] = {index};
             activityLog.log(OWNER, "just a test activity", fields);
         }
         DateTime after = new DateTime();
@@ -159,10 +175,15 @@ public class DefaultActivityLogImplTestCase {
         activities = activityLog.filter(before, after,
                 OWNER);
         Assert.assertEquals(activities.length, 0);
+
+        activityLog.delete(OWNER);
+        activities = activityLog.filter(before, after);
+        Assert.assertEquals(activities.length, 0);
     }
 
     @Test
-    public void testSerializableObjects() throws ActivityLogException, SerializationManagerException {
+    public void testSerializableObjects()
+            throws ActivityLogException, SerializationManagerException {
         DateTime before = new DateTime();
         TestClass expected = new TestClass();
         SerializationManager sm = new SerializationManager();
@@ -178,6 +199,10 @@ public class DefaultActivityLogImplTestCase {
         Assert.assertEquals(1, actualFields.length);
 
         Assert.assertEquals(field, actualFields[0]);
+
+        activityLog.delete(OWNER);
+        activities = activityLog.filter(before, after);
+        Assert.assertEquals(activities.length, 0);
     }
 
     @Test
@@ -189,13 +214,21 @@ public class DefaultActivityLogImplTestCase {
             activityLog.log(OWNER, "just a test activity", fields);
         }
         DateTime after = new DateTime();
-        Activity activities[] = activityLog.filter(before, after,
+        Activity activities[] = activityLog.filter(
+                before,
+                after,
                 OWNER);
         Assert.assertEquals(activities.length, 10);
 
         activityLog.delete(before, after, OWNER);
-        activities = activityLog.filter(before, after,
+        activities = activityLog.filter(
+                before,
+                after,
                 OWNER);
+        Assert.assertEquals(activities.length, 0);
+
+        activityLog.delete(OWNER);
+        activities = activityLog.filter(before, after);
         Assert.assertEquals(activities.length, 0);
     }
 

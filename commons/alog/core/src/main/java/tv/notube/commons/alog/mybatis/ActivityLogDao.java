@@ -203,6 +203,21 @@ public class ActivityLogDao extends ConfigurableDao {
         return activities.toArray(new Activity[activities.size()]);
     }
 
+    public Activity[] selectActivityByDateOwner(DateTime to, String owner) {
+        SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
+        ActivityLogMapper mapper = session.getMapper(ActivityLogMapper.class);
+        List<Activity> activities;
+        try {
+            activities = mapper.selectActivityByOwnerWithStartDate(
+                    to,
+                    owner
+            );
+        } finally {
+            session.close();
+        }
+        return activities.toArray(new Activity[activities.size()]);
+    }
+
     private void flushAllFields(ActivityLogMapper mapper, UUID activityId) {
         mapper.deleteActivityStringFields(activityId);
         mapper.deleteActivityIntegerFields(activityId);
@@ -210,4 +225,5 @@ public class ActivityLogDao extends ConfigurableDao {
         mapper.deleteActivityURLFields(activityId);
         mapper.deleteActivitySerializedFields(activityId);
     }
+
 }
