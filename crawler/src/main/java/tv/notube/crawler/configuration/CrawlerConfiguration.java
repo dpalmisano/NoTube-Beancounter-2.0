@@ -3,6 +3,8 @@ package tv.notube.crawler.configuration;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
 
 /**
+ * This class models the configuration for the {@link tv.notube.crawler.Crawler}.
+ *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
 public class CrawlerConfiguration {

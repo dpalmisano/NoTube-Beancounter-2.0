@@ -1,17 +1,16 @@
 package tv.notube.commons.model;
 
 import org.joda.time.DateTime;
-import tv.notube.commons.model.activity.Activity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Models the main NoTube user characteristics.
+ * Models the main <a href="http://notube.tv">NoTube</a> user
+ * characteristics.
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
@@ -26,8 +25,6 @@ public class User extends Referenceable implements Serializable {
     private DateTime profiledAt;
 
     private boolean forcedProfiling;
-
-    private List<Activity> activities = new ArrayList<Activity>();
 
     private Map<String, Auth> services = new HashMap<String, Auth>();
 
@@ -67,18 +64,6 @@ public class User extends Referenceable implements Serializable {
         this.forcedProfiling = forcedProfiling;
     }
 
-    public List<Activity> getActivities() {
-        return activities;
-    }
-
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
-    }
-
-    public boolean addActivity(Activity activity) {
-        return this.activities.add(activity);
-    }
-
     public List<String> getServices() {
         return new ArrayList<String>(services.keySet());
     }
@@ -114,7 +99,6 @@ public class User extends Referenceable implements Serializable {
                 ", surname='" + surname + '\'' +
                 ", profiledAt=" + profiledAt +
                 ", forcedProfiling=" + forcedProfiling +
-                ", activities=" + activities +
                 ", services=" + services +
                 ", password='" + password + '\'' +
                 ", username='" + username + '\'' +

@@ -1,6 +1,7 @@
 package tv.notube.usermanager;
 
 import tv.notube.commons.model.User;
+import tv.notube.commons.model.activity.Activity;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManager;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.UUID;
  */
 public interface UserManager {
 
-    public static final String  COMPONENT = "user-manager";
+    public static final String COMPONENT = "user-manager";
 
     /**
      * Store a {@link User} on the Beancounter.
@@ -40,6 +41,38 @@ public interface UserManager {
      * @throws UserManagerException
      */
     public User getUser(String username) throws UserManagerException;
+
+    /**
+     * Store a list of {@link Activity} for a specific user.
+     *
+     * @param userId
+     * @param activities
+     * @throws UserManagerException
+     */
+    public void storeUserActivities(UUID userId, List<Activity> activities)
+            throws UserManagerException;
+
+    /**
+     * Retrieve all the stored {@link Activity} of a {@link User} using
+     * its <i>identifier</i>.
+     *
+     * @param userId
+     * @return
+     * @throws UserManagerException
+     */
+    public List<Activity> getUserActivities(UUID userId)
+            throws UserManagerException;
+
+    /**
+     * Retrieve all the stored {@link Activity} of a {@link User} using
+     * its <i>username</i>.
+     *
+     * @param username
+     * @return
+     * @throws UserManagerException
+     */
+    public List<Activity> getUserActivities(String username)
+            throws UserManagerException;
 
     /**
      * Completely flushes out all the {@link User} data.
@@ -70,7 +103,7 @@ public interface UserManager {
      *
      * @param service
      * @param user
-     *@param token  @throws UserManagerException
+     * @param token   @throws UserManagerException
      */
     public void registerService(String service, User user, String token)
             throws UserManagerException;

@@ -8,7 +8,7 @@ import tv.notube.commons.model.User;
 import tv.notube.profiler.data.DataSource;
 import tv.notube.profiler.data.DataSourceException;
 import tv.notube.profiler.data.RawDataSet;
-import tv.notube.usermanager.KVStoreUserManagerImpl;
+import tv.notube.usermanager.DefaultUserManagerImpl;
 import tv.notube.usermanager.UserManager;
 import tv.notube.usermanager.configuration.ConfigurationManager;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
@@ -30,7 +30,7 @@ public class UserDataSourceTestCase {
                  = ConfigurationManager
                  .getInstance(CONFIG_FILE)
                  .getUserManagerConfiguration();
-        UserManager userManager = new KVStoreUserManagerImpl(configuration);
+        UserManager userManager = new DefaultUserManagerImpl(configuration);
         dataSource = new UserDataSource(userManager);
         dataSource.init();
 

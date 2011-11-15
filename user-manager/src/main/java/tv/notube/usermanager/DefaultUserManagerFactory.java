@@ -19,7 +19,7 @@ public class DefaultUserManagerFactory implements UserManagerFactory {
     }
 
     private DefaultUserManagerFactory(UserManagerConfiguration configuration) {
-        userManager = new KVStoreUserManagerImpl(configuration);
+        userManager = new DefaultUserManagerImpl(configuration);
     }
 
     private UserManager userManager;

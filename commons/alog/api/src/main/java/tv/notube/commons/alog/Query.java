@@ -1,5 +1,7 @@
 package tv.notube.commons.alog;
 
+import tv.notube.commons.alog.fields.*;
+
 /**
  * put class description here
  *
@@ -7,11 +9,17 @@ package tv.notube.commons.alog;
  */
 public class Query {
 
-    public static final String INTEGER_FIELD_PATTERN = "%sfield.name = '%s' " +
+    private static final String INTEGER_FIELD_PATTERN = "%sfield.name = '%s' " +
             "AND %sfield.value %s %s ";
 
-    public static final String STRING_FIELD_PATTERN = "%sfield.name = '%s' " +
+    private static final String STRING_FIELD_PATTERN = "%sfield.name = '%s' " +
             "AND %sfield.value = '%s' ";
+
+    private static final String URL_FIELD_PATTERN = "%sfield.name = '%s' " +
+            "AND %sfield.value = '%s' ";
+
+    private static final String DATETIME_FIELD_PATTERN = "%sfield.name = '%s' " +
+            "AND %sfield.value %s '%s' ";
 
     public enum Math {
         GT,
@@ -78,6 +86,25 @@ public class Query {
                         "integer",
                         getMathOperator((Math) stack[i+1]),
                         intf.getValue()
+                );
+            } else if(obj instanceof URLField) {
+                URLField urlf = (URLField) obj;
+                query += String.format(
+                        URL_FIELD_PATTERN,
+                        "url",
+                        urlf.getName(),
+                        "url",
+                        urlf.getValue().toString()
+                );
+            } else if(obj instanceof DatetimeField) {
+                DatetimeField dtf = (DatetimeField) obj;
+                query += String.format(
+                        DATETIME_FIELD_PATTERN,
+                        "datetime",
+                        dtf.getName(),
+                        "datetime",
+                        getMathOperator((Math) stack[i+1]),
+                        dtf.getValue().getMillis()
                 );
             } else if(obj instanceof Boolean) {
                 query += obj + " ";

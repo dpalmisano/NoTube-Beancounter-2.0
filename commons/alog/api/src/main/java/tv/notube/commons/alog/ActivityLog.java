@@ -1,6 +1,7 @@
 package tv.notube.commons.alog;
 
 import org.joda.time.DateTime;
+import tv.notube.commons.alog.fields.Field;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,6 +19,9 @@ public interface ActivityLog {
 
     public Activity[] filter(DateTime from, DateTime to) throws
             ActivityLogException;
+
+    public Activity[] filter(DateTime to, String owner, Query query)
+        throws ActivityLogException;
 
     public Activity[] filter(
             DateTime from,

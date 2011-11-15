@@ -11,10 +11,13 @@ import org.apache.ibatis.type.ByteArrayTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import tv.notube.commons.alog.fields.Bytes;
 import tv.notube.commons.alog.mybatis.handlers.JodaDateTimeTypeHandler;
+import tv.notube.commons.alog.mybatis.handlers.URLTypeHandler;
 import tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler;
 import tv.notube.commons.alog.mybatis.mapper.ActivityLogMapper;
 
+import java.net.URL;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -44,6 +47,11 @@ public class ConnectionFactory {
                     new JodaDateTimeTypeHandler());
             configuration.getTypeHandlerRegistry().register(UUID.class,
                     new UUIDTypeHandler());
+            configuration.getTypeHandlerRegistry().register(URL.class,
+                    new URLTypeHandler());
+            configuration.getTypeHandlerRegistry().register(
+                    JdbcType.BLOB,
+                    new ByteArrayTypeHandler());
             sqlMapper = new SqlSessionFactoryBuilder().build(configuration);
         }
         logger.info("SqlSession correctly instantiated");

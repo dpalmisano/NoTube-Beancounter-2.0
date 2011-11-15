@@ -5,7 +5,12 @@ import org.joda.time.DateTime;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import tv.notube.commons.alog.fields.*;
+import tv.notube.commons.alog.fields.serialization.SerializationManager;
+import tv.notube.commons.alog.fields.serialization.SerializationManagerException;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -56,7 +61,6 @@ public class DefaultActivityLogImplTestCase {
         Assert.assertEquals(activities.length, 0);
     }
 
-
     @Test
     public void testQueryOnFields() throws ActivityLogException {
         DateTime before = new DateTime();
@@ -94,13 +98,56 @@ public class DefaultActivityLogImplTestCase {
         Assert.assertEquals(2, fields.length);
     }
 
+    @Test
+    public void testQueryOnFieldsWithDate() throws ActivityLogException {
+        for(int i=0; i < 10; i++) {
+            IntegerField index = new IntegerField("index", i);
+            StringField name = new StringField("name", "name" + i);
+            Field fields[] = { index, name };
+            activityLog.log(OWNER, "just a test activity", fields);
+        }
+        DateTime after = new DateTime();
+        Query query = new Query();
+        query.push(new IntegerField("index", 4), Query.Math.GT);
+        Activity activities[] = activityLog.filter(
+                after,
+                OWNER,
+                query
+        );
+        Assert.assertEquals(10, activities.length);
+    }
+
+    @Test
+    public void testOnSimpleFields() throws MalformedURLException, ActivityLogException {
+        DateTime before = new DateTime();
+        DatetimeField dateTimeField = new DatetimeField(
+                "date",
+                new DateTime()
+        );
+        URLField urlField = new URLField(
+                "url",
+                new URL("http://test.com/index.html")
+        );
+        Field fields[] = { dateTimeField, urlField };
+        activityLog.log(OWNER, "just a test activity", fields);
+        DateTime after = new DateTime();
+        Activity activities[] = activityLog.filter(before, after, OWNER);
+        Assert.assertEquals(1, activities.length);
+
+        Field actual[] = activityLog.getFields(activities[0].getId());
+        Assert.assertEquals(2, actual.length);
+
+        activityLog.delete(OWNER);
+        activities = activityLog.filter(before, after, OWNER);
+        Assert.assertEquals(0, activities.length);
+    }
 
     @Test
     public void testDeleteByDateRange() throws ActivityLogException, InterruptedException {
         DateTime before = new DateTime();
         for (int i = 0; i < 10; i++) {
             IntegerField index = new IntegerField("index", i);
-            Field fields[] = {index};
+            Field fields[] = { index };
             activityLog.log(OWNER, "just a test activity", fields);
         }
         DateTime after = new DateTime();
@@ -112,6 +159,25 @@ public class DefaultActivityLogImplTestCase {
         activities = activityLog.filter(before, after,
                 OWNER);
         Assert.assertEquals(activities.length, 0);
+    }
+
+    @Test
+    public void testSerializableObjects() throws ActivityLogException, SerializationManagerException {
+        DateTime before = new DateTime();
+        TestClass expected = new TestClass();
+        SerializationManager sm = new SerializationManager();
+        Bytes bytes = sm.serialize(expected);
+        BytesField field = new BytesField("object", bytes);
+        Field fields[] = { field };
+        activityLog.log(OWNER, "just a test activity", fields);
+        DateTime after = new DateTime();
+        Activity activities[] = activityLog.filter(before, after, OWNER);
+
+        Assert.assertEquals(1, activities.length);
+        Field actualFields[] = activityLog.getFields(activities[0].getId());
+        Assert.assertEquals(1, actualFields.length);
+
+        Assert.assertEquals(expected, actualFields[0]);
     }
 
     @Test

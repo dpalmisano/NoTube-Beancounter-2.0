@@ -9,6 +9,10 @@ import tv.notube.usermanager.configuration.UserManagerConfiguration;
 import java.io.File;
 
 /**
+ * This class is responsible to parse the configuration file
+ * and instantiate a valid not <code>null</code>
+ * {@link tv.notube.crawler.configuration.CrawlerConfiguration}.
+ *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
 public class ConfigurationManager {

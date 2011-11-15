@@ -3,9 +3,9 @@ package tv.notube.commons.alog.mybatis.mapper;
 import org.apache.ibatis.annotations.Param;
 import org.joda.time.DateTime;
 import tv.notube.commons.alog.Activity;
-import tv.notube.commons.alog.Field;
+import tv.notube.commons.alog.fields.Bytes;
+import tv.notube.commons.alog.fields.Field;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +26,22 @@ public interface ActivityLogMapper {
     public void insertIntegerField(
             @Param("id") UUID id,
             @Param("field") Field field
+    );
+
+    public void insertDatetimeField(
+            @Param("id") UUID id,
+            @Param("field") Field field
+    );
+
+    public void insertURLField(
+            @Param("id") UUID id,
+            @Param("field") Field field
+    );
+
+    public void insertBytesField(
+            @Param("id") UUID id,
+            @Param("name") String name,
+            @Param("value") byte[] field
     );
 
     public List<Activity> selectActivityByOwner(
@@ -50,12 +66,26 @@ public interface ActivityLogMapper {
             @Param("query") String query
     );
 
+    public List<Activity> selectActivityByQueryWithDate(
+            @Param("to") DateTime to,
+            @Param("owner") String owner,
+            @Param("query") String query
+    );
+
     public List<Field> selectActivityStringFields(
             @Param("id") UUID id
     );
 
     public List<Field> selectActivityIntegerFields(
-            @Param("id") UUID activityId
+            @Param("id") UUID id
+    );
+
+    public List<Field> selectActivityDatetimeFields(
+            @Param("id") UUID id
+    );
+
+    public List<Field> selectActivityURLFields(
+            @Param("id") UUID id
     );
 
     public void deleteActivitiesByDateRange(
@@ -79,6 +109,14 @@ public interface ActivityLogMapper {
 
     public void deleteActivityIntegerFields(
             @Param("id") UUID activityId
+    );
+
+    public void deleteActivityURLFields(
+            @Param("id") UUID id
+    );
+
+    public void deleteActivityDatetimeFields(
+            @Param("id") UUID id
     );
 
 }

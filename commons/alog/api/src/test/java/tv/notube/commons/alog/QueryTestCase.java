@@ -2,6 +2,8 @@ package tv.notube.commons.alog;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import tv.notube.commons.alog.fields.IntegerField;
+import tv.notube.commons.alog.fields.StringField;
 
 /**
  * Unit test for simple App.

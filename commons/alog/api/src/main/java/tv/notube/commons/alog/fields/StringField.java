@@ -1,4 +1,4 @@
-package tv.notube.commons.alog;
+package tv.notube.commons.alog.fields;
 
 /**
  * put class description here

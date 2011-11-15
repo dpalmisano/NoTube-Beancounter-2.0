@@ -33,7 +33,7 @@ public class UserManagerTestCase {
                  = ConfigurationManager
                  .getInstance(CONFIG_FILE)
                  .getUserManagerConfiguration();
-        userManager = new KVStoreUserManagerImpl(configuration);
+        userManager = new DefaultUserManagerImpl(configuration);
     }
 
     @AfterTest

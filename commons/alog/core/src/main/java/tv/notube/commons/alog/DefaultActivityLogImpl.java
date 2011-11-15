@@ -1,6 +1,7 @@
 package tv.notube.commons.alog;
 
 import org.joda.time.DateTime;
+import tv.notube.commons.alog.fields.Field;
 import tv.notube.commons.alog.mybatis.ActivityLogDao;
 
 import java.io.InputStream;
@@ -33,6 +34,11 @@ public class DefaultActivityLogImpl implements ActivityLog {
 
     public Activity[] filter(DateTime from, DateTime to) throws ActivityLogException {
         return dao.selectActivityByDateRange(from, to);
+    }
+
+    public Activity[] filter(DateTime to, String owner, Query query)
+            throws ActivityLogException {
+        return dao.selectActivityByDateOwnerAndQuery(to, owner, query);
     }
 
     public Activity[] filter(DateTime from, DateTime to, String owner)

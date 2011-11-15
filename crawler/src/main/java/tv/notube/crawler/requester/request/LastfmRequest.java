@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * <a href="http://last.fm>last.fm</a> specific implementation of
+ * {@link DefaultRequest}.
+ *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
 public class LastfmRequest extends DefaultRequest {

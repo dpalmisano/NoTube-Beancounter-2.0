@@ -3,6 +3,7 @@ package tv.notube.commons.alog.mybatis;
 import org.apache.ibatis.session.SqlSession;
 import org.joda.time.DateTime;
 import tv.notube.commons.alog.*;
+import tv.notube.commons.alog.fields.*;
 import tv.notube.commons.alog.mybatis.mapper.ActivityLogMapper;
 
 import java.util.ArrayList;
@@ -33,6 +34,21 @@ public class ActivityLogDao extends ConfigurableDao {
                 } else if (field instanceof IntegerField) {
                     mapper.insertIntegerField(activity.getId(), field);
                     continue;
+                } else if (field instanceof DatetimeField) {
+                    mapper.insertDatetimeField(activity.getId(), field);
+                    continue;
+                } else if (field instanceof URLField) {
+                    mapper.insertURLField(activity.getId(), field);
+                    continue;
+                } else if (field instanceof BytesField) {
+                    BytesField bytesField = (BytesField) field;
+                    byte[] bytes = bytesField.getValue().getBytes();
+                    mapper.insertBytesField(
+                            activity.getId(),
+                            bytesField.getName(),
+                            bytes
+                    );
+                    continue;
                 }
                 throw new IllegalArgumentException("Field with type: '" +
                         field.getClass() +
@@ -51,6 +67,8 @@ public class ActivityLogDao extends ConfigurableDao {
         try {
             fields.addAll(mapper.selectActivityStringFields(activityId));
             fields.addAll(mapper.selectActivityIntegerFields(activityId));
+            fields.addAll(mapper.selectActivityDatetimeFields(activityId));
+            fields.addAll(mapper.selectActivityURLFields(activityId));
         } finally {
             session.close();
         }
@@ -117,6 +135,8 @@ public class ActivityLogDao extends ConfigurableDao {
             for(Activity activity : activities) {
                 mapper.deleteActivityStringFields(activity.getId());
                 mapper.deleteActivityIntegerFields(activity.getId());
+                mapper.deleteActivityDatetimeFields(activity.getId());
+                mapper.deleteActivityURLFields(activity.getId());
             }
             mapper.deleteActivitiesByOwner(owner);
         } finally {
@@ -157,6 +177,26 @@ public class ActivityLogDao extends ConfigurableDao {
         try {
          activities = mapper.selectActivityByQuery(
                 from,
+                to,
+                owner,
+                query.compile()
+        );
+        } finally {
+            session.close();
+        }
+        return activities.toArray(new Activity[activities.size()]);
+    }
+
+    public Activity[] selectActivityByDateOwnerAndQuery(
+            DateTime to,
+            String owner,
+            Query query
+    ) {
+        SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
+        ActivityLogMapper mapper = session.getMapper(ActivityLogMapper.class);
+        List<Activity> activities;
+        try {
+         activities = mapper.selectActivityByQueryWithDate(
                 to,
                 owner,
                 query.compile()
