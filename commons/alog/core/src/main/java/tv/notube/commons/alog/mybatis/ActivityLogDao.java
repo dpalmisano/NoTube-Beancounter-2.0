@@ -69,6 +69,7 @@ public class ActivityLogDao extends ConfigurableDao {
             fields.addAll(mapper.selectActivityIntegerFields(activityId));
             fields.addAll(mapper.selectActivityDatetimeFields(activityId));
             fields.addAll(mapper.selectActivityURLFields(activityId));
+            fields.addAll(mapper.selectActivitySerializedFields(activityId));
         } finally {
             session.close();
         }
@@ -117,8 +118,7 @@ public class ActivityLogDao extends ConfigurableDao {
         List<Activity> activities = mapper.selectActivityByDateRange(from, to);
         try {
             for(Activity activity : activities) {
-                mapper.deleteActivityStringFields(activity.getId());
-                mapper.deleteActivityIntegerFields(activity.getId());
+                flushAllFields(mapper, activity.getId());
             }
             mapper.deleteActivitiesByDateRange(from, to);
         } finally {
@@ -133,10 +133,7 @@ public class ActivityLogDao extends ConfigurableDao {
         List<Activity> activities = mapper.selectActivityByOwner(owner);
         try {
             for(Activity activity : activities) {
-                mapper.deleteActivityStringFields(activity.getId());
-                mapper.deleteActivityIntegerFields(activity.getId());
-                mapper.deleteActivityDatetimeFields(activity.getId());
-                mapper.deleteActivityURLFields(activity.getId());
+                flushAllFields(mapper, activity.getId());
             }
             mapper.deleteActivitiesByOwner(owner);
         } finally {
@@ -155,8 +152,7 @@ public class ActivityLogDao extends ConfigurableDao {
         );
         try {
             for(Activity activity : activities) {
-                mapper.deleteActivityStringFields(activity.getId());
-                mapper.deleteActivityIntegerFields(activity.getId());
+                flushAllFields(mapper, activity.getId());
             }
             mapper.deleteActivitiesByDateRangeAndOwner(from, to, owner);
         } finally {
@@ -205,5 +201,13 @@ public class ActivityLogDao extends ConfigurableDao {
             session.close();
         }
         return activities.toArray(new Activity[activities.size()]);
+    }
+
+    private void flushAllFields(ActivityLogMapper mapper, UUID activityId) {
+        mapper.deleteActivityStringFields(activityId);
+        mapper.deleteActivityIntegerFields(activityId);
+        mapper.deleteActivityDatetimeFields(activityId);
+        mapper.deleteActivityURLFields(activityId);
+        mapper.deleteActivitySerializedFields(activityId);
     }
 }

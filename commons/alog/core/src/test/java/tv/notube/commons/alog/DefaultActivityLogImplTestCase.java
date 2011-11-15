@@ -177,7 +177,7 @@ public class DefaultActivityLogImplTestCase {
         Field actualFields[] = activityLog.getFields(activities[0].getId());
         Assert.assertEquals(1, actualFields.length);
 
-        Assert.assertEquals(expected, actualFields[0]);
+        Assert.assertEquals(field, actualFields[0]);
     }
 
     @Test

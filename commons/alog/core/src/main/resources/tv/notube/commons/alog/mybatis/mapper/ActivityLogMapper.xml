@@ -85,6 +85,13 @@
         WHERE id = #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler}
     </select>
 
+    <select id="selectActivitySerializedFields" parameterType="map"
+            resultMap="bytesFieldRM">
+        SELECT name, value
+        FROM serializedfield
+        WHERE id = #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler}
+    </select>
+
     <select id="selectActivityByDateRangeAndOwner" parameterType="map"
             resultMap="activityRM">
         SELECT *
@@ -145,6 +152,12 @@
         #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler}
     </delete>
 
+    <delete id="deleteActivitySerializedFields" parameterType="map">
+        DELETE FROM serializedfield
+        WHERE id =
+        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.alog.mybatis.handlers.UUIDTypeHandler}
+    </delete>
+
     <resultMap id="activityRM" type="tv.notube.commons.alog.Activity">
         <constructor>
             <idArg column="id" javaType="java.util.UUID"
@@ -153,6 +166,14 @@
                  typeHandler="tv.notube.commons.alog.mybatis.handlers.JodaDateTimeTypeHandler"/>
             <arg column="owner" javaType="java.lang.String"/>
             <arg column="description" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="bytesFieldRM" type="tv.notube.commons.alog.fields.BytesField">
+        <constructor>
+            <arg column="name" javaType="java.lang.String"/>
+            <arg column="value" javaType="tv.notube.commons.alog.fields.Bytes"
+                 typeHandler="tv.notube.commons.alog.mybatis.handlers.BytesTypeHandler"/>
         </constructor>
     </resultMap>
 

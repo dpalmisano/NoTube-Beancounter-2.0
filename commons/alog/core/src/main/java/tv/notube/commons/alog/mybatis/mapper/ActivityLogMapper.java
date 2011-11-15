@@ -6,6 +6,7 @@ import tv.notube.commons.alog.Activity;
 import tv.notube.commons.alog.fields.Bytes;
 import tv.notube.commons.alog.fields.Field;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,6 +89,10 @@ public interface ActivityLogMapper {
             @Param("id") UUID id
     );
 
+    public List<Field> selectActivitySerializedFields(
+            @Param("id") UUID id
+    );
+
     public void deleteActivitiesByDateRange(
             @Param("from") DateTime from,
             @Param("to") DateTime to
@@ -119,4 +124,7 @@ public interface ActivityLogMapper {
             @Param("id") UUID id
     );
 
+    public void deleteActivitySerializedFields(
+            @Param("id") UUID id
+    );
 }
