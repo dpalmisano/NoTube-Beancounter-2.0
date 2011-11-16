@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tv.notube.commons.storage.kvs.mybatis.mappers.KVSMapper">
+
+    <insert id="insertObject" parameterType="map">
+        INSERT INTO data (kvstable, kvskey, object)
+        VALUES(#{kvstable}, #{key}, #{object, javaType=byte[], jdbcType=BLOB, typeHandler=org.apache.ibatis.type.ByteArrayTypeHandler})
+    </insert>
+
+    <insert id="insertField" parameterType="map">
+        INSERT INTO fields (kvstable, kvskey, field, value)
+        VALUES (#{kvstable}, #{key}, #{field}, #{value})
+    </insert>
+
+    <select id="selectByKey" parameterType="map" resultMap="bytesRM">
+        SELECT object FROM data WHERE kvskey = #{key} AND kvstable = #{kvstable}
+    </select>
+
+    <select id="selectFieldsByKey" parameterType="map" resultMap="fieldRM">
+           SELECT field, value FROM fields WHERE kvskey = #{key} AND kvstable = #{kvstable}
+    </select>
+
+    <select id="selectByField" parameterType="map" resultType="java.lang.String">
+        SELECT data.kvskey
+        FROM data, fields
+        WHERE fields.field = #{field} AND fields.value = #{value} AND data.kvskey = fields.kvskey AND data.kvstable = #{kvstable}
+    </select>
+
+    <select id="selectByFieldRangeLess" parameterType="map" resultType="java.lang.String">
+        SELECT data.kvskey
+        FROM data, fields
+        WHERE fields.field = #{field} AND fields.value <![CDATA[ <= ]]> #{value} AND data.kvskey = fields.kvskey AND data.kvstable = #{kvstable}
+    </select>
+
+    <select id="selectByFieldRangeGreat" parameterType="map" resultType="java.lang.String">
+        SELECT data.kvskey
+        FROM data, fields
+        WHERE fields.field = #{field} AND fields.value <![CDATA[ >= ]]> #{value} AND data.kvskey = fields.kvskey AND data.kvstable = #{kvstable}
+    </select>
+
+    <delete id="deleteObject" parameterType="map">
+        DELETE FROM data WHERE kvskey = #{key} AND kvstable = #{kvstable}
+    </delete>
+
+    <delete id="deleteFields" parameterType="map">
+        DELETE FROM fields WHERE kvskey = #{key} AND kvstable = #{kvstable}
+    </delete>
+
+    <resultMap id="bytesRM" type="tv.notube.commons.storage.kvs.mybatis.Bytes">
+        <result property="bytes" column="object" jdbcType="BLOB"
+                typeHandler="org.apache.ibatis.type.ByteArrayTypeHandler"/>
+    </resultMap>
+
+    <resultMap id="fieldRM" type="tv.notube.commons.storage.kvs.Field">
+        <result property="name" column="field" />
+        <result property="value" column="value" />
+    </resultMap>
+
+</mapper>
