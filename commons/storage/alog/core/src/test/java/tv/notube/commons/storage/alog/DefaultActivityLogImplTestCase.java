@@ -1,7 +1,7 @@
 package tv.notube.commons.storage.alog;
 
-import junit.framework.Assert;
 import org.joda.time.DateTime;
+import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -29,9 +29,9 @@ public class DefaultActivityLogImplTestCase {
     @BeforeTest
     public void setUp() throws ActivityLogException {
         Properties properties = new Properties();
-        properties.setProperty("url", "jdbc:mysql://127.0.0.1:3306/tv.notube.commons.tv.notube.commons.storage.alog");
-        properties.setProperty("username", "tv.notube.commons.tv.notube.commons.storage.alog");
-        properties.setProperty("password", "tv.notube.commons.tv.notube.commons.storage.alog");
+        properties.setProperty("url", "jdbc:mysql://127.0.0.1:3306/alog");
+        properties.setProperty("username", "alog");
+        properties.setProperty("password", "alog");
         activityLog = new DefaultActivityLogImpl(properties);
     }
 
@@ -50,18 +50,18 @@ public class DefaultActivityLogImplTestCase {
         }
         DateTime now = new DateTime();
         Activity activities[] = activityLog.filter(before, now);
-        Assert.assertEquals(activities.length, 10);
+        Assert.assertEquals(10, activities.length);
 
         activities = activityLog.filter(before, now, OWNER);
-        Assert.assertEquals(activities.length, 10);
+        Assert.assertEquals(10, activities.length);
 
         for(Activity activity : activities) {
             Field[] fields = activityLog.getFields(activity.getId());
-            Assert.assertEquals(fields.length, 1);
+            Assert.assertEquals(1, fields.length);
         }
         activityLog.delete(OWNER);
         activities = activityLog.filter(before, now);
-        Assert.assertEquals(activities.length, 0);
+        Assert.assertEquals(0, activities.length);
     }
 
     @Test

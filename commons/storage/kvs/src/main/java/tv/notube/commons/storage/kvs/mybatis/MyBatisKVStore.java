@@ -2,15 +2,14 @@ package tv.notube.commons.storage.kvs.mybatis;
 
 import org.apache.log4j.Logger;
 import tv.notube.commons.storage.kvs.AbstractKVStore;
-import tv.notube.commons.storage.kvs.Field;
 import tv.notube.commons.storage.kvs.KVStoreException;
-import tv.notube.commons.storage.kvs.serialization.SerializationManager;
-import tv.notube.commons.storage.kvs.serialization.SerializationManagerException;
+import tv.notube.commons.storage.model.Query;
+import tv.notube.commons.storage.model.fields.Bytes;
+import tv.notube.commons.storage.model.fields.Field;
+import tv.notube.commons.storage.model.fields.StringField;
+import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
+import tv.notube.commons.storage.model.fields.serialization.SerializationManagerException;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
@@ -31,14 +30,8 @@ public class MyBatisKVStore extends AbstractKVStore {
         dao = new KVStoreDao(properties);
     }
 
-    public List<String> search(String table, Boolean op, Field... fields)
-            throws KVStoreException {
-        return dao.selectByFields(table, fields);
-    }
-
-    public List<String> search(String table, Math op, Field field)
-            throws KVStoreException {
-        return dao.selectByFieldRange(table, field, op);
+    public List<String> search(String table, Query query) throws KVStoreException {
+        return dao.selectByQuery(table, query);
     }
 
     public Object getValue(String table, String key) throws KVStoreException {
@@ -46,35 +39,36 @@ public class MyBatisKVStore extends AbstractKVStore {
         if(bytes == null) {
             return null;
         }
-        InputStream is = new ByteArrayInputStream(bytes);
         try {
-            return serializationManager.deserialize(is);
+            return serializationManager.deserialize(bytes);
         } catch (SerializationManagerException e) {
-            throw new KVStoreException("", e);
+            final String errMsg = "Error while deserializing object";
+            logger.error(errMsg, e);
+            throw new KVStoreException(errMsg, e);
         }
     }
 
-    public Field[] getFields(String table, String key) throws KVStoreException {
-        List<Field> fields = dao.getFields(table, key);
-        return fields.toArray(new Field[fields.size()]);
+    public StringField[] getFields(String table, String key) throws
+            KVStoreException {
+        List<StringField> fields = dao.getFields(table, key);
+        return fields.toArray(new StringField[fields.size()]);
     }
 
-    public synchronized void setValue(String table, String key, Object object, Field... fields)
-            throws KVStoreException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    public synchronized void setValue(
+            String table,
+            String key,
+            Object object,
+            StringField... fields
+    ) throws KVStoreException {
+        Bytes bytes;
         try {
-            serializationManager.serialize(object, baos);
+            bytes = serializationManager.serialize(object);
         } catch (SerializationManagerException e) {
             final String errMsg = "Error while serializing object with (table, key) '(" + table + "," + key + ")'";
             logger.error(errMsg, e);
             throw new KVStoreException(errMsg, e);
         }
-        final byte[] serialization = baos.toByteArray();
-        try {
-            baos.close();
-        } catch (IOException e) {
-            throw new KVStoreException("", e);
-        }
+        final byte[] serialization = bytes.getBytes();
         dao.insertObject(table, key, serialization, fields);
     }
 

@@ -11,34 +11,28 @@
     </insert>
 
     <insert id="insertField" parameterType="map">
-        INSERT INTO fields (kvstable, kvskey, field, value)
-        VALUES (#{kvstable}, #{key}, #{field}, #{value})
+        INSERT INTO stringfield (kvstable, kvskey, name, value)
+        VALUES (#{kvstable}, #{key}, #{name}, #{value})
     </insert>
 
     <select id="selectByKey" parameterType="map" resultMap="bytesRM">
         SELECT object FROM data WHERE kvskey = #{key} AND kvstable = #{kvstable}
     </select>
 
-    <select id="selectFieldsByKey" parameterType="map" resultMap="fieldRM">
-           SELECT field, value FROM fields WHERE kvskey = #{key} AND kvstable = #{kvstable}
+    <select id="selectFieldsByKey" parameterType="map" resultMap="stringFieldRM">
+           SELECT name, value FROM stringfield WHERE kvskey = #{key} AND kvstable = #{kvstable}
     </select>
 
     <select id="selectByField" parameterType="map" resultType="java.lang.String">
         SELECT data.kvskey
-        FROM data, fields
-        WHERE fields.field = #{field} AND fields.value = #{value} AND data.kvskey = fields.kvskey AND data.kvstable = #{kvstable}
+        FROM data, stringfield
+        WHERE stringfield.field = #{field} AND stringfield.value = #{value} AND data.kvskey = stringfield.kvskey AND data.kvstable = #{kvstable}
     </select>
 
-    <select id="selectByFieldRangeLess" parameterType="map" resultType="java.lang.String">
+    <select id="selectByQuery" parameterType="map" resultType="java.lang.String">
         SELECT data.kvskey
-        FROM data, fields
-        WHERE fields.field = #{field} AND fields.value <![CDATA[ <= ]]> #{value} AND data.kvskey = fields.kvskey AND data.kvstable = #{kvstable}
-    </select>
-
-    <select id="selectByFieldRangeGreat" parameterType="map" resultType="java.lang.String">
-        SELECT data.kvskey
-        FROM data, fields
-        WHERE fields.field = #{field} AND fields.value <![CDATA[ >= ]]> #{value} AND data.kvskey = fields.kvskey AND data.kvstable = #{kvstable}
+        FROM data LEFT JOIN stringfield ON data.kvstable = stringfield.kvstable AND data.kvskey = stringfield.kvskey
+        WHERE ${query}
     </select>
 
     <delete id="deleteObject" parameterType="map">
@@ -46,17 +40,19 @@
     </delete>
 
     <delete id="deleteFields" parameterType="map">
-        DELETE FROM fields WHERE kvskey = #{key} AND kvstable = #{kvstable}
+        DELETE FROM stringfield WHERE kvskey = #{key} AND kvstable = #{kvstable}
     </delete>
 
-    <resultMap id="bytesRM" type="tv.notube.commons.storage.kvs.mybatis.Bytes">
+    <resultMap id="bytesRM" type="tv.notube.commons.storage.model.fields.Bytes">
         <result property="bytes" column="object" jdbcType="BLOB"
                 typeHandler="org.apache.ibatis.type.ByteArrayTypeHandler"/>
     </resultMap>
 
-    <resultMap id="fieldRM" type="tv.notube.commons.storage.kvs.Field">
-        <result property="name" column="field" />
-        <result property="value" column="value" />
+    <resultMap id="stringFieldRM" type="tv.notube.commons.storage.model.fields.StringField">
+        <constructor>
+            <arg column="name" javaType="java.lang.String"/>
+            <arg column="value" javaType="java.lang.String"/>
+        </constructor>
     </resultMap>
 
 </mapper>

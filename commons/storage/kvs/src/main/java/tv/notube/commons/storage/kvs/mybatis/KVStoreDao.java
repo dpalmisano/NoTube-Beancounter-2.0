@@ -1,11 +1,11 @@
 package tv.notube.commons.storage.kvs.mybatis;
 
-import tv.notube.commons.storage.kvs.Field;
-import tv.notube.commons.storage.kvs.KVStore;
 import tv.notube.commons.storage.kvs.mybatis.mappers.KVSMapper;
 import org.apache.ibatis.session.SqlSession;
+import tv.notube.commons.storage.model.Query;
+import tv.notube.commons.storage.model.fields.Bytes;
+import tv.notube.commons.storage.model.fields.StringField;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -18,12 +18,13 @@ public class KVStoreDao extends ConfigurableDao {
         super(properties);
     }
 
-    public void insertObject(String table, String key, byte[] bytes, Field[] fields) {
+    public void insertObject(String table, String key, byte[] bytes,
+                             StringField[] fields) {
         SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
         KVSMapper mapper = session.getMapper(KVSMapper.class);
         try {
             mapper.insertObject(table, key, bytes);
-            for (Field field : fields) {
+            for (StringField field : fields) {
                 mapper.insertField(table, key, field.getName(), field.getValue());
             }
             session.commit();
@@ -44,10 +45,10 @@ public class KVStoreDao extends ConfigurableDao {
         return bytes != null ? bytes.getBytes() : null;
     }
 
-    public List<Field> getFields(String table, String key) {
+    public List<StringField> getFields(String table, String key) {
         SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
         KVSMapper mapper = session.getMapper(KVSMapper.class);
-        List<Field> fields;
+        List<StringField> fields;
         try {
             fields = mapper.selectFieldsByKey(table, key);
         } finally {
@@ -56,32 +57,16 @@ public class KVStoreDao extends ConfigurableDao {
         return fields;
     }
 
-    public List<String> selectByFields(String table, Field[] fields) {
+    public List<String> selectByQuery(String table, Query query) {
         SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
         KVSMapper mapper = session.getMapper(KVSMapper.class);
-        List<String> keys = new ArrayList<String>();
+        List<String> keys;
         try {
-            for (Field field : fields) {
-                keys.addAll(mapper.selectByField(table, field.getName(), field.getValue()));
-            }
+            keys = mapper.selectByQuery(table, query.compile());
         } finally {
             session.close();
         }
         return keys;
-    }
-
-    public List<String> selectByFieldRange(String table, Field field, KVStore.Math op) {
-        SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
-        KVSMapper mapper = session.getMapper(KVSMapper.class);
-        try {
-            if (op.equals(KVStore.Math.LESS)) {
-                return mapper.selectByFieldRangeLess(table, field.getName(), Long.parseLong(field.getValue()));
-            } else {
-                return mapper.selectByFieldRangeGreat(table, field.getName(), Long.parseLong(field.getValue()));
-            }
-        } finally {
-            session.close();
-        }
     }
 
     public void deleteByKey(String table, String key) {

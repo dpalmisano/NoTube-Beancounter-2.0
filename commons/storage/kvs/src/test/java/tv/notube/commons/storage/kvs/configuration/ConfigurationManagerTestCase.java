@@ -10,7 +10,8 @@ import org.testng.annotations.Test;
  */
 public class ConfigurationManagerTestCase {
 
-    private final static String CONFIG_FILE = "src/test/resources/tv/notube/kv/configuration/kvs-configuration.xml";
+    private final static String CONFIG_FILE =
+            "tv/notube/commons/storage/kvs/configuration/kvs-configuration.xml";
 
     private ConfigurationManager configurationManager;
 

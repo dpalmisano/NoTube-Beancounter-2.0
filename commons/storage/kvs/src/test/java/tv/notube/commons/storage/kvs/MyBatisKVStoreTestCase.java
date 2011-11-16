@@ -1,22 +1,19 @@
 package tv.notube.commons.storage.kvs;
 
+import org.testng.Assert;
 import tv.notube.commons.storage.kvs.configuration.ConfigurationManager;
 import tv.notube.commons.storage.kvs.mybatis.MyBatisKVStore;
-import tv.notube.commons.storage.kvs.serialization.SerializationManager;
-import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import tv.notube.commons.storage.model.Query;
+import tv.notube.commons.storage.model.fields.StringField;
+import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
 
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.UUID;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
@@ -30,15 +27,12 @@ public class MyBatisKVStoreTestCase {
 
     private KVStore kVStore;
 
-    private SecureRandom random;
-
     @BeforeTest
     public void setUp() {
         Properties properties = ConfigurationManager.getInstance(CONFIG_FILE)
                 .getKVStoreConfiguration()
                 .getProperties();
         kVStore = new MyBatisKVStore(properties, new SerializationManager());
-        random = new SecureRandom();
     }
 
     @AfterTest
@@ -48,142 +42,55 @@ public class MyBatisKVStoreTestCase {
 
     @Test
     public void testCRUD() throws MalformedURLException, KVStoreException {
+        final String KEY = "key-1";
         TestClass expected = new TestClass();
         expected.setBool(false);
         expected.setString("a test string");
         expected.setUrl(new URL("http://google.com"));
 
-        Field field = new Field();
-        field.setName("date");
-        field.setValue((new Date()).toString());
+        StringField f1 = new StringField("name", "test-object");
+        kVStore.setValue(TABLE, KEY, expected, f1);
 
-        final String key = UUID.randomUUID().toString();
-        kVStore.setValue(TABLE, key, expected, field);
+        TestClass actual = (TestClass) kVStore.getValue(TABLE, KEY);
+        Assert.assertEquals(expected, actual);
 
-        TestClass actual = (TestClass) kVStore.getValue(TABLE, key);
-        Assert.assertNotNull(actual);
-        Assert.assertEquals(actual, expected);
-        Assert.assertEquals(actual.getUrl(), expected.getUrl());
+        StringField fields[] = kVStore.getFields(TABLE, KEY);
+        Assert.assertEquals(1, fields.length);
 
-        Field[] fields = kVStore.getFields(TABLE, key);
-        Assert.assertNotNull(fields);
-        Assert.assertEquals(fields.length, 1);
-        Assert.assertEquals(fields[0], field);
-        List<String> keys = kVStore.search(TABLE, KVStore.Boolean.AND, field);
-        Assert.assertNotNull(keys);
-        Assert.assertEquals(keys.size(), 1);
+        Assert.assertEquals(f1, fields[0]);
 
-        kVStore.deleteValue(TABLE, key);
-        actual = (TestClass) kVStore.getValue(TABLE, key);
+        kVStore.deleteValue(TABLE, KEY);
+        actual = (TestClass) kVStore.getValue(TABLE, KEY);
         Assert.assertNull(actual);
 
-        fields = kVStore.getFields(TABLE, key);
-        Assert.assertEquals(fields.length, 0);
+        fields = kVStore.getFields(TABLE, KEY);
+        Assert.assertEquals(0, fields.length);
     }
 
     @Test
-    public void testCollectionWithMultipleParametersSimpleCRUD()
-            throws MalformedURLException, KVStoreException {
-        List<TestClass> expected = new ArrayList<TestClass>();
-        final int SIZE = 1000;
-        for (int i = 0; i < SIZE; i++) {
-            TestClass tc = new TestClass();
-            tc.setUrl(new URL("http://test.com/" + i));
-            tc.setString(new BigInteger(130, random).toString(32));
-            expected.add(tc);
+    public void testWithQuery() throws MalformedURLException, KVStoreException {
+        for (int i = 0; i < 100; i++) {
+            TestClass obj = new TestClass();
+            obj.setBool(false);
+            obj.setMillis(System.currentTimeMillis());
+            String name = "name-" + i;
+            String key = "key-" + i;
+            obj.setString(name);
+            obj.setUrl(new URL("http://test.com"));
+
+            StringField field = new StringField("identifier", name);
+            kVStore.setValue(TABLE, key, obj, field);
         }
-        Field field1 = new Field();
-        field1.setName("date");
-        field1.setValue((new Date().toString()));
-        Field field2 = new Field();
-        field2.setName("author");
-        field2.setValue("Davide Palmisano");
-        String id = UUID.randomUUID().toString();
-        kVStore.setValue(TABLE, id, expected, field1, field2);
+        Query query = new Query();
+        StringField field = new StringField("identifier", "name-50");
+        query.push(field, Query.Math.EQ);
 
-        List<TestClass> actual = (List<TestClass>) kVStore.getValue(TABLE, id);
-        Assert.assertNotNull(actual);
-        Assert.assertEquals(actual.size(), SIZE);
-
-        kVStore.deleteValue(TABLE, id);
-        Assert.assertNull(kVStore.getValue(TABLE, id));
-    }
-
-
-    @Test
-    public void testOrdering() throws MalformedURLException, KVStoreException {
-        TestClass tc1 = new TestClass();
-        tc1.setUrl(new URL("http://test.com/smaller"));
-        tc1.setString("smaller");
-
-        Field f11 = new Field();
-        f11.setName("millis");
-        f11.setValue("150");
-
-        kVStore.setValue(TABLE, "key1", tc1, f11);
-
-        TestClass tc2 = new TestClass();
-        tc2.setUrl(new URL("http://test.com/bigger"));
-        tc2.setString("bigger");
-
-        Field f21 = new Field();
-        f21.setName("millis");
-        f21.setValue("50");
-
-        kVStore.setValue(TABLE, "key2", tc2, f21);
-
-        Field q = new Field();
-        q.setName("millis");
-        q.setValue("100");
-
-        List<String> actuals = kVStore.search(TABLE, KVStore.Math.LESS, q);
-        Assert.assertEquals(actuals.size(), 1);
-        Assert.assertEquals(actuals.get(0), "key2");
-
-        actuals = kVStore.search(TABLE, KVStore.Math.GREAT, q);
-        Assert.assertEquals(actuals.size(), 1);
-        Assert.assertEquals(actuals.get(0), "key1");
-
-        kVStore.deleteValue(TABLE, "key1");
-        kVStore.deleteValue(TABLE, "key2");
-
-        Assert.assertNull(kVStore.getValue(TABLE, "key1"));
-        Assert.assertNull(kVStore.getValue(TABLE, "key2"));
-    }
-
-    @Test
-    public void testEquality() throws MalformedURLException, KVStoreException {
-        TestClass tc1 = new TestClass();
-        tc1.setUrl(new URL("http://test.com/1"));
-        tc1.setString("one");
-
-        Field f11 = new Field();
-        f11.setName("name");
-        f11.setValue("one");
-
-        kVStore.setValue(TABLE, "key1", tc1, f11);
-
-        TestClass tc2 = new TestClass();
-        tc2.setUrl(new URL("http://test.com/2"));
-        tc2.setString("two");
-
-        Field f12 = new Field();
-        f12.setName("name");
-        f12.setValue("two");
-
-        kVStore.setValue(TABLE, "key2", tc2, f12);
-
-        List<String> actualKeys = kVStore.search(
-                TABLE,
-                KVStore.Math.EQUALS,
-                f11
-        );
-
-        Assert.assertNotNull(actualKeys);
-        Assert.assertEquals(1, actualKeys.size());
-        Assert.assertEquals("key1", actualKeys.get(0));
-        kVStore.deleteValue(TABLE, "key1");
-        Assert.assertNull(kVStore.getValue(TABLE, "key1"));
+        List<String> keys = kVStore.search(TABLE, query);
+        Assert.assertEquals(1, keys.size());
+        Assert.assertEquals(keys.get(0), "key-50");
+        for (int i = 0; i < 100; i++) {
+            kVStore.deleteValue(TABLE, "key-" + i);
+        }
     }
 
 }

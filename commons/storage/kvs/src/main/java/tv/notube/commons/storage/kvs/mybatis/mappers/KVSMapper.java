@@ -1,8 +1,8 @@
 package tv.notube.commons.storage.kvs.mybatis.mappers;
 
-import tv.notube.commons.storage.kvs.Field;
-import tv.notube.commons.storage.kvs.mybatis.Bytes;
 import org.apache.ibatis.annotations.Param;
+import tv.notube.commons.storage.model.fields.Bytes;
+import tv.notube.commons.storage.model.fields.StringField;
 
 import java.util.List;
 
@@ -15,12 +15,6 @@ public interface KVSMapper {
             @Param("kvstable") String table,
             @Param("key") String key);
 
-    public List<String> selectByField(
-            @Param("kvstable") String table,
-            @Param("field") String field,
-            @Param("value") String value
-    );
-
     public void insertObject(
             @Param("kvstable") String table,
             @Param("key") String key,
@@ -30,11 +24,11 @@ public interface KVSMapper {
     public void insertField(
             @Param("kvstable") String table,
             @Param("key") String key,
-            @Param("field") String field,
+            @Param("name") String field,
             @Param("value") String value
     );
 
-    public List<Field> selectFieldsByKey(
+    public List<StringField> selectFieldsByKey(
             @Param("kvstable") String table,
             @Param("key") String key
     );
@@ -49,16 +43,8 @@ public interface KVSMapper {
             @Param("key") String key
     );
 
-    public List<String> selectByFieldRangeGreat(
+    public List<String> selectByQuery(
             @Param("kvstable") String table,
-            @Param("field") String name,
-            @Param("value") long value
+            @Param("query") String query
     );
-
-    public List<String> selectByFieldRangeLess(
-            @Param("kvstable") String table,
-            @Param("field") String name,
-            @Param("value") long value
-    );
-
 }

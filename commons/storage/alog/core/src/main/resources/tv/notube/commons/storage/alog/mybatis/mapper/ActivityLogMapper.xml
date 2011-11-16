@@ -3,42 +3,42 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.mapper.ActivityLogMapper">
+<mapper namespace="tv.notube.commons.storage.alog.mybatis.mapper.ActivityLogMapper">
 
-    <insert id="insertActivity" parameterType="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.model.Activity">
+    <insert id="insertActivity" parameterType="tv.notube.commons.storage.model.Activity">
         INSERT INTO activities (id, date, owner, description)
         VALUES
-        (#{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.tv.notube.commons.alogotube.commons.alog.mybatis.handlers.UUIDTypeHandler},#{dateTime,javaType=org.joda.time.DateTime,jdbcType=Btv.notube.commons.alogT,typeHandler=tv.notube.commons.alogotube.commons.alog.mybatis.handlers.JodaDateTimeTypeHandler},#{owner},#{description})
+        (#{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler},#{dateTime,javaType=org.joda.time.DateTime,jdbcType=BIGINT,typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.JodaDateTimeTypeHandler},#{owner},#{description})
     </insert>
 
     <insert id="insertIntegerField" parameterType="map">
         INSERT INTO integerfield (id, name, value)
         VALUES (#{id,javaType=java.util.UUID,jdbcType=VARCHAR,
-        typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler},#{field.name},#{field.value})
+        typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler},#{field.name},#{field.value})
     </insert>
 
     <insert id="insertDatetimeField" parameterType="map">
         INSERT INTO datetimefield (id, name, value)
         VALUES (#{id,javaType=java.util.UUID,jdbcType=VARCHAR,
-        typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler},#{field.name},#{field.value})
+        typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler},#{field.name},#{field.value})
     </insert>
 
     <insert id="insertStringField" parameterType="map">
         INSERT INTO stringfield (id, name, value)
         VALUES (#{id,javaType=java.util.UUID,jdbcType=VARCHAR,
-        typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler},#{field.name},#{field.value})
+        typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler},#{field.name},#{field.value})
     </insert>
 
     <insert id="insertURLField" parameterType="map">
         INSERT INTO urlfield (id, name, value)
         VALUES (#{id,javaType=java.util.UUID,jdbcType=VARCHAR,
-        typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler},#{field.name},#{field.value})
+        typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler},#{field.name},#{field.value})
     </insert>
 
     <insert id="insertBytesField" parameterType="map">
         INSERT INTO serializedfield (id, name, value)
         VALUES (#{id,javaType=java.util.UUID,jdbcType=VARCHAR,
-        typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler},#{name},#{value, javaType=byte[], jdbcType=BLOB, typeHandler=org.apache.ibatis.type.ByteArrayTypeHandler})
+        typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler},#{name},#{value, javaType=byte[], jdbcType=BLOB, typeHandler=org.apache.ibatis.type.ByteArrayTypeHandler})
     </insert>
 
     <select id="selectActivityByOwner" parameterType="map"
@@ -60,7 +60,7 @@
         SELECT name, value
         FROM stringfield
         WHERE id =
-        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
+        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
     </select>
 
     <select id="selectActivityIntegerFields" parameterType="map"
@@ -68,7 +68,7 @@
         SELECT name, value
         FROM integerfield
         WHERE id =
-        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
+        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
     </select>
 
     <select id="selectActivityDatetimeFields" parameterType="map"
@@ -76,7 +76,7 @@
         SELECT name, value
         FROM datetimefield
         WHERE id =
-        #{id,javaType=java.util.UUID,jdbcType=VARCHAR, typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
+        #{id,javaType=java.util.UUID,jdbcType=VARCHAR, typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
     </select>
 
     <select id="selectActivityURLFields" parameterType="map"
@@ -84,7 +84,7 @@
         SELECT name, value
         FROM urlfield
         WHERE id =
-        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
+        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
     </select>
 
     <select id="selectActivitySerializedFields" parameterType="map"
@@ -92,7 +92,7 @@
         SELECT name, value
         FROM serializedfield
         WHERE id =
-        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
+        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
     </select>
 
     <select id="selectActivityByDateRangeAndOwner" parameterType="map"
@@ -141,76 +141,76 @@
     <delete id="deleteActivityStringFields" parameterType="map">
         DELETE FROM stringfield
         WHERE id =
-        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
+        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
     </delete>
 
     <delete id="deleteActivityIntegerFields" parameterType="map">
         DELETE FROM integerfield
         WHERE id =
-        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
+        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
     </delete>
 
     <delete id="deleteActivityDatetimeFields" parameterType="map">
         DELETE FROM datetimefield
         WHERE id =
-        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
+        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
     </delete>
 
     <delete id="deleteActivityURLFields" parameterType="map">
         DELETE FROM urlfield
         WHERE id =
-        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
+        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
     </delete>
 
     <delete id="deleteActivitySerializedFields" parameterType="map">
         DELETE FROM serializedfield
         WHERE id =
-        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
+        #{id,javaType=java.util.UUID,jdbcType=VARCHAR,typeHandler=tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler}
     </delete>
 
-    <resultMap id="activityRM" type="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.model.Activity">
+    <resultMap id="activityRM" type="tv.notube.commons.storage.model.Activity">
         <constructor>
             <idArg column="id" javaType="java.util.UUID"
-                   typeHandler="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler"/>
+                   typeHandler="tv.notube.commons.storage.alog.mybatis.handlers.UUIDTypeHandler"/>
             <arg column="date" javaType="org.joda.time.DateTime"
-                 typeHandler="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.JodaDateTimeTypeHandler"/>
+                 typeHandler="tv.notube.commons.storage.alog.mybatis.handlers.JodaDateTimeTypeHandler"/>
             <arg column="owner" javaType="java.lang.String"/>
             <arg column="description" javaType="java.lang.String"/>
         </constructor>
     </resultMap>
 
-    <resultMap id="bytesFieldRM" type="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.model.fields.BytesField">
+    <resultMap id="bytesFieldRM" type="tv.notube.commons.storage.model.fields.BytesField">
         <constructor>
             <arg column="name" javaType="java.lang.String"/>
-            <arg column="value" javaType="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.model.fields.Bytes"
-                 typeHandler="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.BytesTypeHandler"/>
+            <arg column="value" javaType="tv.notube.commons.storage.model.fields.Bytes"
+                 typeHandler="tv.notube.commons.storage.alog.mybatis.handlers.BytesTypeHandler"/>
         </constructor>
     </resultMap>
 
-    <resultMap id="urlFieldRM" type="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.model.fields.URLField">
+    <resultMap id="urlFieldRM" type="tv.notube.commons.storage.model.fields.URLField">
         <constructor>
             <arg column="name" javaType="java.lang.String"/>
             <arg column="value" javaType="java.net.URL"
-                 typeHandler="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.URLTypeHandler"/>
+                 typeHandler="tv.notube.commons.storage.alog.mybatis.handlers.URLTypeHandler"/>
         </constructor>
     </resultMap>
 
-    <resultMap id="datetimeFieldRM" type="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.model.fields.DatetimeField">
+    <resultMap id="datetimeFieldRM" type="tv.notube.commons.storage.model.fields.DatetimeField">
         <constructor>
             <arg column="name" javaType="java.lang.String"/>
             <arg column="value" javaType="org.joda.time.DateTime"
-                 typeHandler="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.alog.mybatis.handlers.JodaDateTimeTypeHandler"/>
+                 typeHandler="tv.notube.commons.storage.alog.mybatis.handlers.JodaDateTimeTypeHandler"/>
         </constructor>
     </resultMap>
 
-    <resultMap id="integerFieldRM" type="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.model.fields.IntegerField">
+    <resultMap id="integerFieldRM" type="tv.notube.commons.storage.model.fields.IntegerField">
         <constructor>
             <arg column="name" javaType="java.lang.String"/>
             <arg column="value" javaType="java.lang.Integer"/>
         </constructor>
     </resultMap>
 
-    <resultMap id="stringFieldRM" type="tv.notube.commons.tv.notube.commons.tv.notube.commons.storage.model.fields.StringField">
+    <resultMap id="stringFieldRM" type="tv.notube.commons.storage.model.fields.StringField">
         <constructor>
             <arg column="name" javaType="java.lang.String"/>
             <arg column="value" javaType="java.lang.String"/>

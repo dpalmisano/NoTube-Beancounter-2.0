@@ -1,6 +1,6 @@
 package tv.notube.commons.storage.kvs;
 
-import tv.notube.commons.storage.kvs.serialization.SerializationManager;
+import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
