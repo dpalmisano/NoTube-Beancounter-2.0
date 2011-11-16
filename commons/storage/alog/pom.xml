@@ -12,10 +12,9 @@
     <artifactId>alog</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>NoTube 2.0 Commons: Alog Parent</name>
+    <name>NoTube 2.0 Storage Infrastructure: Activity Log</name>
 
     <modules>
-        <module>api</module>
         <module>core</module>
         <module>rest</module>
     </modules>

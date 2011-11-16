@@ -52,7 +52,6 @@
 
     <modules>
         <module>commons</module>
-        <module>kvs</module>
         <module>crawler</module>
         <module>platform</module>
         <module>user-manager</module>

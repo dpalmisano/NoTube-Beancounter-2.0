@@ -16,8 +16,8 @@
 
 	<modules>
         <module>model</module>
-        <module>alog</module>
         <module>alchemyapi</module>
+    	<module>storage</module>
   </modules>
 
 </project>

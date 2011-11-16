@@ -1,6 +1,7 @@
 package tv.notube.commons.alog.mapper;
 
 import org.joda.time.DateTime;
+import tv.notube.commons.alog.fields.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

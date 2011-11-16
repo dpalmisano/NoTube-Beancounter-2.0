@@ -1,15 +1,27 @@
 package tv.notube.usermanager;
 
 import org.apache.log4j.Logger;
-import tv.notube.commons.alog.*;
+import org.joda.time.DateTime;
+import tv.notube.commons.alog.ActivityLog;
+import tv.notube.commons.alog.ActivityLogException;
+import tv.notube.commons.alog.DefaultActivityLogImpl;
+import tv.notube.commons.alog.Query;
+import tv.notube.commons.alog.fields.*;
+import tv.notube.commons.alog.fields.serialization.SerializationManagerException;
 import tv.notube.commons.model.User;
+import tv.notube.commons.model.activity.Activity;
 import tv.notube.kvs.storage.KVStore;
+import tv.notube.kvs.storage.KVStoreException;
 import tv.notube.kvs.storage.mybatis.MyBatisKVStore;
 import tv.notube.kvs.storage.serialization.SerializationManager;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
+import tv.notube.usermanager.fields.Author;
+import tv.notube.usermanager.fields.LastWrite;
+import tv.notube.usermanager.fields.Username;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManager;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManagerFactory;
 
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -22,6 +34,8 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
     private static Logger logger = Logger.getLogger(DefaultUserManagerImpl.class);
 
     private static final String USERS_TABLE = "users";
+
+    private static final String USER_ACTIVITY_OWNER = COMPONENT + "-%s";
 
     private KVStore kvs;
 
@@ -43,11 +57,52 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
     }
 
     public void storeUser(User user) throws UserManagerException {
-        throw new UnsupportedOperationException("NYI");
+        UUID userId = user.getId();
+        if(getUser(userId) != null) {
+            deleteUser(userId);
+            try {
+                kvs.setValue(
+                        USERS_TABLE,
+                        userId.toString(),
+                        user,
+                        new LastWrite(),
+                        new Author(COMPONENT),
+                        new Username(user.getUsername())
+                );
+            } catch (KVStoreException e) {
+                final String errMsg = "Error while storing user '" + userId +
+                        "' on kvs";
+                logger.error(errMsg, e);
+                throw new UserManagerException(errMsg, e);
+            }
+        } else {
+            try {
+                kvs.setValue(
+                        USERS_TABLE,
+                        userId.toString(),
+                        user,
+                        new LastWrite(),
+                        new Author(COMPONENT),
+                        new Username(user.getUsername())
+                );
+            } catch (KVStoreException e) {
+                final String errMsg = "Error while storing user '" + userId +
+                        "' on kvs";
+                logger.error(errMsg, e);
+                throw new UserManagerException(errMsg, e);
+            }
+        }
     }
 
     public User getUser(UUID userId) throws UserManagerException {
-        throw new UnsupportedOperationException("NYI");
+        try {
+            return (User) kvs.getValue(USERS_TABLE, userId.toString());
+        } catch (KVStoreException e) {
+            final String errMsg = "Error while retrieving user '" + userId +
+                    "' from kvs";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
     }
 
     public User getUser(String username) throws UserManagerException {
@@ -56,31 +111,137 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
 
     public void storeUserActivities(
             UUID userId,
-            List<tv.notube.commons.model.activity.Activity> activities
+            List<Activity> activities
     ) throws UserManagerException {
-        throw new UnsupportedOperationException("NYI");
+        if (getUser(userId) == null) {
+            final String errMsg = "User '" + userId + "' not found";
+            logger.error(errMsg);
+            throw new UserManagerException(errMsg);
+        }
+        for (Activity activity : activities) {
+            Field[] fields;
+            try {
+                fields = getActivityLogFields(activity);
+            } catch (SerializationManagerException e) {
+                final String errMsg = "Error while serializing activity";
+                logger.error(errMsg, e);
+                throw new UserManagerException(errMsg, e);
+            }
+            try {
+                alog.log(
+                        String.format(USER_ACTIVITY_OWNER, userId.toString()),
+                        "user activity",
+                        fields
+                );
+            } catch (ActivityLogException e) {
+                final String errMsg = "Error while storing activities for " +
+                        "user '" + userId + "'";
+                logger.error(errMsg, e);
+                throw new UserManagerException(errMsg, e);
+            }
+        }
     }
 
-    public List<tv.notube.commons.model.activity.Activity> getUserActivities(UUID userId)
+    public List<Activity> getUserActivities(UUID userId)
             throws UserManagerException {
-        throw new UnsupportedOperationException("NYI");
+        if (getUser(userId) == null) {
+            final String errMsg = "User '" + userId + "' not found";
+            logger.error(errMsg);
+            throw new UserManagerException(errMsg);
+        }
+        tv.notube.commons.alog.Activity activities[];
+        try {
+            activities = alog.filter(
+                    new DateTime(),
+                    String.format(USER_ACTIVITY_OWNER, userId.toString())
+            );
+        } catch (ActivityLogException e) {
+            final String errMsg = "User while getting activities for '" +
+                    userId + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
+        List<Activity> userActivities = new ArrayList<Activity>();
+        tv.notube.commons.alog.fields.serialization.SerializationManager sm =
+                new tv.notube.commons.alog.fields.serialization.SerializationManager();
+        for (tv.notube.commons.alog.Activity activity : activities) {
+            Field fields[];
+            try {
+                fields = alog.getFields(activity.getId());
+            } catch (ActivityLogException e) {
+                final String errMsg = "User while getting fields for " +
+                        "activity";
+                logger.error(errMsg, e);
+                throw new UserManagerException(errMsg, e);
+            }
+            for(Field field : fields) {
+                if (field instanceof BytesField) {
+                    BytesField bf = (BytesField) field;
+                    Activity userActivity;
+                    try {
+                        userActivity = (Activity) sm.deserialize(
+                                bf.getValue().getBytes()
+                        );
+                    } catch (SerializationManagerException e) {
+                        final String errMsg = "User while getting " +
+                                "activity field for activity";
+                        logger.error(errMsg, e);
+                        throw new UserManagerException(errMsg, e);
+                    }
+                    userActivities.add(userActivity);
+                }
+            }
+        }
+        return userActivities;
     }
 
-    public List<tv.notube.commons.model.activity.Activity> getUserActivities(String username)
+    public List<Activity> getUserActivities(String username)
             throws UserManagerException {
         throw new UnsupportedOperationException("NYI");
     }
 
     public void deleteUser(UUID userId) throws UserManagerException {
-        throw new UnsupportedOperationException("NYI");
+        try {
+            kvs.deleteValue(USERS_TABLE, userId.toString());
+        } catch (KVStoreException e) {
+            final String errMsg = "Error while deleting user '" + userId + "' from" +
+                    " kvs";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
+        try {
+            alog.delete(String.format(USER_ACTIVITY_OWNER, userId.toString()));
+        } catch (ActivityLogException e) {
+            final String errMsg = "Error while deleting user '" + userId + "' from" +
+                    " alog";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
     }
 
     public List<UUID> getUsersToBeProfiled() throws UserManagerException {
-        throw new UnsupportedOperationException("NYI");
+        // TODO (high) replace this with an appropriate method.
+        return getUsersToCrawled();
     }
 
     public List<UUID> getUsersToCrawled() throws UserManagerException {
-        throw new UnsupportedOperationException("NYI");
+        List<String> userIds;
+        try {
+            userIds = kvs.search(
+                    USERS_TABLE,
+                    KVStore.Math.LESS,
+                    new LastWrite()
+            );
+        } catch (KVStoreException e) {
+            final String errMsg= "Error while getting users to be crawled";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
+        List<UUID> uuids = new ArrayList<UUID>();
+        for(String userId : userIds) {
+            uuids.add(UUID.fromString(userId));
+        }
+        return uuids;
     }
 
     public void registerService(String service, User user, String token)
@@ -90,6 +251,28 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
 
     public ServiceAuthorizationManager getServiceAuthorizationManager()
             throws UserManagerException {
-        throw new UnsupportedOperationException("NYI");
+        return sam;
     }
+
+    private Field[] getActivityLogFields(Activity activity)
+            throws SerializationManagerException {
+        String what = activity.getVerb().name();
+        DateTime when = activity.getContext().getDate();
+        URL where = activity.getContext().getService();
+        StringField whatField = new StringField("verb", what);
+        DatetimeField whenField = new DatetimeField("date", when);
+        URLField whereField = new URLField("service", where);
+        tv.notube.commons.alog.fields.serialization.SerializationManager sm =
+                new tv.notube.commons.alog.fields.serialization.SerializationManager();
+        Bytes bytes;
+        bytes = sm.serialize(activity);
+        BytesField objectField = new BytesField("object", bytes);
+        return new Field[]{
+                whatField,
+                whenField,
+                whereField,
+                objectField
+        };
+    }
+
 }

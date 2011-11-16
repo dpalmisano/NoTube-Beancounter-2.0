@@ -1,5 +1,7 @@
 package tv.notube.commons.alog;
 
+import tv.notube.commons.alog.fields.*;
+
 /**
  * put class description here
  *

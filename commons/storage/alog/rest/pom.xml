@@ -13,8 +13,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>NoTube 2.0 Commons: Alog REST APIs</name>
-    <url>http://notube.tv</url>
+    <name>NoTube 2.0 Storage Infrastructure: Alog REST APIs</name>
 
     <dependencies>
         <dependency>
