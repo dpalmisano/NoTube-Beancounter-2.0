@@ -1,6 +1,7 @@
 package tv.notube.crawler.runnable;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import tv.notube.commons.model.Service;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.UserCredential;
@@ -40,7 +41,10 @@ public class Spider implements Runnable {
         try {
             this.user = getUser(id);
         } catch (UserManagerException e) {
-            throw new SpiderException("", e);
+            final String errMsg = "Error while getting user with id '" + id +
+                    "'";
+            logger.error(errMsg, e);
+            throw new SpiderException(errMsg, e);
         }
     }
 
@@ -50,25 +54,45 @@ public class Spider implements Runnable {
         try {
             sam = um.getServiceAuthorizationManager();
         } catch (UserManagerException e) {
-            throw new RuntimeException("", e);
+            final String errMsg = "Error while getting Service Auth Manager";
+            logger.error(errMsg, e);
+            throw new RuntimeException(errMsg, e);
         }
         for (String serviceName : user.getServices()) {
             Service service;
             try {
                 service = sam.getService(serviceName);
             } catch (ServiceAuthorizationManagerException e) {
-                throw new RuntimeException("", e);
+                final String errMsg = "Error while getting Service '" + serviceName +
+                        "'";
+                logger.error(errMsg, e);
+                throw new RuntimeException(errMsg, e);
             }
             try {
                 activities = requester.call(service, user.getAuth(serviceName));
             } catch (RequesterException e) {
-                throw new RuntimeException("", e);
+                final String errMsg = "Error while calling service '" +
+                        serviceName +
+                        "'";
+                logger.error(errMsg, e);
+                throw new RuntimeException(errMsg, e);
             }
-            user.setActivities(activities);
+            user.setProfiledAt(new DateTime());
             try {
                 um.storeUser(user);
             } catch (UserManagerException e) {
-                throw new RuntimeException("", e);
+                final String errMsg = "Error while storing user '" + user
+                        .getId() + "'";
+                logger.error(errMsg, e);
+                throw new RuntimeException(errMsg, e);
+            }
+            try {
+                um.storeUserActivities(user.getId(), activities);
+            } catch (UserManagerException e) {
+                final String errMsg = "Error while storing activities for " +
+                        "user '" + user.getId() + "'";
+                logger.error(errMsg, e);
+                throw new RuntimeException(errMsg, e);
             }
         }
     }

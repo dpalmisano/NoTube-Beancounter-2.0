@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 import tv.notube.commons.model.Auth;
 import tv.notube.commons.model.Service;
 import tv.notube.commons.model.User;
+import tv.notube.commons.model.activity.Activity;
 import tv.notube.crawler.Crawler;
 import tv.notube.crawler.runnable.Spider;
 import tv.notube.crawler.runnable.SpiderException;
@@ -20,6 +21,7 @@ import tv.notube.usermanager.configuration.UserManagerConfiguration;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -91,7 +93,9 @@ public class SpiderTest {
     public void test() throws UserManagerException {
         spider.run();
         User actual = um.getUser(UUID.fromString(USERID));
-        Assert.assertTrue(actual.getActivities().size() > 0);
+        Assert.assertNotNull(actual);
+        List<Activity> activities = um.getUserActivities(actual.getId());
+        Assert.assertTrue(activities.size() > 0);
     }
 
 }

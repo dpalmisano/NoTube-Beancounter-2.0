@@ -1,8 +1,8 @@
 package tv.notube.profiler;
 
-import tv.notube.kvs.storage.KVStore;
-import tv.notube.kvs.storage.mybatis.MyBatisKVStore;
-import tv.notube.kvs.storage.serialization.SerializationManager;
+import tv.notube.commons.storage.kvs.KVStore;
+import tv.notube.commons.storage.kvs.mybatis.MyBatisKVStore;
+import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
 import tv.notube.profiler.configuration.ProfilerConfiguration;
 import tv.notube.profiler.configuration.ProfilingLineDescription;
 import tv.notube.profiler.configuration.ProfilingLineItemDescription;

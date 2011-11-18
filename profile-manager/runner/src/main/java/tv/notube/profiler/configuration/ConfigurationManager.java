@@ -4,12 +4,10 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-import tv.notube.kvs.storage.configuration.KVStoreConfiguration;
+import tv.notube.commons.storage.kvs.configuration.KVStoreConfiguration;
 import tv.notube.profiler.data.DataManagerConfiguration;
 import tv.notube.profiler.data.DataManagerConfigurationException;
 import tv.notube.profiler.data.DataManagerException;
-import tv.notube.profiler.line.ProfilingLine;
-import tv.notube.profiler.line.ProfilingLineItem;
 import tv.notube.profiler.storage.ProfileStoreConfiguration;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
 

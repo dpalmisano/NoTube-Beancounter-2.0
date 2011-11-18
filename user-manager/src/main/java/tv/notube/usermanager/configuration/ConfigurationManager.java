@@ -4,9 +4,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-import tv.notube.kvs.storage.configuration.KVStoreConfiguration;
-
-import java.io.File;
+import tv.notube.commons.storage.kvs.configuration.KVStoreConfiguration;
 
 /**
  * @author Davide Palmiaano ( dpalmisano@gmail.com )

@@ -10,10 +10,10 @@ import tv.notube.commons.model.UserProfile;
 import tv.notube.commons.model.activity.Activity;
 import tv.notube.commons.model.activity.Context;
 import tv.notube.commons.model.activity.Verb;
-import tv.notube.kvs.storage.KVStore;
-import tv.notube.kvs.storage.configuration.ConfigurationManager;
-import tv.notube.kvs.storage.mybatis.MyBatisKVStore;
-import tv.notube.kvs.storage.serialization.SerializationManager;
+import tv.notube.commons.storage.kvs.KVStore;
+import tv.notube.commons.storage.kvs.configuration.ConfigurationManager;
+import tv.notube.commons.storage.kvs.mybatis.MyBatisKVStore;
+import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
 
 import java.net.MalformedURLException;
 import java.net.URI;

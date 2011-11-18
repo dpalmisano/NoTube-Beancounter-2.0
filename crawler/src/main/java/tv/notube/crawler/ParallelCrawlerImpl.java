@@ -1,10 +1,8 @@
 package tv.notube.crawler;
 
 import org.apache.log4j.Logger;
-import tv.notube.commons.model.User;
 import tv.notube.crawler.runnable.Spider;
 import tv.notube.crawler.runnable.SpiderException;
-import tv.notube.kvs.storage.KVStore;
 import tv.notube.usermanager.UserManager;
 import tv.notube.usermanager.UserManagerException;
 

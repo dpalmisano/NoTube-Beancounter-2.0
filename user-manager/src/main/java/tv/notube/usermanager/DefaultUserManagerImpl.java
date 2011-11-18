@@ -2,22 +2,19 @@ package tv.notube.usermanager;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import tv.notube.commons.alog.ActivityLog;
-import tv.notube.commons.alog.ActivityLogException;
-import tv.notube.commons.alog.DefaultActivityLogImpl;
-import tv.notube.commons.alog.Query;
-import tv.notube.commons.alog.fields.*;
-import tv.notube.commons.alog.fields.serialization.SerializationManagerException;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.activity.Activity;
-import tv.notube.kvs.storage.KVStore;
-import tv.notube.kvs.storage.KVStoreException;
-import tv.notube.kvs.storage.mybatis.MyBatisKVStore;
-import tv.notube.kvs.storage.serialization.SerializationManager;
+import tv.notube.commons.storage.alog.DefaultActivityLogImpl;
+import tv.notube.commons.storage.kvs.KVStore;
+import tv.notube.commons.storage.kvs.KVStoreException;
+import tv.notube.commons.storage.kvs.mybatis.MyBatisKVStore;
+import tv.notube.commons.storage.model.ActivityLog;
+import tv.notube.commons.storage.model.ActivityLogException;
+import tv.notube.commons.storage.model.Query;
+import tv.notube.commons.storage.model.fields.*;
+import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
+import tv.notube.commons.storage.model.fields.serialization.SerializationManagerException;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
-import tv.notube.usermanager.fields.Author;
-import tv.notube.usermanager.fields.LastWrite;
-import tv.notube.usermanager.fields.Username;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManager;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManagerFactory;
 
@@ -61,13 +58,22 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
         if(getUser(userId) != null) {
             deleteUser(userId);
             try {
+                StringField lastWrite = new StringField(
+                        "last_write",
+                        Long.toString(System.currentTimeMillis())
+                );
+                StringField author = new StringField("author", COMPONENT);
+                StringField username = new StringField(
+                        "username",
+                        user.getUsername()
+                );
                 kvs.setValue(
                         USERS_TABLE,
                         userId.toString(),
                         user,
-                        new LastWrite(),
-                        new Author(COMPONENT),
-                        new Username(user.getUsername())
+                        lastWrite,
+                        author,
+                        username
                 );
             } catch (KVStoreException e) {
                 final String errMsg = "Error while storing user '" + userId +
@@ -77,13 +83,22 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
             }
         } else {
             try {
+                StringField lastWrite = new StringField(
+                        "last_write",
+                        Long.toString(System.currentTimeMillis())
+                );
+                StringField author = new StringField("author", COMPONENT);
+                StringField username = new StringField(
+                        "username",
+                        user.getUsername()
+                );
                 kvs.setValue(
                         USERS_TABLE,
                         userId.toString(),
                         user,
-                        new LastWrite(),
-                        new Author(COMPONENT),
-                        new Username(user.getUsername())
+                        lastWrite,
+                        author,
+                        username
                 );
             } catch (KVStoreException e) {
                 final String errMsg = "Error while storing user '" + userId +
@@ -149,7 +164,7 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
             logger.error(errMsg);
             throw new UserManagerException(errMsg);
         }
-        tv.notube.commons.alog.Activity activities[];
+        tv.notube.commons.storage.model.Activity activities[];
         try {
             activities = alog.filter(
                     new DateTime(),
@@ -162,9 +177,9 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
             throw new UserManagerException(errMsg, e);
         }
         List<Activity> userActivities = new ArrayList<Activity>();
-        tv.notube.commons.alog.fields.serialization.SerializationManager sm =
-                new tv.notube.commons.alog.fields.serialization.SerializationManager();
-        for (tv.notube.commons.alog.Activity activity : activities) {
+        SerializationManager sm =
+                new SerializationManager();
+        for (tv.notube.commons.storage.model.Activity activity : activities) {
             Field fields[];
             try {
                 fields = alog.getFields(activity.getId());
@@ -226,19 +241,24 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
 
     public List<UUID> getUsersToCrawled() throws UserManagerException {
         List<String> userIds;
+        StringField lastWrite = new StringField(
+                "last_write",
+                Long.toString(System.currentTimeMillis())
+        );
+        Query query = new Query();
+        query.push(lastWrite, Query.Math.LT);
         try {
             userIds = kvs.search(
                     USERS_TABLE,
-                    KVStore.Math.LESS,
-                    new LastWrite()
+                    query
             );
         } catch (KVStoreException e) {
-            final String errMsg= "Error while getting users to be crawled";
+            final String errMsg = "Error while getting users to be crawled";
             logger.error(errMsg, e);
             throw new UserManagerException(errMsg, e);
         }
         List<UUID> uuids = new ArrayList<UUID>();
-        for(String userId : userIds) {
+        for (String userId : userIds) {
             uuids.add(UUID.fromString(userId));
         }
         return uuids;
@@ -262,8 +282,8 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
         StringField whatField = new StringField("verb", what);
         DatetimeField whenField = new DatetimeField("date", when);
         URLField whereField = new URLField("service", where);
-        tv.notube.commons.alog.fields.serialization.SerializationManager sm =
-                new tv.notube.commons.alog.fields.serialization.SerializationManager();
+        SerializationManager sm =
+                new SerializationManager();
         Bytes bytes;
         bytes = sm.serialize(activity);
         BytesField objectField = new BytesField("object", bytes);

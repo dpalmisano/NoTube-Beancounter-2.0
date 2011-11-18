@@ -1,6 +1,6 @@
 package tv.notube.usermanager.configuration;
 
-import tv.notube.kvs.storage.configuration.KVStoreConfiguration;
+import tv.notube.commons.storage.kvs.configuration.KVStoreConfiguration;
 
 /**
  * Main bean wrapping the configuration properties of

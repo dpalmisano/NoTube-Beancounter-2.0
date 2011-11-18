@@ -13,7 +13,7 @@ public class Query {
             "AND %sfield.value %s %s ";
 
     private static final String STRING_FIELD_PATTERN = "%sfield.name = '%s' " +
-            "AND %sfield.value = '%s' ";
+            "AND %sfield.value %s '%s' ";
 
     private static final String URL_FIELD_PATTERN = "%sfield.name = '%s' " +
             "AND %sfield.value = '%s' ";
@@ -75,6 +75,7 @@ public class Query {
                         "string",
                         sf.getName(),
                         "string",
+                        getMathOperator((Math) stack[i+1]),
                         sf.getValue()
                 );
             } else if(obj instanceof IntegerField) {

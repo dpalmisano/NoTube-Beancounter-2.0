@@ -12,7 +12,7 @@ import tv.notube.profiler.data.DataManager;
 import tv.notube.profiler.storage.ProfileStore;
 
 /**
- * Main application's entry point. It implement a simple command
+ * Main application's entry point. It implements a simple command
  * line interface.
  * 
  * @author Davide Palmisano ( dpalmisano@gmail.com )

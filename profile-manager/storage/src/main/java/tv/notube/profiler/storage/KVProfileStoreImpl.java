@@ -2,9 +2,9 @@ package tv.notube.profiler.storage;
 
 import org.apache.log4j.Logger;
 import tv.notube.commons.model.UserProfile;
-import tv.notube.kvs.storage.KVStore;
-import tv.notube.kvs.storage.KVStoreException;
-import tv.notube.profiler.storage.field.ProfiledAt;
+import tv.notube.commons.storage.kvs.KVStore;
+import tv.notube.commons.storage.kvs.KVStoreException;
+import tv.notube.commons.storage.model.fields.StringField;
 
 import java.io.OutputStream;
 import java.util.UUID;
@@ -26,7 +26,8 @@ public class KVProfileStoreImpl implements ProfileStore {
 
     public void storeUserProfile(UserProfile userProfile) throws ProfileStoreException {
         try {
-            kvs.setValue(TABLE, userProfile.getUsername(), userProfile, new ProfiledAt());
+            StringField profiledAt = new StringField("profiled_at", Long.toString(System.currentTimeMillis()));
+            kvs.setValue(TABLE, userProfile.getUsername(), userProfile, profiledAt);
         } catch (KVStoreException e) {
             final String errMsg = "Error while storing user profile with id '"
                     + userProfile.getId() + "' for user '" + userProfile.getUsername() + "'";
