@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import tv.notube.commons.model.User;
+import tv.notube.commons.model.UserActivities;
 import tv.notube.commons.model.activity.Activity;
 import tv.notube.commons.model.activity.Context;
 import tv.notube.commons.model.activity.Song;
@@ -14,6 +15,8 @@ import tv.notube.profiler.line.ProfilingLineItemException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
@@ -52,8 +55,7 @@ public class TextLinkerProfilingLineItemTestCase {
 
     @Test
     public void test() throws MalformedURLException, ProfilingLineItemException {
-        User user = new User();
-        user.setUsername("dpalmisano");
+        String username = "dpalmisano";
 
         Activity a = new Activity();
         a.setVerb(Verb.TWEET);
@@ -65,7 +67,6 @@ public class TextLinkerProfilingLineItemTestCase {
         context.setDate(new DateTime());
         context.setService(new URL("http://twitter.com"));
         a.setContext(context);
-        user.addActivity(a);
 
         Activity a2 = new Activity();
         a2.setVerb(Verb.LISTEN);
@@ -77,7 +78,6 @@ public class TextLinkerProfilingLineItemTestCase {
         context2.setDate(new DateTime());
         context2.setService(new URL("http://last.fm"));
         a2.setContext(context2);
-        user.addActivity(a2);
 
         Activity a3 = new Activity();
         a3.setVerb(Verb.TWEET);
@@ -89,21 +89,27 @@ public class TextLinkerProfilingLineItemTestCase {
         context3.setDate(new DateTime());
         context3.setService(new URL("http://twitter.com"));
         a3.setContext(context3);
-        user.addActivity(a3);
 
         Activity a4 = new Activity();
         a4.setVerb(Verb.TWEET);
         Tweet tweet3 = new Tweet();
         tweet3.setUrl(new URL("http://twitter.com/dpalmisano/status/11736"));
-        tweet3.setText("Heading to Thriece gig tonight in London");
+        tweet3.setText("Heading to Thrice gig tonight in London");
         a4.setObject(tweet2);
         Context context4 = new Context();
         context4.setDate(new DateTime());
         context4.setService(new URL("http://twitter.com"));
         a4.setContext(context4);
-        user.addActivity(a4);
 
-        initItem.execute(user);
+        List<Activity> activities = new ArrayList<Activity>();
+        activities.add(a);
+        activities.add(a2);
+        activities.add(a3);
+        activities.add(a4);
+
+        UserActivities userActivities = new UserActivities(username, activities);
+
+        initItem.execute(userActivities);
     }
 
 }

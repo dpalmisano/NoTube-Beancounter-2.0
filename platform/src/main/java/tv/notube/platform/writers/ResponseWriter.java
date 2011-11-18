@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import org.joda.time.DateTime;
 import tv.notube.commons.model.gson.DateTimeAdapter;
 import tv.notube.platform.Response;
-
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;

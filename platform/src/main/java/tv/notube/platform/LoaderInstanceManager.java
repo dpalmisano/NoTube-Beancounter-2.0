@@ -1,12 +1,11 @@
 package tv.notube.platform;
 
 import org.apache.log4j.Logger;
-import tv.notube.kvs.storage.KVStore;
-import tv.notube.kvs.storage.mybatis.MyBatisKVStore;
-import tv.notube.kvs.storage.serialization.SerializationManager;
+import tv.notube.commons.storage.kvs.KVStore;
+import tv.notube.commons.storage.kvs.mybatis.MyBatisKVStore;
+import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
 import tv.notube.profiler.storage.KVProfileStoreImpl;
 import tv.notube.profiler.storage.ProfileStore;
-import tv.notube.profiler.storage.ProfileStoreConfiguration;
 import tv.notube.usermanager.DefaultUserManagerFactory;
 import tv.notube.usermanager.UserManager;
 import tv.notube.usermanager.UserManagerFactoryException;
@@ -51,7 +50,8 @@ public class LoaderInstanceManager {
             throw new RuntimeException(errMsg, e);
         }
         try {
-        Properties properties = tv.notube.kvs.storage.configuration.ConfigurationManager
+        Properties properties =
+                tv.notube.commons.storage.kvs.configuration.ConfigurationManager
                 .getInstance("kvs-configuration.xml")
                 .getKVStoreConfiguration()
                 .getProperties();
