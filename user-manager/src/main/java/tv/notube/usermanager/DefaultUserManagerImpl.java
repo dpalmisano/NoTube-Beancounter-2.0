@@ -2,6 +2,8 @@ package tv.notube.usermanager;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import tv.notube.commons.model.Auth;
+import tv.notube.commons.model.Service;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.activity.Activity;
 import tv.notube.commons.storage.alog.DefaultActivityLogImpl;
@@ -16,6 +18,7 @@ import tv.notube.commons.storage.model.fields.serialization.SerializationManager
 import tv.notube.commons.storage.model.fields.serialization.SerializationManagerException;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManager;
+import tv.notube.usermanager.services.auth.ServiceAuthorizationManagerException;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManagerFactory;
 
 import java.net.URL;
@@ -121,7 +124,38 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
     }
 
     public User getUser(String username) throws UserManagerException {
-        throw new UnsupportedOperationException("NYI");
+        Query query = new Query();
+        StringField usernameField = new StringField(
+                "username",
+                username
+        );
+        query.push(usernameField, Query.Math.EQ);
+        List<String> userIds;
+        try {
+            userIds = kvs.search(USERS_TABLE, query);
+        } catch (KVStoreException e) {
+            final String errMsg = "Error while retrieving username '"
+                    + username + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
+        if(userIds.size() == 0) {
+            return null;
+        }
+        if(userIds.size() > 1) {
+            final String errMsg = "Data inconsistency. It seems that we have " +
+                    "two users with the same username '" + username + "'";
+            logger.error(errMsg);
+            throw new UserManagerException(errMsg);
+        }
+        try {
+            return (User) kvs.getValue(USERS_TABLE, userIds.get(0));
+        } catch (KVStoreException e) {
+            final String errMsg = "Error while retriving user with id '" +
+                    userIds.get(0) + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
     }
 
     public void storeUserActivities(
@@ -264,9 +298,23 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
         return uuids;
     }
 
-    public void registerService(String service, User user, String token)
+    public void registerService(String serviceName, User user, String token)
             throws UserManagerException {
-        throw new UnsupportedOperationException("NYI");
+        try {
+            if (sam.getService(serviceName) == null) {
+                final String errMsg = "Service '" + serviceName + "' is not " +
+                        "supported.";
+                logger.error(errMsg);
+                throw new UserManagerException(errMsg);
+            }
+        } catch (ServiceAuthorizationManagerException e) {
+            final String errMsg = "Error while getting service '" + serviceName + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
+        Auth auth = new Auth(token, user.getUsername());
+        user.addService(serviceName, auth);
+        storeUser(user);
     }
 
     public ServiceAuthorizationManager getServiceAuthorizationManager()

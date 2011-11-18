@@ -40,12 +40,12 @@ public class UserService {
         UserManager um = instanceManager.getUserManager();
         try {
             if (um.getUser(username) != null) {
-                final String errMsg = "username '" + username + "' is already taken", e;
+                final String errMsg = "username '" + username + "' is already taken";
                 throw new RuntimeException(errMsg);
             }
         } catch (UserManagerException e) {
             final String errMsg = "Error while calling the UserManager";
-            throw new RuntimeException(errMsg);
+            throw new RuntimeException(errMsg, e);
         }
         User user = new User();
         user.setName(name);

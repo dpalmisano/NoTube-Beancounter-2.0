@@ -236,4 +236,27 @@ public class DefaultActivityLogImplTestCase {
         Assert.assertEquals(activities.length, 0);
     }
 
+    @Test
+    public void testMultipleFields() throws MalformedURLException, ActivityLogException {
+        DateTime before = new DateTime();
+        URLField urlField1 = new URLField(
+                "url-1",
+                new URL("http://test.com/index-2.html")
+        );
+        URLField urlField2 = new URLField(
+                "url-2",
+                new URL("http://test.com/index-2.html")
+        );
+        activityLog.log(OWNER, "multiple fields", urlField1, urlField2);
+        DateTime after = new DateTime();
+        Activity activities[] = activityLog.filter(before, after);
+        Assert.assertEquals(1, activities.length);
+        Field fields[] = activityLog.getFields(activities[0].getId());
+        Assert.assertEquals(2, fields.length);
+
+        activityLog.delete(OWNER);
+        activities = activityLog.filter(before, after);
+        Assert.assertEquals(activities.length, 0);
+    }
+
 }
