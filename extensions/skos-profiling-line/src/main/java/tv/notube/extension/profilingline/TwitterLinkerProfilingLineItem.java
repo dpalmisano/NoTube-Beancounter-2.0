@@ -1,10 +1,10 @@
 package tv.notube.extension.profilingline;
 
+import tv.notube.commons.alchemyapi.*;
 import tv.notube.commons.model.activity.Activity;
 import tv.notube.commons.model.activity.Tweet;
 import tv.notube.extension.profilingline.lupedia.DefaultLupediaImpl;
 import tv.notube.extension.profilingline.lupedia.Lupedia;
-import tv.notube.extension.profilingline.lupedia.LupediaException;
 import tv.notube.profiler.line.ProfilingLineItem;
 import tv.notube.profiler.line.ProfilingLineItemException;
 
@@ -17,15 +17,20 @@ import java.util.List;
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-public class TextLinkerProfilingLineItem extends ProfilingLineItem {
+public class TwitterLinkerProfilingLineItem extends ProfilingLineItem {
+
+    private static final String API_KEY = "04490000a72fe7ec5cb3497f14e77f338c86f2fe";
 
     private static String TWITTER = "http://twitter.com";
 
     private Lupedia lupedia;
 
-    public TextLinkerProfilingLineItem(String name, String description) {
+    private AlchemyAPI alchemyAPI;
+
+    public TwitterLinkerProfilingLineItem(String name, String description) {
         super(name, description);
         lupedia = new DefaultLupediaImpl();
+        alchemyAPI = new AlchemyAPI(API_KEY);
     }
 
     @Override
@@ -44,9 +49,10 @@ public class TextLinkerProfilingLineItem extends ProfilingLineItem {
                     Tweet tweet = (Tweet) activity.getObject();
                     List<URI> resources;
                     try {
-                        resources = lupedia.getResources(tweet.getText());
-                    } catch (LupediaException e) {
-                        throw new ProfilingLineItemException("", e);
+                        resources = getResources(tweet.getText());
+                    } catch (AlchemyAPIException e) {
+                        throw new ProfilingLineItemException("Error while " +
+                                "calling AlchemyAPI", e);
                     }
                     intermediate.addLinkedActivity(activity, resources);
                     activitiesToBeRemoved.add(activity);
@@ -59,6 +65,24 @@ public class TextLinkerProfilingLineItem extends ProfilingLineItem {
             intermediate.removeActivity(activity);
         }
         super.getNextProfilingLineItem().execute(intermediate);
+    }
+
+    private List<URI> getResources(String text) throws AlchemyAPIException {
+        List<URI> result = new ArrayList<URI>();
+        AlchemyAPIResponse alchemyAPIResponse;
+        alchemyAPIResponse = alchemyAPI.getNamedEntities(text);
+        List<Identified> identifieds = alchemyAPIResponse.getIdentified();
+        for (Identified identified : identifieds) {
+            NamedEntity namedEntity = (NamedEntity) identified;
+            result.add(namedEntity.getIdentifier());
+        }
+        alchemyAPIResponse = alchemyAPI.getRankedConcept(text);
+        identifieds = alchemyAPIResponse.getIdentified();
+        for (Identified identified : identifieds) {
+            Concept concept = (Concept) identified;
+            result.add(concept.getIdentifier());
+        }
+        return result;
     }
 
 

@@ -42,7 +42,7 @@
 				<profiling-line-item>
                     <name>text</name>
                     <description>extracts DBPedia resources from text</description>
-                    <class>tv.notube.extension.profilingline.TextLinkerProfilingLineItem</class>
+                    <class>tv.notube.extension.profilingline.TwitterLinkerProfilingLineItem</class>
                 </profiling-line-item>
 				<profiling-line-item>
 	                <name>musicbrainz</name>

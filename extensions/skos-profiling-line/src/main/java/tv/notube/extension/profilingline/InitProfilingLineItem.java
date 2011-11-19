@@ -1,14 +1,8 @@
 package tv.notube.extension.profilingline;
 
-import tv.notube.commons.model.User;
 import tv.notube.commons.model.UserActivities;
-import tv.notube.commons.model.activity.Activity;
 import tv.notube.profiler.line.ProfilingLineItem;
 import tv.notube.profiler.line.ProfilingLineItemException;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )

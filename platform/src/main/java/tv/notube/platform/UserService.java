@@ -18,6 +18,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.lang.reflect.Method;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
@@ -37,6 +38,30 @@ public class UserService {
             @FormParam("username") String username,
             @FormParam("password") String password
     ) {
+        if(username == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
+        if(username == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
+        if(username == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
+        if(username == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
         UserManager um = instanceManager.getUserManager();
         try {
             if (um.getUser(username) != null) {
@@ -68,6 +93,12 @@ public class UserService {
     @GET
     @Path("/{username}")
     public Response getUser(@PathParam("username") String username) {
+        if(username == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
         UserManager um = instanceManager.getUserManager();
         User user;
         try {
@@ -99,7 +130,24 @@ public class UserService {
             @PathParam("username") String username,
             @QueryParam("token") String token
     ) {
-
+        if (service == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'service' cannot be null"
+            );
+        }
+        if (username == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
+        if (token == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'token' cannot be null"
+            );
+        }
         UserManager um = instanceManager.getUserManager();
         User userObj;
         try {
@@ -121,7 +169,13 @@ public class UserService {
 
     @GET
     @Path("/profile/{username}")
-    public Response getProfile( @PathParam("username") String username ) {
+    public Response getProfile(@PathParam("username") String username) {
+        if (username == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
         ProfileStore ps = instanceManager.getProfileStore();
         UserProfile up;
         try {

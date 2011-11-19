@@ -3,7 +3,6 @@ package tv.notube.extension.profilingline;
 import org.joda.time.DateTime;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import tv.notube.commons.model.User;
 import tv.notube.commons.model.UserActivities;
 import tv.notube.commons.model.activity.Activity;
 import tv.notube.commons.model.activity.Context;
@@ -21,7 +20,7 @@ import java.util.List;
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-public class TextLinkerProfilingLineItemTestCase {
+public class SkosProfilingLineItemTestCase {
 
     private ProfilingLineItem initItem;
 
@@ -36,9 +35,9 @@ public class TextLinkerProfilingLineItemTestCase {
     @BeforeTest
     public void setUp() {
         initItem = new InitProfilingLineItem("init", "prepares the objects");
-        textItem = new TextLinkerProfilingLineItem(
-                "text-linker",
-                "it provides dbpedia URLs"
+        textItem = new TwitterLinkerProfilingLineItem(
+                "twitter-linker",
+                "it provides dbpedia URLs from Tweets"
         );
         mbItem = new MusicBrainzLinkerProfilingLineItem(
                 "music-brainz", "links to dbpedia resolving mbrainz ids"
@@ -107,7 +106,8 @@ public class TextLinkerProfilingLineItemTestCase {
         activities.add(a3);
         activities.add(a4);
 
-        UserActivities userActivities = new UserActivities(username, activities);
+        UserActivities userActivities =
+                new UserActivities(username, activities);
 
         initItem.execute(userActivities);
     }

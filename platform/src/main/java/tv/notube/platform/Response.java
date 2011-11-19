@@ -29,6 +29,11 @@ public class Response {
 
     public Response(){}
 
+    public Response(Status s, String m) {
+        status = s;
+        message = m;
+    }
+
     public Response(Status s, String m, Object o) {
         status = s;
         message = m;
