@@ -17,6 +17,7 @@ import tv.notube.commons.storage.model.fields.*;
 import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
 import tv.notube.commons.storage.model.fields.serialization.SerializationManagerException;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
+import tv.notube.usermanager.services.auth.AuthHandlerException;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManager;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManagerException;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManagerFactory;
@@ -312,9 +313,19 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
             logger.error(errMsg, e);
             throw new UserManagerException(errMsg, e);
         }
-        Auth auth = new Auth(token, user.getUsername());
-        user.addService(serviceName, auth);
-        storeUser(user);
+        User authenticatedUser;
+        try {
+            authenticatedUser = sam.getHandler(serviceName).auth(user, token);
+        } catch (AuthHandlerException e) {
+            final String errMsg = "Error while getting service '" + serviceName + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        } catch (ServiceAuthorizationManagerException e) {
+            final String errMsg = "Error while getting service '" + serviceName + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
+        storeUser(authenticatedUser);
     }
 
     public ServiceAuthorizationManager getServiceAuthorizationManager()

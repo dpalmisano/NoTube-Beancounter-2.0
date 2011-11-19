@@ -1,24 +1,17 @@
 package tv.notube.platform;
 
 import com.sun.jersey.api.core.InjectParam;
-import org.apache.http.protocol.ResponseServer;
-import tv.notube.commons.model.Service;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.UserProfile;
+import tv.notube.commons.model.activity.Activity;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreException;
 import tv.notube.usermanager.UserManager;
 import tv.notube.usermanager.UserManagerException;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
@@ -38,25 +31,25 @@ public class UserService {
             @FormParam("username") String username,
             @FormParam("password") String password
     ) {
-        if(username == null) {
+        if (username == null || username.equals("")) {
             return new Response(
                     Response.Status.NOK,
                     "parameter 'username' cannot be null"
             );
         }
-        if(username == null) {
+        if (username == null || username.equals("")) {
             return new Response(
                     Response.Status.NOK,
                     "parameter 'username' cannot be null"
             );
         }
-        if(username == null) {
+        if (username == null || username.equals("")) {
             return new Response(
                     Response.Status.NOK,
                     "parameter 'username' cannot be null"
             );
         }
-        if(username == null) {
+        if (username == null || username.equals("")) {
             return new Response(
                     Response.Status.NOK,
                     "parameter 'username' cannot be null"
@@ -93,7 +86,7 @@ public class UserService {
     @GET
     @Path("/{username}")
     public Response getUser(@PathParam("username") String username) {
-        if(username == null) {
+        if (username == null || username.equals("")) {
             return new Response(
                     Response.Status.NOK,
                     "parameter 'username' cannot be null"
@@ -121,6 +114,87 @@ public class UserService {
         );
     }
 
+    @GET
+    @Path("activities/{username}")
+    public Response getActivities(
+            @PathParam("username") String username
+    ) {
+        if (username == null || username.equals("")) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
+        UserManager um = instanceManager.getUserManager();
+        User user;
+        try {
+            user = um.getUser(username);
+        } catch (UserManagerException e) {
+            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+        }
+        if (user == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "user with username '" + username + "' not found"
+            );
+        }
+        List<Activity> activities;
+        try {
+            activities = um.getUserActivities(user.getId());
+        } catch (UserManagerException e) {
+            throw new RuntimeException("Error while getting user '" + username
+                    + "' activities", e);
+        }
+        return new Response(
+                Response.Status.OK,
+                "user '" + username + "' activities found",
+                activities
+        );
+    }
+
+    @DELETE
+    @Path("/{username}")
+    public Response deleteUser(
+            @PathParam("username") String username
+    ) {
+        if (username == null || username.equals("")) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
+        UserManager um = instanceManager.getUserManager();
+        ProfileStore ps = instanceManager.getProfileStore();
+        User user;
+        try {
+            user = um.getUser(username);
+        } catch (UserManagerException e) {
+            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+        }
+        if (user == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "user with username '" + username + "' not found"
+            );
+        }
+        try {
+            um.deleteUser(user.getId());
+        } catch (UserManagerException e) {
+            throw new RuntimeException("Error while deleting user '" + username
+                    + "'", e);
+        }
+        try {
+            ps.deleteUserProfile(username);
+        } catch (ProfileStoreException e) {
+            throw new RuntimeException("Error while deleting user '" + username +
+                    "'");
+        }
+        return new Response(
+                Response.Status.OK,
+                "user with username '" + username + "' not found"
+        );
+    }
+
     public void signIn() {}
 
     @GET
@@ -130,19 +204,19 @@ public class UserService {
             @PathParam("username") String username,
             @QueryParam("token") String token
     ) {
-        if (service == null) {
+        if (service == null || username.equals("")) {
             return new Response(
                     Response.Status.NOK,
                     "parameter 'service' cannot be null"
             );
         }
-        if (username == null) {
+        if (username == null || username.equals("")) {
             return new Response(
                     Response.Status.NOK,
                     "parameter 'username' cannot be null"
             );
         }
-        if (token == null) {
+        if (token == null || username.equals("")) {
             return new Response(
                     Response.Status.NOK,
                     "parameter 'token' cannot be null"
@@ -170,7 +244,7 @@ public class UserService {
     @GET
     @Path("/profile/{username}")
     public Response getProfile(@PathParam("username") String username) {
-        if (username == null) {
+        if (username == null || username.equals("")) {
             return new Response(
                     Response.Status.NOK,
                     "parameter 'username' cannot be null"
