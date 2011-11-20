@@ -9,17 +9,17 @@ import java.util.List;
  */
 public class SkosLookupResponse {
 
-    private List<URI> skos = new ArrayList<URI>();
+    private List<URI> uris = new ArrayList<URI>();
 
-    public List<URI> getSkos() {
-        return skos;
+    public List<URI> getUris() {
+        return uris;
     }
 
-    public void setSkos(List<URI> skos) {
-        this.skos = skos;
+    public void setUris(List<URI> uris) {
+        this.uris = uris;
     }
 
-    public void addSkos(URI uri) {
-        skos.add(uri);
+    public void addUri(URI uri) {
+        uris.add(uri);
     }
 }

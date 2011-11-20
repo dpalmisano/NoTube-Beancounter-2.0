@@ -15,7 +15,7 @@ public class Interest extends Referenceable {
 
     private boolean visible;
 
-    private float weight;
+    private double weight;
 
     private List<Activity> activities = new ArrayList<Activity>();
 
@@ -23,11 +23,11 @@ public class Interest extends Referenceable {
         this.reference = resource;
     }
 
-    public float getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public void setWeight(float weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 

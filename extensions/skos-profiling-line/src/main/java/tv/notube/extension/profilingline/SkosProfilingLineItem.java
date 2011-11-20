@@ -7,10 +7,7 @@ import tv.notube.profiler.line.ProfilingLineItem;
 import tv.notube.profiler.line.ProfilingLineItemException;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
@@ -29,8 +26,8 @@ public class SkosProfilingLineItem extends ProfilingLineItem {
         Map<Activity, List<URI>> linkedActivities
                 = intermediate.getLinkedActivities();
 
-        Map<URI, List<Activity>> skosForActivities =
-                new HashMap<URI, List<Activity>>();
+        Map<URI, Set<Activity>> skosForActivities =
+                new HashMap<URI, Set<Activity>>();
 
         for(Activity activity : linkedActivities.keySet()) {
             List<URI> resources = linkedActivities.get(activity);
@@ -56,13 +53,13 @@ public class SkosProfilingLineItem extends ProfilingLineItem {
     private void addSkos(
             URI skos,
             Activity activity,
-            Map<URI, List<Activity>> skosForActivities
+            Map<URI, Set<Activity>> skosForActivities
     ) {
         if(skosForActivities.containsKey(skos)) {
             skosForActivities.get(skos).add(activity);
             return;
         }
-        List<Activity> activities = new ArrayList<Activity>();
+        Set<Activity> activities = new HashSet<Activity>();
         activities.add(activity);
         skosForActivities.put(skos, activities);
     }

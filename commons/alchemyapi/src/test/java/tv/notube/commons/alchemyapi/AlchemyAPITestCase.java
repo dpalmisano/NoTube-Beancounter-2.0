@@ -5,6 +5,9 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * Main reference class for {@link AlchemyAPI}.
  *
@@ -41,6 +44,27 @@ public class AlchemyAPITestCase {
                 "lives in New York";
         AlchemyAPIResponse alchemyAPIResponse = alchemyAPI.getNamedEntities(
                 text
+        );
+        Assert.assertNotNull(alchemyAPIResponse);
+        Assert.assertEquals(alchemyAPIResponse.getIdentified().size(), 1);
+    }
+
+    @Test
+    public void testGetWebNamedEntities() throws AlchemyAPIException, MalformedURLException {
+        final URL url = new URL("http://www.guardian.co.uk/theguardian/2011/nov/19/read-serious-books-zoe-williams?INTCMP=SRCH");
+        AlchemyAPIResponse alchemyAPIResponse = alchemyAPI.getNamedEntities(
+                url
+        );
+        Assert.assertNotNull(alchemyAPIResponse);
+        Assert.assertEquals(alchemyAPIResponse.getIdentified().size(), 19);
+    }
+
+    @Test
+    public void testGetWebRankedConcepts() throws AlchemyAPIException,
+            MalformedURLException {
+        final URL url = new URL("http://www.guardian.co.uk/theguardian/2011/nov/19/read-serious-books-zoe-williams?INTCMP=SRCH");
+        AlchemyAPIResponse alchemyAPIResponse = alchemyAPI.getRankedConcept(
+                url
         );
         Assert.assertNotNull(alchemyAPIResponse);
         Assert.assertEquals(alchemyAPIResponse.getIdentified().size(), 1);

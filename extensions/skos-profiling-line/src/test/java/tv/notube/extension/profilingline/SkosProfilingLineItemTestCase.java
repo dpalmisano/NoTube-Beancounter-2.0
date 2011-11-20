@@ -32,6 +32,8 @@ public class SkosProfilingLineItemTestCase {
 
     private ProfilingLineItem weight;
 
+    private ProfilingLineItem types;
+
     @BeforeTest
     public void setUp() {
         initItem = new InitProfilingLineItem("init", "prepares the objects");
@@ -44,8 +46,13 @@ public class SkosProfilingLineItemTestCase {
         );
         skos = new SkosProfilingLineItem("skos", "resolving SKOS subjects");
         weight = new WeightingProfilingLineItem("weight", "weighting interests");
+        types = new TypingProfilingLineItem("types", "typing interests");
 
-        weight.setNextProfilingLineItem(new TestDumpProfilingLineItem("test", "this just dumps"));
+        types.setNextProfilingLineItem(new TestDumpProfilingLineItem(
+                "test",
+                "this just dumps")
+        );
+        weight.setNextProfilingLineItem(types);
         skos.setNextProfilingLineItem(weight);
         mbItem.setNextProfilingLineItem(skos);
         textItem.setNextProfilingLineItem(mbItem);
@@ -53,7 +60,8 @@ public class SkosProfilingLineItemTestCase {
     }
 
     @Test
-    public void test() throws MalformedURLException, ProfilingLineItemException {
+    public void testSimple() throws MalformedURLException,
+            ProfilingLineItemException {
         String username = "dpalmisano";
 
         Activity a = new Activity();
@@ -109,6 +117,31 @@ public class SkosProfilingLineItemTestCase {
         UserActivities userActivities =
                 new UserActivities(username, activities);
 
+        initItem.execute(userActivities);
+    }
+
+    @Test
+    public void testRichTweet() throws MalformedURLException, ProfilingLineItemException {
+        Tweet tweet = new Tweet();
+        tweet.addHashTag("raiperunanotte");
+        tweet.addUrl(new URL("http://www.axessjournalism" +
+                ".com/blog/2010/3/27/on-rai-per-una-notte"));
+        tweet.setText("just watched an amazing #raiperunanotte episode. " +
+                "Berlusconi go home!");
+
+        Activity a = new Activity();
+        a.setVerb(Verb.TWEET);
+        a.setObject(tweet);
+
+        Context context = new Context();
+        context.setDate(new DateTime());
+        context.setService(new URL("http://twitter.com"));
+        a.setContext(context);
+        List<Activity> activities = new ArrayList<Activity>();
+        activities.add(a);
+        String username = "dpalmisano";
+
+        UserActivities userActivities = new UserActivities(username, activities);
         initItem.execute(userActivities);
     }
 

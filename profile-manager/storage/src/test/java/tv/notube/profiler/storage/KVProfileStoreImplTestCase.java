@@ -6,6 +6,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import tv.notube.commons.model.Interest;
+import tv.notube.commons.model.Type;
 import tv.notube.commons.model.UserProfile;
 import tv.notube.commons.model.activity.Activity;
 import tv.notube.commons.model.activity.Context;
@@ -19,7 +20,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -78,15 +81,19 @@ public class KVProfileStoreImplTestCase {
         i1.setId(UUID.randomUUID());
         i1.addActivity(a1);
 
-        expected.addInterest(i1);
+        Set<Interest> interests = new HashSet<Interest>();
+        interests.add(i1);
+        Type type = new Type(interests, 0.67);
+
+        expected.addType(type);
 
         profileStore.storeUserProfile(expected);
 
         UserProfile actual = profileStore.getUserProfile(username);
         Assert.assertNotNull(actual);
         Assert.assertEquals(expected, actual);
-        Assert.assertEquals(actual.getInterests().size(), 1);
-        Assert.assertEquals(actual.getInterests().get(0).getActivities().size(), 1);
+        Assert.assertEquals(actual.getTypes().size(), 1);
+        Assert.assertEquals(actual.getTypes().get(0).getInterests().size(), 1);
 
         profileStore.deleteUserProfile(username);
         actual = profileStore.getUserProfile(username);

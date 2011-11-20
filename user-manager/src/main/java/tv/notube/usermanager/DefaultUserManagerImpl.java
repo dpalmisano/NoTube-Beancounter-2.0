@@ -317,11 +317,13 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
         try {
             authenticatedUser = sam.getHandler(serviceName).auth(user, token);
         } catch (AuthHandlerException e) {
-            final String errMsg = "Error while getting service '" + serviceName + "'";
+            final String errMsg = "Error while getting auth manager for " +
+                    "service '" + serviceName + "'";
             logger.error(errMsg, e);
             throw new UserManagerException(errMsg, e);
         } catch (ServiceAuthorizationManagerException e) {
-            final String errMsg = "Error while getting service '" + serviceName + "'";
+            final String errMsg = "Error while authenticating user '" + user.getUsername()
+                    + "' to service '" + serviceName + "'";
             logger.error(errMsg, e);
             throw new UserManagerException(errMsg, e);
         }

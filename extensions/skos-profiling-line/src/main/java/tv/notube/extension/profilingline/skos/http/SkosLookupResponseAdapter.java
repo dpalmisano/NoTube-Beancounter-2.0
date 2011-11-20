@@ -20,7 +20,7 @@ public class SkosLookupResponseAdapter
         SkosLookupResponse result = new SkosLookupResponse();
         for(JsonElement item : array) {
             try {
-                result.addSkos(new URI(item.getAsString()));
+                result.addUri(new URI(item.getAsString()));
             } catch (URISyntaxException e) {
                 throw new JsonParseException("URL is not well formed", e);
             }

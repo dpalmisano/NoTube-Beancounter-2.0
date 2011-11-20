@@ -11,6 +11,7 @@ import tv.notube.commons.alchemyapi.handlers.AlchemyAPIResponseHandler;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,10 @@ public class AlchemyAPI {
     private final static String CONCEPTS = "http://access.alchemyapi.com/calls/text/TextGetRankedConcepts?apikey=%s&outputMode=json";
 
     private final static String ENTITIES = "http://access.alchemyapi.com/calls/text/TextGetRankedNamedEntities?apikey=%s&outputMode=json";
+
+    private final static String WEB_CONCEPTS = "http://access.alchemyapi.com/calls/url/URLGetRankedConcepts?apikey=%s&outputMode=json";
+
+    private final static String WEB_ENTITIES = "http://access.alchemyapi.com/calls/url/URLGetRankedNamedEntities?apikey=%s&outputMode=json";
 
     private HttpClient httpClient;
 
@@ -68,7 +73,7 @@ public class AlchemyAPI {
     }
 
     public AlchemyAPIResponse getNamedEntities(String text) throws AlchemyAPIException {
-         if (text == null) {
+        if (text == null) {
             throw new IllegalArgumentException("Parameter text cannot be " +
                     "null");
         }
@@ -98,4 +103,64 @@ public class AlchemyAPI {
         }
     }
 
+    public AlchemyAPIResponse getRankedConcept(URL url) throws AlchemyAPIException {
+        if (url == null) {
+            throw new IllegalArgumentException("Parameter text cannot be " +
+                    "null");
+        }
+        HttpPost method = new HttpPost(String.format(WEB_CONCEPTS, apikey));
+        ResponseHandler<AlchemyAPIResponse> aarh = new
+                AlchemyAPIResponseHandler(AlchemyAPIResponseHandler.Type.CONCEPTS);
+
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+        nameValuePairs.add(new BasicNameValuePair(
+                "url",
+                url.toString())
+        );
+        try {
+            method.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+        } catch (UnsupportedEncodingException e) {
+            final String errMsg = "Encoding not supported";
+            throw new AlchemyAPIException(errMsg, e);
+        }
+
+        try {
+            return httpClient.execute(method, aarh);
+        } catch (IOException e) {
+            final String errMsg = "Error while calling AlchemyAPI";
+            throw new AlchemyAPIException(errMsg, e);
+        } finally {
+            httpClient.getConnectionManager().closeExpiredConnections();
+        }
+    }
+
+    public AlchemyAPIResponse getNamedEntities(URL url) throws AlchemyAPIException {
+        if (url == null) {
+            throw new IllegalArgumentException("Parameter text cannot be " +
+                    "null");
+        }
+        HttpPost method = new HttpPost(String.format(WEB_ENTITIES, apikey));
+        ResponseHandler<AlchemyAPIResponse> aarh = new
+                AlchemyAPIResponseHandler(AlchemyAPIResponseHandler.Type.ENTITIES);
+
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+        nameValuePairs.add(new BasicNameValuePair(
+                "url",
+                url.toString())
+        );
+        try {
+            method.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+        } catch (UnsupportedEncodingException e) {
+            final String errMsg = "Encoding not supported";
+            throw new AlchemyAPIException(errMsg, e);
+        }
+        try {
+            return httpClient.execute(method, aarh);
+        } catch (IOException e) {
+            final String errMsg = "Error while calling AlchemyAPI";
+            throw new AlchemyAPIException(errMsg, e);
+        } finally {
+            httpClient.getConnectionManager().closeExpiredConnections();
+        }
+    }
 }

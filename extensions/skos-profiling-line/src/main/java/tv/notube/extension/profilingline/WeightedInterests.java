@@ -1,22 +1,20 @@
 package tv.notube.extension.profilingline;
 
-import tv.notube.commons.model.activity.Activity;
+import tv.notube.commons.model.Interest;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-public class UnweightedInterests {
+public class WeightedInterests {
 
     private String user;
 
-    private Map<URI, Set<Activity>> interests;
+    private Set<Interest> interests = new HashSet<Interest>();
 
-    public UnweightedInterests(String user, Map<URI,Set<Activity>> interests) {
+    public WeightedInterests(String user, Set<Interest> interests) {
         this.user = user;
         this.interests = interests;
     }
@@ -29,11 +27,11 @@ public class UnweightedInterests {
         this.user = user;
     }
 
-    public Map<URI, Set<Activity>> getInterests() {
+    public Set<Interest> getInterests() {
         return interests;
     }
 
-    public void setInterests(Map<URI, Set<Activity>> interests) {
+    public void setInterests(Set<Interest> interests) {
         this.interests = interests;
     }
 }
