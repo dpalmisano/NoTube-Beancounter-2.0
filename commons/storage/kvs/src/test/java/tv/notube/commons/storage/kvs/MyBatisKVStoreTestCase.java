@@ -54,6 +54,10 @@ public class MyBatisKVStoreTestCase {
         TestClass actual = (TestClass) kVStore.getValue(TABLE, KEY);
         Assert.assertEquals(expected, actual);
 
+        List<String> actualKeys = kVStore.search(TABLE);
+        Assert.assertEquals(1, actualKeys.size());
+        Assert.assertEquals(KEY, actualKeys.get(0));
+
         StringField fields[] = kVStore.getFields(TABLE, KEY);
         Assert.assertEquals(1, fields.length);
 

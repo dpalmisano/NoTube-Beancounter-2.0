@@ -1,4 +1,4 @@
-package tv.notube.extension.profilingline.skos.http;
+package tv.notube.commons.skos.http;
 
 import java.net.URI;
 import java.util.ArrayList;

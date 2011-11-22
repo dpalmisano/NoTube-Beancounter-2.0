@@ -14,6 +14,9 @@ public interface KVStore {
     public List<String> search(String table, Query query)
         throws KVStoreException;
 
+    public List<String> search(String table)
+        throws KVStoreException;
+
     public Object getValue(String table, String key)
             throws KVStoreException;
 

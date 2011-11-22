@@ -47,4 +47,8 @@ public interface KVSMapper {
             @Param("kvstable") String table,
             @Param("query") String query
     );
+
+    public List<String> selectByTable(
+            @Param("kvstable") String table
+    );
 }

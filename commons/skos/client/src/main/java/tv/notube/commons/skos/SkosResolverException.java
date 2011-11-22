@@ -1,4 +1,4 @@
-package tv.notube.extension.profilingline.skos;
+package tv.notube.commons.skos;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )

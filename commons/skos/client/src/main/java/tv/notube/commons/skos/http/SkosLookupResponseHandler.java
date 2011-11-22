@@ -1,4 +1,4 @@
-package tv.notube.extension.profilingline.skos.http;
+package tv.notube.commons.skos.http;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,10 +11,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )

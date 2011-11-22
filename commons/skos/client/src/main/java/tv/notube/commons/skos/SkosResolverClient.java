@@ -1,11 +1,11 @@
-package tv.notube.extension.profilingline.skos;
+package tv.notube.commons.skos;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import tv.notube.extension.profilingline.skos.http.SkosLookupResponse;
-import tv.notube.extension.profilingline.skos.http.SkosLookupResponseHandler;
+import tv.notube.commons.skos.http.SkosLookupResponse;
+import tv.notube.commons.skos.http.SkosLookupResponseHandler;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,15 +14,15 @@ import java.util.List;
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-public class SkosResolver {
+public class SkosResolverClient {
 
-    private final static String SKOS = "http://moth.notube.tv:9090/skos-lookup/rest/skos/";
+    private final static String SKOS = "http://moth.notube.tv:9090/service-1.0-SNAPSHOT/rest/skos/";
 
     private final static String TYPE = "http://moth.notube.tv:9090/skos-lookup/rest/type/";
 
     private HttpClient httpClient;
 
-    public SkosResolver() {
+    public SkosResolverClient() {
         httpClient = new DefaultHttpClient();
     }
 

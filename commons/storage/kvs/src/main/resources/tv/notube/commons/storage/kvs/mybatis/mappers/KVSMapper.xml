@@ -35,6 +35,12 @@
         WHERE ${query}
     </select>
 
+    <select id="selectByTable" parameterType="map" resultType="java.lang.String">
+        SELECT data.kvskey
+        FROM data
+        WHERE data.kvstable = #{kvstable}
+    </select>
+
     <delete id="deleteObject" parameterType="map">
         DELETE FROM data WHERE kvskey = #{key} AND kvstable = #{kvstable}
     </delete>

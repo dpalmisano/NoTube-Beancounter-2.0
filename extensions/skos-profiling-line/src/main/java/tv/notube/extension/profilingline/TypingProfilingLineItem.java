@@ -3,10 +3,10 @@ package tv.notube.extension.profilingline;
 import tv.notube.commons.model.Interest;
 import tv.notube.commons.model.Type;
 import tv.notube.commons.model.UserProfile;
-import tv.notube.extension.profilingline.skos.SkosResolver;
-import tv.notube.extension.profilingline.skos.SkosResolverException;
+import tv.notube.commons.skos.SkosResolverException;
 import tv.notube.profiler.line.ProfilingLineItem;
 import tv.notube.profiler.line.ProfilingLineItemException;
+import tv.notube.commons.skos.SkosResolverClient;
 
 import java.net.URI;
 import java.util.*;
@@ -18,11 +18,11 @@ import java.util.*;
  */
 public class TypingProfilingLineItem extends ProfilingLineItem {
 
-    private SkosResolver skosResolver;
+    private SkosResolverClient skosResolver;
 
     public TypingProfilingLineItem(String name, String description) {
         super(name, description);
-        skosResolver = new SkosResolver();
+        skosResolver = new SkosResolverClient();
     }
 
     @Override

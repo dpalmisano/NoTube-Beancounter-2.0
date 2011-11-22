@@ -34,6 +34,10 @@ public class MyBatisKVStore extends AbstractKVStore {
         return dao.selectByQuery(table, query);
     }
 
+    public List<String> search(String table) throws KVStoreException {
+        return dao.selectByTable(table);
+    }
+
     public Object getValue(String table, String key) throws KVStoreException {
         byte[] bytes = dao.getObject(table, key);
         if(bytes == null) {

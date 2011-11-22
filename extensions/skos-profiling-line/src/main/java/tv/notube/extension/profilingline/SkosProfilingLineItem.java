@@ -1,8 +1,8 @@
 package tv.notube.extension.profilingline;
 
 import tv.notube.commons.model.activity.Activity;
-import tv.notube.extension.profilingline.skos.SkosResolver;
-import tv.notube.extension.profilingline.skos.SkosResolverException;
+import tv.notube.commons.skos.SkosResolverClient;
+import tv.notube.commons.skos.SkosResolverException;
 import tv.notube.profiler.line.ProfilingLineItem;
 import tv.notube.profiler.line.ProfilingLineItemException;
 
@@ -14,11 +14,11 @@ import java.util.*;
  */
 public class SkosProfilingLineItem extends ProfilingLineItem {
 
-    private SkosResolver skosResolver;
+    private SkosResolverClient skosResolver;
 
     public SkosProfilingLineItem(String name, String description) {
         super(name, description);
-        skosResolver = new SkosResolver();
+        skosResolver = new SkosResolverClient();
     }
 
     public void execute(Object o) throws ProfilingLineItemException {

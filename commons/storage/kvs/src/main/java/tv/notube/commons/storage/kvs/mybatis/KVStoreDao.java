@@ -69,6 +69,18 @@ public class KVStoreDao extends ConfigurableDao {
         return keys;
     }
 
+    public List<String> selectByTable(String table) {
+        SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
+        KVSMapper mapper = session.getMapper(KVSMapper.class);
+        List<String> keys;
+        try {
+            keys = mapper.selectByTable(table);
+        } finally {
+            session.close();
+        }
+        return keys;
+    }
+
     public void deleteByKey(String table, String key) {
         SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
         KVSMapper mapper = session.getMapper(KVSMapper.class);

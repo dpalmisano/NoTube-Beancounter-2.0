@@ -18,6 +18,7 @@
         <module>model</module>
         <module>alchemyapi</module>
     	<module>storage</module>
+        <module>skos</module>
   </modules>
 
 </project>
