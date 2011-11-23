@@ -32,7 +32,8 @@ public class SkosProfilingLineItemTestCase {
 
     private ProfilingLineItem weight;
 
-    private ProfilingLineItem types;
+    private ProfilingLineItem building;
+
 
     @BeforeTest
     public void setUp() {
@@ -46,13 +47,14 @@ public class SkosProfilingLineItemTestCase {
         );
         skos = new SkosProfilingLineItem("skos", "resolving SKOS subjects");
         weight = new WeightingProfilingLineItem("weight", "weighting interests");
-        types = new TypingProfilingLineItem("types", "typing interests");
 
-        types.setNextProfilingLineItem(new TestDumpProfilingLineItem(
+        building = new ProfileBuildingProfilingLineItem("build",
+                "it builds the profile");
+        building.setNextProfilingLineItem(new TestDumpProfilingLineItem(
                 "test",
                 "this just dumps")
         );
-        weight.setNextProfilingLineItem(types);
+        weight.setNextProfilingLineItem(building);
         skos.setNextProfilingLineItem(weight);
         mbItem.setNextProfilingLineItem(skos);
         textItem.setNextProfilingLineItem(mbItem);

@@ -15,13 +15,4 @@ public interface SkosMapper {
             @Param("resource") String resource
     );
 
-
-    public List<String> selectTypes(
-            @Param("resources") String resource
-    );
-
-    public void insertType(
-            @Param("entity") String entity,
-            @Param("type") String type
-    );
 }

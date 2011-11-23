@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <profiler-configuration>
+<processes>10</processes>
     <data-manager>
         <keys>
             <key name="user" class="tv.notube.profiler.data.datasources.UserDataSource">
@@ -41,7 +42,7 @@
                 </profiling-line-item>
 				<profiling-line-item>
                     <name>text</name>
-                    <description>extracts DBPedia resources from text</description>
+                    <description>it extracts knowledge (dbpedia URLs) from a tweet using links and hashtags</description>
                     <class>tv.notube.extension.profilingline.TwitterLinkerProfilingLineItem</class>
                 </profiling-line-item>
 				<profiling-line-item>
@@ -58,6 +59,11 @@
 	                <name>weight</name>
 	                <description>calculates the final user profile</description>
 	                <class>tv.notube.extension.profilingline.WeightingProfilingLineItem</class>
+	            </profiling-line-item>
+                <profiling-line-item>
+	                <name>build</name>
+	                <description>builds the profile</description>
+	                <class>tv.notube.extension.profilingline.ProfileBuildingProfilingLineItem</class>
 	            </profiling-line-item>
             </profiling-line-items>
         </profiling-line>

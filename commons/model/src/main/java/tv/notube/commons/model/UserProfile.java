@@ -1,7 +1,9 @@
 package tv.notube.commons.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * It's the main class representative of a {@link User} profile.
@@ -21,6 +23,8 @@ public class UserProfile extends Referenceable {
     private String username;
 
     private List<Type> types = new ArrayList<Type>();
+
+    private Set<Interest> interests = new HashSet<Interest>();
 
     public Visibility getVisibility() {
         return visibility;
@@ -46,6 +50,14 @@ public class UserProfile extends Referenceable {
         this.types = types;
     }
 
+    public void setInterests(Set<Interest> interests) {
+        this.interests = interests;
+    }
+
+    public Set<Interest> getInterests() {
+        return interests;
+    }
+
     public void addType(Type type) {
         this.types.add(type);
     }
@@ -56,6 +68,7 @@ public class UserProfile extends Referenceable {
                 "visibility=" + visibility +
                 ", username='" + username + '\'' +
                 ", types=" + types +
+                ", interests=" + interests +
                 "} " + super.toString();
     }
 }

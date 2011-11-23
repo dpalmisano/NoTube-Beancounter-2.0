@@ -18,8 +18,6 @@ public class SkosResolverClient {
 
     private final static String SKOS = "http://moth.notube.tv:9090/service-1.0-SNAPSHOT/rest/skos/";
 
-    private final static String TYPE = "http://moth.notube.tv:9090/skos-lookup/rest/type/";
-
     private HttpClient httpClient;
 
     public SkosResolverClient() {
@@ -51,28 +49,4 @@ public class SkosResolverClient {
         }
     }
 
-    public URI getTypes(URI resource) throws SkosResolverException {
-        String name = resource.toString().substring(
-                "http://dbpedia.org/resource/".length(),
-                resource.toString().length()
-        );
-        String queryUrl = TYPE + name;
-        HttpGet method = new HttpGet(queryUrl);
-        SkosLookupResponse response;
-        ResponseHandler<SkosLookupResponse> lrh = new SkosLookupResponseHandler();
-        try {
-            response = httpClient.execute(method, lrh);
-        } catch (IOException e) {
-            throw new SkosResolverException(
-                    "Error while calling type SkosLookup with resource: '"
-                            + resource + "'",
-                    e
-            );
-        }
-        try {
-            return response.getUris().get(0);
-        } finally {
-            httpClient.getConnectionManager().closeExpiredConnections();
-        }
-    }
 }
