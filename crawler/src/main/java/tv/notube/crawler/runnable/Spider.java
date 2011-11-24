@@ -49,7 +49,7 @@ public class Spider implements Runnable {
     }
 
     public void run() {
-        List<Activity> activities;
+        List<Activity> activities = new ArrayList<Activity>();
         ServiceAuthorizationManager sam;
         try {
             sam = um.getServiceAuthorizationManager();
@@ -69,7 +69,9 @@ public class Spider implements Runnable {
                 throw new RuntimeException(errMsg, e);
             }
             try {
-                activities = requester.call(service, user.getAuth(serviceName));
+                activities.addAll(
+                        requester.call(service, user.getAuth(serviceName))
+                );
             } catch (RequesterException e) {
                 final String errMsg = "Error while calling service '" +
                         serviceName +
@@ -78,22 +80,22 @@ public class Spider implements Runnable {
                 throw new RuntimeException(errMsg, e);
             }
             user.setProfiledAt(new DateTime());
-            try {
-                um.storeUser(user);
-            } catch (UserManagerException e) {
-                final String errMsg = "Error while storing user '" + user
-                        .getId() + "'";
-                logger.error(errMsg, e);
-                throw new RuntimeException(errMsg, e);
-            }
-            try {
-                um.storeUserActivities(user.getId(), activities);
-            } catch (UserManagerException e) {
-                final String errMsg = "Error while storing activities for " +
-                        "user '" + user.getId() + "'";
-                logger.error(errMsg, e);
-                throw new RuntimeException(errMsg, e);
-            }
+        }
+        try {
+            um.storeUser(user);
+        } catch (UserManagerException e) {
+            final String errMsg = "Error while storing user '" + user
+                    .getId() + "'";
+            logger.error(errMsg, e);
+            throw new RuntimeException(errMsg, e);
+        }
+        try {
+            um.storeUserActivities(user.getId(), activities);
+        } catch (UserManagerException e) {
+            final String errMsg = "Error while storing activities for " +
+                    "user '" + user.getId() + "'";
+            logger.error(errMsg, e);
+            throw new RuntimeException(errMsg, e);
         }
     }
 

@@ -51,7 +51,7 @@ public class TwitterAuthHandler extends DefaultAuthHandler {
         Token accessToken = twitterOAuth.getAccessToken(requestToken, v);
         user.addService(
                 service.getName(),
-                new OAuthAuth(accessToken.getToken(), service.getSecret())
+                new OAuthAuth(accessToken.getToken(), accessToken.getSecret())
         );
         return user;
     }

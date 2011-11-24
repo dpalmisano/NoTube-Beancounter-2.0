@@ -2,7 +2,9 @@ package tv.notube.commons.model.activity;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
@@ -11,7 +13,7 @@ public class Tweet extends tv.notube.commons.model.activity.Object {
 
     private String text;
 
-    private List<String> hashTags = new ArrayList<String>();
+    private Set<String> hashTags = new HashSet<String>();
 
     private List<URL> urls = new ArrayList<URL>();
 
@@ -23,11 +25,11 @@ public class Tweet extends tv.notube.commons.model.activity.Object {
         this.text = text;
     }
 
-    public List<String> getHashTags() {
+    public Set<String> getHashTags() {
         return hashTags;
     }
 
-    public void setHashTags(List<String> hashTags) {
+    public void setHashTags(Set<String> hashTags) {
         this.hashTags = hashTags;
     }
 

@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.net.URL;
 
 /**
@@ -95,5 +96,28 @@ public class DefaultActivityBuilder implements ActivityBuilder {
             return;
         }
         throw new IllegalStateException("Did you invoke push?");
+    }
+
+    public void objectSetField(String method, java.lang.Object object, Class clazz)
+            throws ActivityBuilderException {
+        if(activity == null) {
+            throw new IllegalStateException("Did you invoke push?");
+        }
+        Method adder;
+        try {
+            adder = activity.getObject().getClass().getDeclaredMethod(
+                    method,
+                    clazz
+            );
+        } catch (NoSuchMethodException e) {
+            throw new ActivityBuilderException("", e);
+        }
+        try {
+            adder.invoke(activity.getObject(), object);
+        } catch (IllegalAccessException e) {
+            throw new ActivityBuilderException("", e);
+        } catch (InvocationTargetException e) {
+            throw new ActivityBuilderException("", e);
+        }
     }
 }

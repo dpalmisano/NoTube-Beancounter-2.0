@@ -5,6 +5,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import tv.notube.commons.model.OAuthAuth;
 import tv.notube.commons.model.SimpleAuth;
 import tv.notube.commons.model.Service;
 import tv.notube.commons.model.User;
@@ -75,10 +76,16 @@ public class SpiderTest {
         user.setReference(new URI("http://notube.tv/user/test"));
         user.setProfiledAt(new DateTime());
 
-        Service service = new Service();
-        service.setName("lastfm");
-        user.addService(service.getName(), new SimpleAuth("af65659c785315b90b54eea682e66433", "davidepalmisano"));
+        Service lastfm = new Service();
+        lastfm.setName("lastfm");
+        user.addService(lastfm.getName(), new SimpleAuth("af65659c785315b90b54eea682e66433", "davidepalmisano"));
 
+        Service twitter = new Service();
+        twitter.setName("twitter");
+        user.addService(twitter.getName(), new OAuthAuth(
+                "14656799-3tA0w5Ikz9oLFjDKy9La99IDYdPRE2koaxIl2nhnB",
+                "9MAFzWyTdH6jFO4k9yRVGVp7S9kUfVhvnkVPNM8CE")
+        );
         um.storeUser(user);
     }
 
@@ -94,7 +101,7 @@ public class SpiderTest {
         User actual = um.getUser(UUID.fromString(USERID));
         Assert.assertNotNull(actual);
         List<Activity> activities = um.getUserActivities(actual.getId());
-        Assert.assertTrue(activities.size() > 0);
+        Assert.assertEquals(120, activities.size());
     }
 
 }

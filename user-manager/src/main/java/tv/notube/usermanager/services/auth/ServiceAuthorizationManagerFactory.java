@@ -52,7 +52,7 @@ public class ServiceAuthorizationManagerFactory {
         twitter.setSecret("BRDzw6MFJB3whzmm1rWlzjsD5LoXJmlmYT40lhravRs");
         twitter.setSessionEndpoint("https://api.twitter.com/oauth/request_token");
         try {
-            twitter.setEndpoint(new URL("https://api.twitter.com/"));
+            twitter.setEndpoint(new URL("https://api.twitter.com/1/statuses/user_timeline.json"));
         } catch (MalformedURLException e) {
             throw new RuntimeException(
                     "LastFM endpoint URL is not wellformed",

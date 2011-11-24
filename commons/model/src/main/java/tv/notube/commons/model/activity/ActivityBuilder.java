@@ -2,6 +2,7 @@ package tv.notube.commons.model.activity;
 
 import org.joda.time.DateTime;
 
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.Map;
 
@@ -28,4 +29,9 @@ public interface ActivityBuilder {
     public void setContext(DateTime dateTime, URL service)
             throws ActivityBuilderException;
 
+    public void objectSetField(
+            String method,
+            java.lang.Object object,
+            Class clazz
+    ) throws ActivityBuilderException;
 }
