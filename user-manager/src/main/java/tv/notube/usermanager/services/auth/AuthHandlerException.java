@@ -5,7 +5,12 @@ package tv.notube.usermanager.services.auth;
  */
 public class AuthHandlerException extends Exception {
 
+    public AuthHandlerException(String message) {
+        super(message);
+    }
+
     public AuthHandlerException(String message, Exception e) {
         super(message, e);
     }
+
 }

@@ -5,11 +5,10 @@ import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import tv.notube.commons.model.Auth;
+import tv.notube.commons.model.SimpleAuth;
 import tv.notube.commons.model.Service;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.activity.Activity;
-import tv.notube.crawler.Crawler;
 import tv.notube.crawler.runnable.Spider;
 import tv.notube.crawler.runnable.SpiderException;
 import tv.notube.usermanager.DefaultUserManagerFactory;
@@ -78,7 +77,7 @@ public class SpiderTest {
 
         Service service = new Service();
         service.setName("lastfm");
-        user.addService(service.getName(), new Auth("af65659c785315b90b54eea682e66433", "davidepalmisano"));
+        user.addService(service.getName(), new SimpleAuth("af65659c785315b90b54eea682e66433", "davidepalmisano"));
 
         um.storeUser(user);
     }

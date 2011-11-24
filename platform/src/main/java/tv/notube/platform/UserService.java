@@ -8,9 +8,13 @@ import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreException;
 import tv.notube.usermanager.UserManager;
 import tv.notube.usermanager.UserManagerException;
+import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -196,6 +200,94 @@ public class UserService {
     }
 
     public void signIn() {}
+
+    @GET
+    @Path("/oauth/token/{service}/{username}")
+    public javax.ws.rs.core.Response getOAuthToken(
+            @PathParam("service") String service,
+            @PathParam("username") String username
+    ) {
+        if (service == null || username.equals("")) {
+            throw new RuntimeException("Service paramenter cannot be null");
+        }
+        if (username == null || username.equals("")) {
+            throw new RuntimeException("Service paramenter cannot be null");
+        }
+        UserManager um = instanceManager.getUserManager();
+        User userObj;
+        try {
+            userObj = um.getUser(username);
+        } catch (UserManagerException e) {
+            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+        }
+        OAuthToken oAuthToken;
+        try {
+            oAuthToken = um.getOAuthToken(service, userObj.getUsername());
+        } catch (UserManagerException e) {
+            throw new RuntimeException(
+                    "Error while getting token for user '" + username + "' " +
+                            "on service '" + service + "'",
+                    e
+            );
+        }
+        URL redirect = oAuthToken.getRedirectPage();
+        try {
+            return javax.ws.rs.core.Response.temporaryRedirect(redirect.toURI()).build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Malformed redirect URL", e);
+        }
+    }
+
+    @GET
+    @Path("/oauth/callback/{service}/{username}/")
+    public Response handleAuthCallback(
+            @PathParam("service") String service,
+            @PathParam("username") String username,
+            @QueryParam("oauth_token") String token,
+            @QueryParam("oauth_verifier") String verifier
+    ) {
+        if (service == null || service.equals("")) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'service' cannot be null"
+            );
+        }
+        if (username == null || username.equals("")) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
+        if (token == null || token.equals("")) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'service' cannot be null"
+            );
+        }
+        if (verifier == null || verifier.equals("")) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
+        UserManager um = instanceManager.getUserManager();
+        User userObj;
+        try {
+            userObj = um.getUser(username);
+        } catch (UserManagerException e) {
+            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+        }
+        try {
+            um.registerOAuthService(service, userObj, token, verifier);
+        } catch (UserManagerException e) {
+            throw new RuntimeException("Error while OAuth-like exchange for service: '" + service + "'");
+        }
+        return new Response(
+                Response.Status.OK,
+                "service '" + service + " as been successfully added to user '" + username + "'",
+                null
+        );
+    }
 
     @GET
     @Path("/callback/{service}/{username}/")

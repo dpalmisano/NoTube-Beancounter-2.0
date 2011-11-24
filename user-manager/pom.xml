@@ -37,6 +37,11 @@
             <artifactId>httpclient</artifactId>
             <version>4.1.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.scribe</groupId>
+            <artifactId>scribe</artifactId>
+            <version>1.2.3</version>
+        </dependency>
     </dependencies>
 
 </project>

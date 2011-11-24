@@ -5,13 +5,13 @@ import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import tv.notube.commons.model.Auth;
+import tv.notube.commons.model.SimpleAuth;
 import tv.notube.commons.model.Service;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.activity.*;
-import tv.notube.commons.model.activity.Object;
 import tv.notube.usermanager.configuration.ConfigurationManager;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
+import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -65,7 +65,7 @@ public class UserManagerTestCase {
         service.setName("facebook");
         user.addService(
                 service.getName(),
-                new Auth("fake-session","lmiller")
+                new SimpleAuth("fake-session","lmiller")
         );
 
         userManager.storeUser(user);
@@ -92,7 +92,7 @@ public class UserManagerTestCase {
         service.setName("facebook");
         user.addService(
                 service.getName(),
-                new Auth("fake-session","lmiller")
+                new SimpleAuth("fake-session","lmiller")
         );
         userManager.storeUser(user);
 
@@ -113,6 +113,26 @@ public class UserManagerTestCase {
         List<Activity> actual = userManager.getUserActivities(userId);
         Assert.assertNotNull(actual);
         Assert.assertEquals(1, actual.size());
+    }
+
+    @Test
+    public void testGetToken() throws URISyntaxException, UserManagerException {
+        User user = new User();
+        user.setId(userId);
+        user.setName("Davide");
+        user.setSurname("Palmisano");
+        user.setForcedProfiling(false);
+        user.setReference(new URI("http://notube.tv/user/" + userId));
+        user.setProfiledAt(new DateTime());
+        user.setUsername("dpalmisano");
+
+        userManager.storeUser(user);
+
+        User actual = userManager.getUser(userId);
+        Assert.assertEquals(user, actual);
+
+        OAuthToken oAuthToken = userManager.getOAuthToken("twitter",
+                "dpalmisano");
     }
 
 }

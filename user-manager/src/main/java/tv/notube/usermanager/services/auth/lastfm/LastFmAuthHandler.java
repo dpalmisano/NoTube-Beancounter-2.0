@@ -5,12 +5,13 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-import tv.notube.commons.model.Auth;
+import tv.notube.commons.model.SimpleAuth;
 import tv.notube.commons.model.Service;
 import tv.notube.commons.model.User;
 import tv.notube.usermanager.services.auth.AuthHandlerException;
 import tv.notube.usermanager.services.auth.DefaultAuthHandler;
 import tv.notube.usermanager.services.auth.lastfm.handlers.LastFmResponseHandler;
+import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -61,12 +62,28 @@ public class LastFmAuthHandler extends DefaultAuthHandler {
         }
         String session = response.getKey();
         String username = response.getName();
-        user.addService(service.getName(), new Auth(session, username));
+        user.addService(service.getName(), new SimpleAuth(session, username));
         try {
             return user;
         } finally {
             httpClient.getConnectionManager().closeExpiredConnections();
         }
+    }
+
+    public User auth(User user, String token, String verifier) throws AuthHandlerException {
+        if (verifier == null) {
+            return auth(user, token);
+        } else {
+            throw new AuthHandlerException(
+                    "This step of the OAuth protocol is not required by LastFM"
+            );
+        }
+    }
+
+    public OAuthToken getToken(String username) throws AuthHandlerException {
+        throw new AuthHandlerException(
+                "This step of the OAuth protocol is not required by LastFM"
+        );
     }
 
     private String getApiSig(Map<String, String> params, String secret) {

@@ -2,6 +2,7 @@ package tv.notube.crawler.requester.request;
 
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import tv.notube.commons.model.SimpleAuth;
 import tv.notube.crawler.requester.DefaultRequest;
 import tv.notube.crawler.requester.RequestException;
 import tv.notube.crawler.requester.ServiceResponse;
@@ -29,9 +30,10 @@ public class LastfmRequest extends DefaultRequest {
      */
     public ServiceResponse call() throws RequestException {
         URL serviceEndpoint = service.getEndpoint();
+        SimpleAuth sa = (SimpleAuth) auth;
         Map<String, String> params = new HashMap<String, String>();
         params.put("method", "user.getrecenttracks");
-        params.put("user", auth.getUsername());
+        params.put("user", sa.getUsername());
         params.put("limit", "100");
         params.put("format", "json");
 

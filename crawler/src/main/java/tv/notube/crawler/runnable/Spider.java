@@ -54,7 +54,7 @@ public class Spider implements Runnable {
         try {
             sam = um.getServiceAuthorizationManager();
         } catch (UserManagerException e) {
-            final String errMsg = "Error while getting Service Auth Manager";
+            final String errMsg = "Error while getting Service SimpleAuth Manager";
             logger.error(errMsg, e);
             throw new RuntimeException(errMsg, e);
         }

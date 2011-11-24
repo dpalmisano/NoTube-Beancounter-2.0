@@ -2,8 +2,6 @@ package tv.notube.usermanager;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import tv.notube.commons.model.Auth;
-import tv.notube.commons.model.Service;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.activity.Activity;
 import tv.notube.commons.storage.alog.DefaultActivityLogImpl;
@@ -17,10 +15,8 @@ import tv.notube.commons.storage.model.fields.*;
 import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
 import tv.notube.commons.storage.model.fields.serialization.SerializationManagerException;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
-import tv.notube.usermanager.services.auth.AuthHandlerException;
-import tv.notube.usermanager.services.auth.ServiceAuthorizationManager;
-import tv.notube.usermanager.services.auth.ServiceAuthorizationManagerException;
-import tv.notube.usermanager.services.auth.ServiceAuthorizationManagerFactory;
+import tv.notube.usermanager.services.auth.*;
+import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
 import java.net.URL;
 import java.util.*;
@@ -299,6 +295,39 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
         return uuids;
     }
 
+    public OAuthToken getOAuthToken(String serviceName, String username) throws
+            UserManagerException {
+        try {
+            if (sam.getService(serviceName) == null) {
+                final String errMsg = "Service '" + serviceName + "' is not " +
+                        "supported.";
+                logger.error(errMsg);
+                throw new UserManagerException(errMsg);
+            }
+        } catch (ServiceAuthorizationManagerException e) {
+            final String errMsg = "Error while getting service '" + serviceName + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
+        AuthHandler authHandler;
+        try {
+            authHandler = sam.getHandler(serviceName);
+        } catch (ServiceAuthorizationManagerException e) {
+            final String errMsg = "Error while getting auth manager for " +
+                    "service '" + serviceName + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
+        try {
+            return authHandler.getToken(username);
+        } catch (AuthHandlerException e) {
+            final String errMsg = "Error while getting auth manager for " +
+                    "service '" + serviceName + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
+    }
+
     public void registerService(String serviceName, User user, String token)
             throws UserManagerException {
         try {
@@ -315,7 +344,50 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
         }
         User authenticatedUser;
         try {
-            authenticatedUser = sam.getHandler(serviceName).auth(user, token);
+            authenticatedUser = sam.getHandler(serviceName).auth(
+                    user,
+                    token,
+                    null
+            );
+        } catch (AuthHandlerException e) {
+            final String errMsg = "Error while getting auth manager for " +
+                    "service '" + serviceName + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        } catch (ServiceAuthorizationManagerException e) {
+            final String errMsg = "Error while authenticating user '" + user.getUsername()
+                    + "' to service '" + serviceName + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
+        storeUser(authenticatedUser);
+    }
+
+    public void registerOAuthService(
+            String serviceName,
+            User user,
+            String token,
+            String verifier
+    ) throws UserManagerException {
+        try {
+            if (sam.getService(serviceName) == null) {
+                final String errMsg = "Service '" + serviceName + "' is not " +
+                        "supported.";
+                logger.error(errMsg);
+                throw new UserManagerException(errMsg);
+            }
+        } catch (ServiceAuthorizationManagerException e) {
+            final String errMsg = "Error while getting service '" + serviceName + "'";
+            logger.error(errMsg, e);
+            throw new UserManagerException(errMsg, e);
+        }
+        User authenticatedUser;
+        try {
+            authenticatedUser = sam.getHandler(serviceName).auth(
+                    user,
+                    token,
+                    verifier
+            );
         } catch (AuthHandlerException e) {
             final String errMsg = "Error while getting auth manager for " +
                     "service '" + serviceName + "'";
