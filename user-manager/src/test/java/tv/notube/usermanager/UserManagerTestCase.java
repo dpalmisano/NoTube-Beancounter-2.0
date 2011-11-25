@@ -130,9 +130,6 @@ public class UserManagerTestCase {
 
         User actual = userManager.getUser(userId);
         Assert.assertEquals(user, actual);
-
-        OAuthToken oAuthToken = userManager.getOAuthToken("twitter",
-                "dpalmisano");
     }
 
 }
