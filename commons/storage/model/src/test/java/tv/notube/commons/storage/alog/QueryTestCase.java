@@ -2,6 +2,7 @@ package tv.notube.commons.storage.alog;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import tv.notube.commons.storage.model.QueryException;
 import tv.notube.commons.storage.model.fields.IntegerField;
 import tv.notube.commons.storage.model.fields.StringField;
 import tv.notube.commons.storage.model.Query;
@@ -23,6 +24,15 @@ public class QueryTestCase {
         query.push(Query.Boolean.OR);
         query.push(field2, Query.Math.GT);
         Assert.assertEquals(query.compile(), expected);
+    }
+
+    @Test
+    public void testDecompile() throws QueryException {
+        final String actual = "integer.newRecommendations = 0 OR     string" +
+                ".name =       Mazzini";
+        Query query = new Query();
+        Query.decompile(actual, query);
+        System.out.println(query);
     }
 
 }
