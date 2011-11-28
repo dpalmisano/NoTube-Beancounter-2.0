@@ -52,34 +52,65 @@
 
         <h3>2) Get user data</h3>
 
-        Path: /user/{username}         <br>
-        Method: GET                                 <br>
-        Parameters: none                           <br>
-        Description: it returns the user data but not the profile. <br>
-        Example:                                                                             <br> <br>
+        Path: /user/{username}<br>
+        Method: GET<br>
+        Parameters: {username} the Beancounter username<br>
+        Description: it returns the user data but not the profile.<br>
+        Example:<br><br>
 
-        GET http://moth.notube.tv:9090/notube-platform/rest/user/dpalmisano  <br> <br>
+        GET http://moth.notube.tv:9090/notube-platform/rest/user/dpalmisano<br><br>
 
         response: {"status":"OK","message":"user 'dpalmisano' found","object":{"name":"Davide","surname":"Palmisano","forcedProfiling":false,"activities":[],"services":{},"username":"dpalmisano","id":"5fe903d3-c6ef-49ba-a9af-44d91f028138"}}
-                                                                                                                             <br>  <br>
-        <h3>2) Add a source (lastfm, 4sq, twitter, facebook, n-screen) to the user</h3>
 
-        It's a bit different since it uses the OAuth exchange mechanism. The following example works for Lastfm.      <br>
+        <h3>3) Get user activities</h3>
+
+        Path: /user/activities{username}<br>
+        Method: GET<br>
+        Parameters: {username} the Beancounter username<br>
+        Description: it returns all the user activites on the sources he's
+        subscribed to.<br>
+        Example:<br><br>
+
+        GET http://moth.notube.tv:9090/notube-platform/rest/user/activities/dpalmisano
+
+        <h3>4) Delete a user</h3>
+
+        Path: /user/{username}<br>
+        Method: DELETE<br>
+        Parameters: {username} the Beancounter username<br>
+        Description: it deletes all the user data and activities.<br>
+        Example: with curl<br><br>
+
+        curl -X DELETE http://moth.notube.tv:9090/notube-platform/rest/user/merlin
+
+                                                            <br>  <br>
+
+        <h3>5) Add a source (lastfm, gomiso.com, twitter, facebook,
+        n-screen) to the user</h3>
+
+        NoTube 2.0 Beancounter APIs support only those services which are
+        OAuth-compliant or OAuth-like compliant. Twitter (OAuth-compliant)
+        and Last.fm (OAuth-like) examples follow:<br>
+
+        <h4> Twitter </h4>
+        1) Send your Beancounte user with {username} to this url:<br>
+        http://moth.notube.tv:9090/notube-platform/rest/user/oauth/token
+        /twitter/{username}<br>
+        2) Then, the user will be redirected to his Twitter account home
+        page to authorize the Beancounter application.
+
+        <h4> Last.fm </h4>
+        It's a bit different since it uses an OAuth-like exchange mechanism.<br>
         1)  Send your user here: http://www.last.fm/api/auth/?api_key=9f57b916d7ab90a7bf562b9e6f2385f0&cb=http://moth.notube.tv:9090/notube-platform/rest/user/callback/lastfm/{username}   <br>
-        where {username} is the Beancounter username   <br>
+        where {username} is the Beancounter username<br>
         2) then your user will be asked to grant permission to NoTube on his last.fm profile page. Once done it will be redirect to a page confirming the authorization process with this response:    <br><br>
         {"status":"OK","message":"service 'lastfm' as been successfully added to user 'dpalmisano'"}
                                                                                                                        <br>
-        you can easily verify calling:                       <br>
+        you can easily verify calling:<br>
 
-        GET http://moth.notube.tv:9090/notube-platform/rest/user/dpalmisano        <br>
+        GET http://moth.notube.tv:9090/notube-platform/rest/user/dpalmisano<br>
 
-        to see 'lastfm' as a service added on the user services list.
-
-
-
-
-
+        to see 'lastfm' or 'twitter' as a service added on the user services list.
 
     </body>
 </html>

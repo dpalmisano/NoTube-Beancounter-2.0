@@ -1,6 +1,7 @@
 package tv.notube.usermanager.services.auth.twitter;
 
 import org.scribe.builder.ServiceBuilder;
+import org.scribe.builder.api.FacebookApi;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.model.Token;
 import org.scribe.model.Verifier;
