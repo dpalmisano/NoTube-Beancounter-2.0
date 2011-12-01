@@ -33,15 +33,28 @@
             <version>3.1</version>
             <scope>runtime</scope>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>1.7.1</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-servlet-webserver</artifactId>
+            <version>1.9.8</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
-     <build>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -71,9 +84,13 @@
                     <configuration>
                         <type>runtime</type>
                         <properties>
-                            <cargo.tomcat.manager.url>http://cibionte.cybion.eu:8080/manager</cargo.tomcat.manager.url>
-                            <cargo.remote.username>tomcat</cargo.remote.username>
-                            <cargo.remote.password>cybion012011</cargo.remote.password>
+                            <cargo.tomcat.manager.url>
+                                http://cibionte.cybion.eu:8080/manager
+                            </cargo.tomcat.manager.url>
+                            <cargo.remote.username>tomcat
+                            </cargo.remote.username>
+                            <cargo.remote.password>cybion012011
+                            </cargo.remote.password>
                         </properties>
                     </configuration>
                 </configuration>

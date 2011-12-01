@@ -3,13 +3,13 @@ package tv.notube.commons.storage.alog;
 import com.sun.jersey.api.core.InjectParam;
 import org.joda.time.DateTime;
 import tv.notube.commons.storage.model.*;
+import tv.notube.commons.storage.model.fields.Field;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * put class description here
@@ -54,7 +54,30 @@ public class ActivityLogService {
         return new Response(
                 Response.Status.OK,
                 "activities found",
-                activities
+                Arrays.asList(activities)
+        );
+    }
+
+    @GET
+    @Path("/fields/{id}")
+    public Response getFields(
+            @PathParam("id") String activityId
+    ) {
+        ActivityLog activityLog = instanceManager.getActivityLog();
+        UUID id = UUID.fromString(activityId);
+        Field fields[];
+        try {
+            fields = activityLog.getFields(id);
+        } catch (ActivityLogException e) {
+            throw new RuntimeException(
+                    "Error while getting field for '" + activityId + "'",
+                    e
+            );
+        }
+        return new Response(
+                Response.Status.OK,
+                "fields for activity '" + activityId + "'",
+                Arrays.asList(fields)
         );
     }
 
