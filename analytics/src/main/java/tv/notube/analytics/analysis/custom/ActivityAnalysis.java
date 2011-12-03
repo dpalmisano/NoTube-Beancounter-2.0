@@ -7,6 +7,7 @@ import tv.notube.analytics.analysis.StorageAnalysis;
 import tv.notube.commons.storage.model.Activity;
 import tv.notube.commons.storage.model.ActivityLog;
 import tv.notube.commons.storage.model.ActivityLogException;
+import tv.notube.commons.storage.model.fields.BytesField;
 import tv.notube.commons.storage.model.fields.Field;
 import tv.notube.commons.storage.model.fields.StringField;
 import tv.notube.commons.storage.model.fields.URLField;
@@ -33,7 +34,9 @@ public class ActivityAnalysis extends StorageAnalysis {
         } catch (ActivityLogException e) {
             throw new AnalysisException("Error while filtering from alog", e);
         }
-        ActivityAnalysisResult result = new ActivityAnalysisResult();
+        ActivityAnalysisResult result = new ActivityAnalysisResult(
+                new DateTime()
+        );
         for (Activity activity : activities) {
             Field fields[];
             try {

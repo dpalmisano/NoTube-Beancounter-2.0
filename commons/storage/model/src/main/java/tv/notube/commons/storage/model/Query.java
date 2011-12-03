@@ -2,6 +2,7 @@ package tv.notube.commons.storage.model;
 
 import tv.notube.commons.storage.model.fields.*;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -10,7 +11,9 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-public class Query {
+public class Query implements Serializable {
+
+    static final long serialVersionUID = 10278539172337475L;
 
     private static final String INTEGER_FIELD_PATTERN = "%sfield.name = '%s' " +
             "AND %sfield.value %s %s ";

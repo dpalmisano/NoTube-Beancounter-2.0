@@ -50,7 +50,9 @@ public class TimeFrameAnalysis extends StorageAnalysis {
             DateTime activityDate = getDate(fields);
             put(activityDate, activity, activitiesPerDay);
         }
-        TimeFrameAnalysisResult result = new TimeFrameAnalysisResult();
+        TimeFrameAnalysisResult result = new TimeFrameAnalysisResult(
+                new DateTime()
+        );
         for(int day : activitiesPerDay.keySet()) {
             List<Activity> dayActivities = activitiesPerDay.get(day);
             ActivityAnalysisResult aar = analizeActivity(dayActivities);
@@ -61,7 +63,9 @@ public class TimeFrameAnalysis extends StorageAnalysis {
 
     private ActivityAnalysisResult analizeActivity(List<Activity> dayActivities)
             throws AnalysisException {
-        ActivityAnalysisResult result = new ActivityAnalysisResult();
+        ActivityAnalysisResult result = new ActivityAnalysisResult(
+                new DateTime()
+        );
         for (Activity activity : dayActivities) {
             Field fields[];
             try {

@@ -1,9 +1,11 @@
 package tv.notube.commons.storage.model.fields;
 
+import java.io.Serializable;
+
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-public abstract class Field<T> {
+public abstract class Field<T> implements Serializable {
 
     private String name;
 

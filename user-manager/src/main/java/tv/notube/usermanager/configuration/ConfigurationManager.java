@@ -33,7 +33,7 @@ public class ConfigurationManager {
 
         try {
             xmlConfiguration = new XMLConfiguration(
-                    this.getClass()
+                            this.getClass()
                             .getClassLoader()
                             .getResource(configurationFilePath)
             );

@@ -19,6 +19,10 @@ public class TimeFrameAnalysisResult extends AnalysisResult {
     private Map<Integer, ActivityAnalysisResult> activityAnalysisResults =
             new HashMap<Integer, ActivityAnalysisResult>();
 
+    public TimeFrameAnalysisResult(DateTime dateTime) {
+        super(dateTime);
+    }
+
     protected void addAnalysis(int day, ActivityAnalysisResult aar) {
         activityAnalysisResults.put(day, aar);
     }

@@ -1,5 +1,6 @@
 package tv.notube.analytics.analysis.custom;
 
+import org.joda.time.DateTime;
 import tv.notube.analytics.analysis.AnalysisResult;
 
 import java.net.URL;
@@ -16,6 +17,10 @@ public class ActivityAnalysisResult extends AnalysisResult {
     private Map<String, Integer> activities = new HashMap<String, Integer>();
 
     private Map<URL, Integer> services = new HashMap<URL, Integer>();
+
+    public ActivityAnalysisResult(DateTime dateTime) {
+        super(dateTime);
+    }
 
     public void add(String verb) {
         if(activities.containsKey(verb)) {
