@@ -17,6 +17,7 @@ import tv.notube.usermanager.configuration.ConfigurationManager;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
 
 import java.util.Properties;
+import java.util.Random;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
@@ -33,6 +34,8 @@ public class LoaderInstanceManager {
     private Logger logger = Logger.getLogger(LoaderInstanceManager.class);
 
     private Analyzer analyzer;
+
+    private Random recommender;
 
     public static LoaderInstanceManager getInstance() {
         if (instance == null)
@@ -74,6 +77,8 @@ public class LoaderInstanceManager {
         prop.setProperty("password", "alog");
         ActivityLog alog = new DefaultActivityLogImpl(prop);
         analyzer = new DefaultAnalyzerImpl(kVStore, alog);
+
+        recommender = new Random(125811727);
     }
 
     public UserManager getUserManager() {
@@ -86,5 +91,9 @@ public class LoaderInstanceManager {
 
     public Analyzer getAnalyzer() {
         return analyzer;
+    }
+
+    public Random getRecommender() {
+        return recommender;
     }
 }

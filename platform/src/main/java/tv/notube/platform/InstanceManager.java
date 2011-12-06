@@ -4,6 +4,8 @@ import tv.notube.analytics.Analyzer;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.usermanager.UserManager;
 
+import java.util.Random;
+
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
@@ -15,10 +17,13 @@ public class InstanceManager {
 
     private Analyzer analyzer;
 
+    private Random recommender;
+
     public InstanceManager() {
         userManager = LoaderInstanceManager.getInstance().getUserManager();
         profileStore = LoaderInstanceManager.getInstance().getProfileStore();
         analyzer = LoaderInstanceManager.getInstance().getAnalyzer();
+        recommender = LoaderInstanceManager.getInstance().getRecommender();
     }
 
     UserManager getUserManager() {
@@ -31,5 +36,9 @@ public class InstanceManager {
 
     public Analyzer getAnalyzer() {
         return analyzer;
+    }
+
+    public Random getRecommender() {
+        return recommender;
     }
 }

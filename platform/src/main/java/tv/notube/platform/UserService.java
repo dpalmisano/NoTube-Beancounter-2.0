@@ -199,7 +199,42 @@ public class UserService {
         );
     }
 
-    public void signIn() {}
+    @POST
+    @Path("/{username}")
+    public Response authenticate(
+            @PathParam("username") String username,
+            @FormParam("password") String password
+    ) {
+        if (username == null || username.equals("")) {
+            throw new RuntimeException("username parameter cannot be null");
+        }
+        if (password == null || username.equals("")) {
+            throw new RuntimeException("password parameter cannot be null");
+        }
+        UserManager um = instanceManager.getUserManager();
+        User user;
+        try {
+            user = um.getUser(username);
+        } catch (UserManagerException e) {
+            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+        }
+        if (user == null) {
+            return new Response(
+                    Response.Status.NOK,
+                    "user with username '" + username + "' not found"
+            );
+        }
+        if (!user.getPassword().equals(password)) {
+            return new Response(
+                    Response.Status.NOK,
+                    "password for '" + username + "' incorrect"
+            );
+        }
+        return new Response(
+                Response.Status.OK,
+                "user '" + username + "' authenticated"
+        );
+    }
 
     @GET
     @Path("/oauth/token/{service}/{username}")
