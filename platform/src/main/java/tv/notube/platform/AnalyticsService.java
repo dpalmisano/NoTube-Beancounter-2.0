@@ -7,13 +7,11 @@ import tv.notube.analytics.analysis.AnalysisDescription;
 import tv.notube.analytics.analysis.AnalysisResult;
 import tv.notube.analytics.analysis.MethodDescription;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import java.lang.Object;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -53,12 +51,32 @@ public class AnalyticsService {
     }
 
     @GET
-    @Path("/analysis/{name}/{user}/{method}/{param}")
+    @Path("/analysis/{name}")
+    public Response getAnalysisDescription( @PathParam("name") String name ) {
+        Analyzer analyzer = instanceManager.getAnalyzer();
+        AnalysisDescription analysisDescription;
+        try {
+            analysisDescription = analyzer.getAnalysisDescription(name);
+        } catch (AnalyzerException e) {
+            throw new RuntimeException(
+                    "Error while getting registered analysis",
+                    e
+            );
+        }
+        return new Response(
+                Response.Status.OK,
+                "analysis description",
+                analysisDescription
+        );
+    }
+
+    @GET
+    @Path("/analysis/{name}/{user}/{method}")
     public Response getAnalysisResult(
             @PathParam("name") String name,
             @PathParam("user") String user,
             @PathParam("method") String methodName,
-            @PathParam("param") String param
+            @Context UriInfo uriInfo
     ) {
         Analyzer analyzer = instanceManager.getAnalyzer();
         AnalysisDescription analysisDescription;
@@ -88,7 +106,9 @@ public class AnalyticsService {
         String resultClassName = analysisDescription.getResultClassName();
         MethodDescription mds[] =
                 analysisDescription.getMethodDescriptions(methodName);
-        String params[] = new String[] { param };
+
+        String params[] = getParams(uriInfo.getQueryParameters().get("param"));
+
         Object result = getResult(
                 analysisResult,
                 resultClassName,
@@ -96,6 +116,12 @@ public class AnalyticsService {
                 params
         );
         return new Response(Response.Status.OK, "analysis result", result);
+    }
+
+    private String[] getParams(List<String> values) {
+        if(values == null)
+            return new String[0];
+        return values.toArray(new String[values.size()]);
     }
 
     private Object getResult(

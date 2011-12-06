@@ -1,5 +1,6 @@
 package tv.notube.commons.model.activity;
 
+import com.google.gson.annotations.Expose;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
@@ -14,10 +15,13 @@ public class Context implements Serializable {
 
     private static final long serialVersionUID = 325277757335L;
 
+    @Expose
     private DateTime date;
 
+    @Expose
     private URL service;
 
+    @Expose
     private String mood;
 
     public DateTime getDate() {

@@ -1,5 +1,6 @@
 package tv.notube.analytics.analysis;
 
+import com.google.gson.annotations.Expose;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
@@ -13,10 +14,13 @@ public class AnalysisResult implements Serializable {
 
     static final long serialVersionUID = 10185559472137495L;
 
+    @Expose
     private DateTime executedAt;
 
+    @Expose
     private String name;
 
+    @Expose
     private String user;
 
     public AnalysisResult(DateTime dateTime) {

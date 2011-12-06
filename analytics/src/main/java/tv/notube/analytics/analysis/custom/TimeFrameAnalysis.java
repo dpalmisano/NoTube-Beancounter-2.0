@@ -121,7 +121,9 @@ public class TimeFrameAnalysis extends StorageAnalysis {
     public AnalysisDescription getAnalysisDescription() {
         MethodDescription getStatistics;
         getStatistics = new MethodDescription(
-                "getStatistics", new String[] { "java.lang.Integer" }
+                "getStatistics",
+                "this method returns activity statistics day by day of the last month",
+                new String[] { "java.lang.Integer" }
         );
         Set<MethodDescription> tfdMds = new HashSet<MethodDescription>();
         tfdMds.add(getStatistics);

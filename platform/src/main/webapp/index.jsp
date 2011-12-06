@@ -112,5 +112,102 @@
 
         to see 'lastfm' or 'twitter' as a service added on the user services list.
 
+        <h3>Analytics APIs</h3>
+
+        The Beancounter foresees a set APIs to access statistical data about
+        activities and interests of a user. Just to introduce some
+        terminology and definition.<br><br>
+
+        1) an <b>analysis</b> is a set of statistical data grouped under an
+        identifying name and with a timestamp of its latest execution. <br>
+
+        2) each <b>analysis</b> could be accessed using some <b>method</b>s
+        it declares. A <b>method</b> has an identifying name and could
+        eventually accept parameters. See examples of invocation below.<br><br>
+
+        <h4>Get available analysis</h4>
+        Path: /analytics/analysis<br>
+        Method: GET<br>
+        Parameters: none<br>
+        Description: it returns all the user analysis the Beancounter is able
+        to perform.<br>
+        Example: http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis<br><br>
+
+
+        <h4>Get a description of a specific analysis</h4>
+        Path: /analytics/analysis/{name}<br>
+        Method: GET<br>
+        Parameters: {name} the name identifiyng the analysis<br>
+        Description: it returns a description of the specified analysis.<br>
+        Example: http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis/timeframe-analysis<br><br>
+
+
+        <h4>Calling a method of an analysis for a specific user</h4>
+        Path: /analytics/analysis/{name}/{user}/{method}?param={param}<br>
+        Method: GET<br>
+        Parameters: <br>
+        - {name} the name identifiyng the analysis<br>
+        - {user} the user id on which the analysis has been performed<br>
+        - {method} the analysis specific <b>method</b> <br>
+        - {param} the method parameter, could be omitted for some methods<br>
+        Description: it returns some statistics as speficied by the analysis
+        and its method descriptions.<br>
+        Example: http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis/timeframe-analysis/8c33b0e6-d3cf-4909-b04c-df93056e64a8/getStatistics?param=4<br><br>
+
+        Let's go through and example.<br>
+        1) Firstly, retrieve some information on the
+        <i>timeframe-analysis</i>:<br>
+        curl http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis/timeframe-analysis <br>
+
+        as you can see from the response:<br>
+        <pre>
+        <code>
+        {
+            "status": "OK",
+            "message": "analysis description",
+            "object": {
+                "name": "timeframe-analysis",
+                "description": "this analysis summarizes the user activities over time",
+                "methodDescriptions": [
+                    {
+                        "name": "getStatistics",
+                        "description": "this method returns activity statistics day by day of the last month"
+                    }
+                ]
+            }
+        }
+</code>
+</pre>
+        the analysis foresees a <i>getStatistics</i> method which returns
+        some statistics about a day of the last month. If you want to know
+        how many tweets, songs listened or shares the user did on the 4th
+        day of the last month you can simply call:<br><br>
+
+        http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis/timeframe-analysis/8c33b0e6-d3cf-4909-b04c-df93056e64a8/getStatistics?param=4<br>
+
+        <br>
+        obtaining a result looking like:<br>
+
+    <pre><code>
+        {
+            "status": "OK",
+            "message": "analysis result",
+            "object": {
+                "activities": {
+                    "TWEET": 8,
+                    "LISTEN": 10
+                },
+            "services": {
+                "http://twitter.com": 8,
+                "http://last.fm": 10
+            },
+            "executedAt": "2011-12-06T16:48:30.287Z"
+        }
+    }
+</code>
+</pre>
+
+        which means that on that day, the user performed that number of activities, grouped by services and verb.
+
     </body>
 </html>

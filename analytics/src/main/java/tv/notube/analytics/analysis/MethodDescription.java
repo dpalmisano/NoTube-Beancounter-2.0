@@ -1,17 +1,30 @@
 package tv.notube.analytics.analysis;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.List;
 
+/**
+ *
+ */
 public class MethodDescription implements Serializable {
 
+    @Expose
     private String name;
+
+    @Expose
+    private String description;
 
     private String[] parameterTypes;
 
-    public MethodDescription(String name, String[] parameterTypes) {
+    public MethodDescription(
+            String name,
+            String description,
+            String[] parameterTypes
+    ) {
         this.name = name;
+        this.description = description;
         this.parameterTypes = parameterTypes;
     }
 
@@ -19,10 +32,8 @@ public class MethodDescription implements Serializable {
         return name;
     }
 
-    public void addParameter(String parameterType) {
-        List<String> types = Arrays.asList(parameterTypes);
-        types.add(parameterType);
-        parameterTypes = types.toArray(new String[types.size()]);
+    public String getDescription() {
+        return description;
     }
 
     public String[] getParameterTypes() {
@@ -49,5 +60,14 @@ public class MethodDescription implements Serializable {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (parameterTypes != null ? Arrays.hashCode(parameterTypes) : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "MethodDescription{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", parameterTypes=" + (parameterTypes == null ? null : Arrays.asList(parameterTypes)) +
+                '}';
     }
 }

@@ -1,5 +1,7 @@
 package tv.notube.platform;
 
+import com.google.gson.annotations.Expose;
+
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -21,10 +23,13 @@ public class Response {
         NOK
     }
 
+    @Expose
     private Status status;
 
+    @Expose
     private String message;
 
+    @Expose
     private Object object;
 
     public Response(){}

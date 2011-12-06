@@ -53,6 +53,7 @@ public class ResponseWriter implements MessageBodyWriter<Response> {
             OutputStream outputStream
     ) throws IOException, WebApplicationException {
         GsonBuilder builder = new GsonBuilder();
+        builder.excludeFieldsWithoutExposeAnnotation();
         DateTimeAdapter dta = new DateTimeAdapter();
         builder.registerTypeAdapter(DateTime.class, dta);
         Gson gson = builder.create();

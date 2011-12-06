@@ -70,10 +70,39 @@ public class ActivityAnalysis extends StorageAnalysis {
     public AnalysisDescription getAnalysisDescription() {
         MethodDescription getAmount;
         getAmount = new MethodDescription(
-                "getAmount", new String[] { "java.lang.String" }
+                "getNumberOfActivitiesByVerb",
+                "it returns the total number of activities of the verb specified as parameter",
+                new String[] { "java.lang.String" }
         );
+
+        MethodDescription getActivities;
+        getActivities = new MethodDescription(
+                "getActivities",
+                "it returns the activity types the user performed",
+                new String[] {}
+        );
+
+        MethodDescription getTotalActivities;
+        getTotalActivities = new MethodDescription(
+                "getTotalActivities",
+                "it returns the total number of activities of the user",
+                new String[] {}
+        );
+
+        MethodDescription getServiceAmount;
+        getServiceAmount = new MethodDescription(
+                "getNumberOfActivitiesByService",
+                "it returns the total number of activities done on a " +
+                        "specified service (must be a valid URL)",
+                new String[] { "java.net.URL" }
+        );
+
         Set<MethodDescription> aadMds = new HashSet<MethodDescription>();
         aadMds.add(getAmount);
+        aadMds.add(getActivities);
+        aadMds.add(getTotalActivities);
+        aadMds.add(getServiceAmount);
+
         return new AnalysisDescription(
                 getName(),
                 getDescription(),
@@ -82,6 +111,5 @@ public class ActivityAnalysis extends StorageAnalysis {
                 ActivityAnalysisResult.class.getCanonicalName(),
                 aadMds
         );
-
     }
 }

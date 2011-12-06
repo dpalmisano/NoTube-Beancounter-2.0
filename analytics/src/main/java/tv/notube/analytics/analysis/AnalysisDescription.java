@@ -1,5 +1,6 @@
 package tv.notube.analytics.analysis;
 
+import com.google.gson.annotations.Expose;
 import tv.notube.commons.storage.model.Query;
 
 import java.io.Serializable;
@@ -12,8 +13,10 @@ import java.util.*;
  */
 public class AnalysisDescription implements Serializable {
 
+    @Expose
     public String name;
 
+    @Expose
     public String description;
 
     private Query query;
@@ -22,6 +25,7 @@ public class AnalysisDescription implements Serializable {
 
     private String resultClassName;
 
+    @Expose
     private Set<MethodDescription> methodDescriptions = new HashSet<MethodDescription>();
 
     public AnalysisDescription(
@@ -60,9 +64,13 @@ public class AnalysisDescription implements Serializable {
         return resultClassName;
     }
 
-    public void addMethodDescription(String name, String[] parameterTypes) {
+    public void addMethodDescription(
+            String name,
+            String description,
+            String[] parameterTypes
+    ) {
         methodDescriptions.add(
-                new MethodDescription(name, parameterTypes)
+                new MethodDescription(name, description, parameterTypes)
         );
     }
 
