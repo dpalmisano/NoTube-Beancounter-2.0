@@ -73,4 +73,6 @@ public abstract class Analysis {
 
     public abstract AnalysisResult run(String owner) throws AnalysisException;
 
+    public abstract AnalysisDescription getAnalysisDescription();
+
 }

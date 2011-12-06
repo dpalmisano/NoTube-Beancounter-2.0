@@ -3,6 +3,7 @@ package tv.notube.analytics.analysis;
 import tv.notube.commons.storage.model.Query;
 
 import java.io.Serializable;
+import java.util.*;
 
 /**
  * put class description here
@@ -19,16 +20,24 @@ public class AnalysisDescription implements Serializable {
 
     private String className;
 
+    private String resultClassName;
+
+    private Set<MethodDescription> methodDescriptions = new HashSet<MethodDescription>();
+
     public AnalysisDescription(
             String name,
             String description,
             Query query,
-            String className
+            String className,
+            String resultClassName,
+            Set<MethodDescription> methodDescriptions
     ) {
         this.name = name;
         this.description = description;
         this.query = query;
         this.className = className;
+        this.resultClassName = resultClassName;
+        this.methodDescriptions = methodDescriptions;
     }
 
     public String getName() {
@@ -47,6 +56,30 @@ public class AnalysisDescription implements Serializable {
         return className;
     }
 
+    public String getResultClassName() {
+        return resultClassName;
+    }
+
+    public void addMethodDescription(String name, String[] parameterTypes) {
+        methodDescriptions.add(
+                new MethodDescription(name, parameterTypes)
+        );
+    }
+
+    public Set<MethodDescription> getMethodDescriptions() {
+        return methodDescriptions;
+    }
+
+    public MethodDescription[] getMethodDescriptions(String methodName) {
+        List<MethodDescription> result = new ArrayList<MethodDescription>();
+        for(MethodDescription methodDescription : methodDescriptions) {
+            if(methodDescription.getName().equals(methodName)) {
+                result.add(methodDescription);
+            }
+        }
+        return result.toArray(new MethodDescription[result.size()]);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,5 +96,17 @@ public class AnalysisDescription implements Serializable {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "AnalysisDescription{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", query=" + query +
+                ", className='" + className + '\'' +
+                ", resultClassName='" + resultClassName + '\'' +
+                ", methodDescriptions=" + methodDescriptions +
+                '}';
     }
 }

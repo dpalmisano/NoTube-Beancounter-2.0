@@ -3,8 +3,12 @@ package tv.notube.analytics.runner;
 import tv.notube.analytics.Analyzer;
 import tv.notube.analytics.AnalyzerException;
 import tv.notube.analytics.DefaultAnalyzerImpl;
+import tv.notube.analytics.analysis.AnalysisDescription;
+import tv.notube.analytics.analysis.MethodDescription;
 import tv.notube.analytics.analysis.custom.ActivityAnalysis;
+import tv.notube.analytics.analysis.custom.ActivityAnalysisResult;
 import tv.notube.analytics.analysis.custom.TimeFrameAnalysis;
+import tv.notube.analytics.analysis.custom.TimeFrameAnalysisResult;
 import tv.notube.commons.storage.alog.DefaultActivityLogImpl;
 import tv.notube.commons.storage.kvs.KVStore;
 import tv.notube.commons.storage.kvs.mybatis.MyBatisKVStore;
@@ -19,9 +23,7 @@ import tv.notube.usermanager.UserManagerException;
 import tv.notube.usermanager.configuration.ConfigurationManager;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
 
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * put class description here
@@ -34,7 +36,7 @@ public class Runner {
 
     private static final String ACTIVITY_ANALYSIS = "activity-analysis";
 
-    private static String OWNER = "user-manager-";
+    private static String OWNER = "user-manager-%s";
 
     private static UserManager userManager;
 
@@ -66,8 +68,8 @@ public class Runner {
             throw new RuntimeException("Error while getting user IDs", e);
         }
         for(UUID userId : userIds) {
+            System.out.println("working on " + String.format(OWNER, userId.toString()));
             try {
-                System.out.println("running on " + userId);
                 analyzer.run(String.format(OWNER, userId.toString()));
             } catch (AnalyzerException e) {
                 throw new RuntimeException("Error while getting user IDs", e);
@@ -76,18 +78,37 @@ public class Runner {
     }
 
     private static void initAnalyzer(Analyzer analyzer) throws AnalyzerException {
-        analyzer.registerAnalysis(
-                TIMEFRAME_ANALYSIS,
-                "this analysis summarizes the user activities in a timeframe",
-                getQuery(),
-                TimeFrameAnalysis.class
+        MethodDescription getAmount;
+        getAmount = new MethodDescription(
+                "getAmount", new String[] { "java.lang.String" }
         );
-        analyzer.registerAnalysis(
+        Set<MethodDescription> aadMds = new HashSet<MethodDescription>();
+        aadMds.add(getAmount);
+        AnalysisDescription aad = new AnalysisDescription(
                 ACTIVITY_ANALYSIS,
                 "this analysis summarizes the user activities",
                 getQuery(),
-                ActivityAnalysis.class
+                ActivityAnalysis.class.getCanonicalName(),
+                ActivityAnalysisResult.class.getCanonicalName(),
+                aadMds
         );
+
+        MethodDescription getStatistics;
+        getStatistics = new MethodDescription(
+                "getStatistics", new String[] { "java.lang.Integer" }
+        );
+        Set<MethodDescription> tfdMds = new HashSet<MethodDescription>();
+        tfdMds.add(getStatistics);
+        AnalysisDescription tad = new AnalysisDescription(
+                TIMEFRAME_ANALYSIS,
+                "this analysis summarizes the user activities over time",
+                getQuery(),
+                TimeFrameAnalysis.class.getCanonicalName(),
+                TimeFrameAnalysisResult.class.getCanonicalName(),
+                tfdMds
+        );
+        analyzer.registerAnalysis(aad, true);
+        analyzer.registerAnalysis(tad, true);
     }
 
     private static Analyzer getAnalyzer() {

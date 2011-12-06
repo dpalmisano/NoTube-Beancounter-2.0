@@ -1,5 +1,6 @@
 package tv.notube.platform;
 
+import tv.notube.analytics.Analyzer;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.usermanager.UserManager;
 
@@ -12,9 +13,12 @@ public class InstanceManager {
 
     private ProfileStore profileStore;
 
+    private Analyzer analyzer;
+
     public InstanceManager() {
         userManager = LoaderInstanceManager.getInstance().getUserManager();
         profileStore = LoaderInstanceManager.getInstance().getProfileStore();
+        analyzer = LoaderInstanceManager.getInstance().getAnalyzer();
     }
 
     UserManager getUserManager() {
@@ -23,5 +27,9 @@ public class InstanceManager {
 
     public ProfileStore getProfileStore() {
         return profileStore;
+    }
+
+    public Analyzer getAnalyzer() {
+        return analyzer;
     }
 }

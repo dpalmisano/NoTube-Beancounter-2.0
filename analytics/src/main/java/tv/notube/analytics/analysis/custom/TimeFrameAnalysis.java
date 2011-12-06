@@ -1,9 +1,7 @@
 package tv.notube.analytics.analysis.custom;
 
 import org.joda.time.DateTime;
-import tv.notube.analytics.analysis.AnalysisException;
-import tv.notube.analytics.analysis.AnalysisResult;
-import tv.notube.analytics.analysis.StorageAnalysis;
+import tv.notube.analytics.analysis.*;
 import tv.notube.commons.storage.model.Activity;
 import tv.notube.commons.storage.model.ActivityLog;
 import tv.notube.commons.storage.model.ActivityLogException;
@@ -37,7 +35,7 @@ public class TimeFrameAnalysis extends StorageAnalysis {
         }
         Map<Integer, List<Activity>> activitiesPerDay =
                 new HashMap<Integer, List<Activity>>();
-        for(Activity activity : activities) {
+        for (Activity activity : activities) {
             Field fields[];
             try {
                 fields = alog.getFields(activity.getId());
@@ -53,7 +51,7 @@ public class TimeFrameAnalysis extends StorageAnalysis {
         TimeFrameAnalysisResult result = new TimeFrameAnalysisResult(
                 new DateTime()
         );
-        for(int day : activitiesPerDay.keySet()) {
+        for (int day : activitiesPerDay.keySet()) {
             List<Activity> dayActivities = activitiesPerDay.get(day);
             ActivityAnalysisResult aar = analizeActivity(dayActivities);
             result.addAnalysis(day, aar);
@@ -76,16 +74,16 @@ public class TimeFrameAnalysis extends StorageAnalysis {
                         e
                 );
             }
-            for(Field field : fields) {
-                if(field instanceof StringField) {
+            for (Field field : fields) {
+                if (field instanceof StringField) {
                     StringField sf = (StringField) field;
-                    if(sf.getName().equals("verb")) {
+                    if (sf.getName().equals("verb")) {
                         result.add(sf.getValue());
                     }
                 }
-                if(field instanceof URLField) {
+                if (field instanceof URLField) {
                     URLField sf = (URLField) field;
-                    if(sf.getName().equals("service")) {
+                    if (sf.getName().equals("service")) {
                         result.add(sf.getValue());
                     }
                 }
@@ -100,7 +98,7 @@ public class TimeFrameAnalysis extends StorageAnalysis {
             Map<Integer, List<Activity>> activitiesPerDay
     ) {
         int day = activityDate.dayOfMonth().get();
-        if(activitiesPerDay.containsKey(day)) {
+        if (activitiesPerDay.containsKey(day)) {
             activitiesPerDay.get(day).add(activity);
         } else {
             List<Activity> activities = new ArrayList<Activity>();
@@ -110,13 +108,31 @@ public class TimeFrameAnalysis extends StorageAnalysis {
     }
 
     private DateTime getDate(Field fields[]) {
-        for(Field field : fields) {
-            if(field.getName().equals("date")) {
+        for (Field field : fields) {
+            if (field.getName().equals("date")) {
                 DatetimeField datetimeField = (DatetimeField) field;
                 return datetimeField.getValue();
             }
         }
         return null;
+    }
+
+    @Override
+    public AnalysisDescription getAnalysisDescription() {
+        MethodDescription getStatistics;
+        getStatistics = new MethodDescription(
+                "getStatistics", new String[] { "java.lang.Integer" }
+        );
+        Set<MethodDescription> tfdMds = new HashSet<MethodDescription>();
+        tfdMds.add(getStatistics);
+        return new AnalysisDescription(
+                getName(),
+                getDescription(),
+                getQuery(),
+                TimeFrameAnalysis.class.getCanonicalName(),
+                TimeFrameAnalysisResult.class.getCanonicalName(),
+                tfdMds
+        );
     }
 
 }

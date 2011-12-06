@@ -1,9 +1,7 @@
 package tv.notube.analytics.analysis.custom;
 
 import org.joda.time.DateTime;
-import tv.notube.analytics.analysis.AnalysisException;
-import tv.notube.analytics.analysis.AnalysisResult;
-import tv.notube.analytics.analysis.StorageAnalysis;
+import tv.notube.analytics.analysis.*;
 import tv.notube.commons.storage.model.Activity;
 import tv.notube.commons.storage.model.ActivityLog;
 import tv.notube.commons.storage.model.ActivityLogException;
@@ -11,6 +9,9 @@ import tv.notube.commons.storage.model.fields.BytesField;
 import tv.notube.commons.storage.model.fields.Field;
 import tv.notube.commons.storage.model.fields.StringField;
 import tv.notube.commons.storage.model.fields.URLField;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * put class description here
@@ -63,5 +64,24 @@ public class ActivityAnalysis extends StorageAnalysis {
             }
         }
         return result;
+    }
+
+    @Override
+    public AnalysisDescription getAnalysisDescription() {
+        MethodDescription getAmount;
+        getAmount = new MethodDescription(
+                "getAmount", new String[] { "java.lang.String" }
+        );
+        Set<MethodDescription> aadMds = new HashSet<MethodDescription>();
+        aadMds.add(getAmount);
+        return new AnalysisDescription(
+                getName(),
+                getDescription(),
+                getQuery(),
+                ActivityAnalysis.class.getCanonicalName(),
+                ActivityAnalysisResult.class.getCanonicalName(),
+                aadMds
+        );
+
     }
 }

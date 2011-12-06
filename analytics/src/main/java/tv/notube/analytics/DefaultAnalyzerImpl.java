@@ -6,10 +6,7 @@ import tv.notube.analytics.analysis.AnalysisException;
 import tv.notube.analytics.analysis.AnalysisResult;
 import tv.notube.commons.storage.kvs.KVStore;
 import tv.notube.commons.storage.kvs.KVStoreException;
-import tv.notube.commons.storage.model.Activity;
 import tv.notube.commons.storage.model.ActivityLog;
-import tv.notube.commons.storage.model.Query;
-import tv.notube.commons.storage.model.QueryException;
 import tv.notube.commons.storage.model.fields.StringField;
 
 import java.lang.reflect.Constructor;
@@ -28,6 +25,8 @@ public class DefaultAnalyzerImpl extends StorageAnalyzerImpl {
     private Set<Analysis> analyses = new HashSet<Analysis>();
 
     private final String ANALYSIS = "analysis";
+
+    private final String KEY = "user-manager-%s";
 
     public DefaultAnalyzerImpl(KVStore kvs, ActivityLog alog) {
         super(kvs, alog);
@@ -50,7 +49,7 @@ public class DefaultAnalyzerImpl extends StorageAnalyzerImpl {
                 throw new RuntimeException("", e);
             }
             try {
-                registerAnalysis(analysisDescription);
+                registerAnalysis(analysisDescription, false);
             } catch (AnalyzerException e) {
                 throw new RuntimeException("", e);
             }
@@ -58,30 +57,18 @@ public class DefaultAnalyzerImpl extends StorageAnalyzerImpl {
     }
 
     public void registerAnalysis(
-            String name,
-            String description,
-            Query query,
-            Class<? extends Analysis> clazz
+            AnalysisDescription analysisDescription,
+            boolean persist
     ) throws AnalyzerException {
-        AnalysisDescription analysisDescription =
-                new AnalysisDescription(
-                        name,
-                        description,
-                        query,
-                        clazz.getName()
-                );
-        registerAnalysis(analysisDescription);
-    }
-
-    private void registerAnalysis(AnalysisDescription analysisDescription)
-            throws AnalyzerException {
-
         Class<? extends Analysis> clazz;
         try {
             clazz = (Class<? extends Analysis>)
                     Class.forName(analysisDescription.getClassName());
         } catch (ClassNotFoundException e) {
-            throw new AnalyzerException("", e);
+            throw new AnalyzerException(
+                    "Error while loading analysis class",
+                    e
+            );
         }
         Constructor<? extends Analysis> constructor;
         try {
@@ -91,7 +78,7 @@ public class DefaultAnalyzerImpl extends StorageAnalyzerImpl {
                     String.class
             );
         } catch (NoSuchMethodException e) {
-            throw new AnalyzerException("", e);
+            throw new AnalyzerException("Error while getting constructor", e);
         }
         Analysis analysis;
         try {
@@ -101,16 +88,25 @@ public class DefaultAnalyzerImpl extends StorageAnalyzerImpl {
                     analysisDescription.getDescription()
             );
         } catch (InstantiationException e) {
-            throw new AnalyzerException("", e);
+            throw new AnalyzerException(
+                    "Error while instantiating analysis",
+                    e
+            );
         } catch (IllegalAccessException e) {
-            throw new AnalyzerException("", e);
+            throw new AnalyzerException(
+                    "Error while instantiating analysis",
+                    e
+            );
         } catch (InvocationTargetException e) {
-            throw new AnalyzerException("", e);
+            throw new AnalyzerException(
+                    "Error while instantiating analysis",
+                    e
+            );
         }
         try {
             analysis.registerQuery(analysisDescription.getQuery());
         } catch (AnalysisException e) {
-            throw new AnalyzerException("", e);
+            throw new AnalyzerException("Error while registering query", e);
         }
         if(analyses.contains(analysis)) {
             throw new AnalyzerException(
@@ -118,7 +114,10 @@ public class DefaultAnalyzerImpl extends StorageAnalyzerImpl {
             );
         }
         analyses.add(analysis);
-        storeAnalysis(analysisDescription);
+        analysisDescriptions.put(analysisDescription.getName(), analysisDescription);
+        if(persist) {
+            storeAnalysis(analysisDescription);
+        }
     }
 
     private void storeAnalysis(AnalysisDescription analysisDescription) throws AnalyzerException {
@@ -157,7 +156,7 @@ public class DefaultAnalyzerImpl extends StorageAnalyzerImpl {
        try {
             return (AnalysisResult) kvs.getValue(
                     name,
-                    username
+                    String.format(KEY, username)
             );
         } catch (KVStoreException e) {
             throw new AnalyzerException(
@@ -178,18 +177,9 @@ public class DefaultAnalyzerImpl extends StorageAnalyzerImpl {
     }
 
     public AnalysisDescription[] getRegisteredAnalysis() throws AnalyzerException {
-        AnalysisDescription descriptions[] = new AnalysisDescription[analyses.size()];
-        int i = 0;
-        for(Analysis analysis : analyses) {
-            descriptions[i] = new AnalysisDescription(
-                    analysis.getName(),
-                    analysis.getDescription(),
-                    analysis.getQuery(),
-                    analysis.getClass().getName()
-            );
-            i++;
-        }
-        return descriptions;
+        return analysisDescriptions.values().toArray(
+                new AnalysisDescription[analysisDescriptions.values().size()]
+        );
     }
 
     public void flush(String name, String username) throws AnalyzerException {

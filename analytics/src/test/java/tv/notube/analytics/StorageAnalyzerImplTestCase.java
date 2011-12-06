@@ -1,15 +1,11 @@
 package tv.notube.analytics;
 
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import tv.notube.analytics.Analyzer;
-import tv.notube.analytics.AnalyzerException;
-import tv.notube.analytics.DefaultAnalyzerImpl;
-import tv.notube.analytics.analysis.Analysis;
 import tv.notube.analytics.analysis.AnalysisDescription;
 import tv.notube.analytics.analysis.AnalysisException;
+import tv.notube.analytics.analysis.MethodDescription;
 import tv.notube.analytics.analysis.custom.ActivityAnalysis;
 import tv.notube.analytics.analysis.custom.ActivityAnalysisResult;
 import tv.notube.analytics.analysis.custom.TimeFrameAnalysis;
@@ -23,7 +19,11 @@ import tv.notube.commons.storage.model.fields.Field;
 import tv.notube.commons.storage.model.fields.StringField;
 import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
 
+import tv.notube.analytics.analysis.AnalysisDescription;
+
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * put class description here
@@ -41,18 +41,37 @@ public class StorageAnalyzerImplTestCase {
     @BeforeTest
     public void setUp() throws AnalysisException, AnalyzerException {
         analyzer = getAnalyzer();
-        analyzer.registerAnalysis(
-                TIMEFRAME_ANALYSIS,
-                "this analysis summarizes the user activities in a timeframe",
-                getQuery(),
-                TimeFrameAnalysis.class
+        MethodDescription getAmount;
+        getAmount = new MethodDescription(
+                "getAmount", new String[] { "java.lang.String" }
         );
-        analyzer.registerAnalysis(
+        Set<MethodDescription> aadMds = new HashSet<MethodDescription>();
+        aadMds.add(getAmount);
+        AnalysisDescription aad = new AnalysisDescription(
                 ACTIVITY_ANALYSIS,
                 "this analysis summarizes the user activities",
                 getQuery(),
-                ActivityAnalysis.class
+                ActivityAnalysis.class.getCanonicalName(),
+                ActivityAnalysisResult.class.getCanonicalName(),
+                aadMds
         );
+
+        MethodDescription getStatistics;
+        getStatistics = new MethodDescription(
+                "getStatistics", new String[] { "java.lang.Integer" }
+        );
+        Set<MethodDescription> tfdMds = new HashSet<MethodDescription>();
+        tfdMds.add(getStatistics);
+        AnalysisDescription tad = new AnalysisDescription(
+                TIMEFRAME_ANALYSIS,
+                "this analysis summarizes the user activities over time",
+                getQuery(),
+                TimeFrameAnalysis.class.getCanonicalName(),
+                TimeFrameAnalysisResult.class.getCanonicalName(),
+                tfdMds
+        );
+        analyzer.registerAnalysis(aad, true);
+        analyzer.registerAnalysis(tad, true);
     }
 
     private Query getQuery() {

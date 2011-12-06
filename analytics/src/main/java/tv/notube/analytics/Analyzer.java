@@ -1,9 +1,7 @@
 package tv.notube.analytics;
 
-import tv.notube.analytics.analysis.Analysis;
 import tv.notube.analytics.analysis.AnalysisDescription;
 import tv.notube.analytics.analysis.AnalysisResult;
-import tv.notube.commons.storage.model.Query;
 
 /**
  * put class description here
@@ -13,14 +11,13 @@ import tv.notube.commons.storage.model.Query;
 public interface Analyzer {
 
     public void registerAnalysis(
-            String name,
-            String description,
-            Query query,
-            Class<? extends Analysis> clazz
+            AnalysisDescription analysisDescription,
+            boolean persist
     ) throws AnalyzerException;
 
-    public void run(String owner)
-        throws AnalyzerException;
+    public AnalysisDescription getAnalysisDescription(String name) throws AnalyzerException;
+
+    public void run(String owner) throws AnalyzerException;
 
     public AnalysisResult getResult(
             String name,
@@ -32,4 +29,5 @@ public interface Analyzer {
     public AnalysisDescription[] getRegisteredAnalysis() throws AnalyzerException;
 
     public void flush(String name, String username) throws AnalyzerException;
+
 }
