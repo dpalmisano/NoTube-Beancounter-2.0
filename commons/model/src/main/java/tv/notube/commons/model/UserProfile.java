@@ -1,5 +1,7 @@
 package tv.notube.commons.model;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,12 +20,16 @@ public class UserProfile extends Referenceable {
         PUBLIC
     }
 
+    @Expose
     private Visibility visibility;
 
+    @Expose
     private String username;
 
+    @Expose
     private List<Type> types = new ArrayList<Type>();
 
+    @Expose
     private Set<Interest> interests = new HashSet<Interest>();
 
     public Visibility getVisibility() {

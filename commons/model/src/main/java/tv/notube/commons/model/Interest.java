@@ -1,5 +1,6 @@
 package tv.notube.commons.model;
 
+import com.google.gson.annotations.Expose;
 import tv.notube.commons.model.activity.Activity;
 
 import java.net.URI;
@@ -13,10 +14,13 @@ import java.util.List;
  */
 public class Interest extends Referenceable {
 
+    @Expose
     private boolean visible;
 
+    @Expose
     private double weight;
 
+    @Expose
     private List<Activity> activities = new ArrayList<Activity>();
 
     public void setResource(URI resource) {

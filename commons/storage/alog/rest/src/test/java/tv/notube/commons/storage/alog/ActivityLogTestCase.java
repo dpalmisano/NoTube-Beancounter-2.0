@@ -44,6 +44,27 @@ public class ActivityLogTestCase extends AbstractJerseyTestCase {
     }
 
     @Test
+    public void testGetActivitiesWithNoQuery() throws IOException {
+        final String baseQuery = "activities/%s";
+        final String owner = "recommender";
+        final String from = "1322158200000";
+        final String to =   "1322179700000";
+
+        final String query = String.format(baseQuery, owner) + "?" + "from="
+                + from + "&" + "to=" + to;
+
+        // Perform GET
+        GetMethod getMethod = new GetMethod(base_uri + query);
+        HttpClient client = new HttpClient();
+        int result = client.executeMethod(getMethod);
+        String responseBody = new String(getMethod.getResponseBody());
+        logger.info("result code: " + result);
+        logger.info("method: " + getMethod.getName() + " at uri: " + base_uri + query);
+        logger.info("response body: " + responseBody);
+        assert result == HttpStatus.SC_OK : "Unexpected result: \n" + result;
+    }
+
+    @Test
     public void testGetFields() throws IOException {
         final String baseQuery = "activities/fields/%s";
         final UUID activityID = UUID.fromString("0921bffc-1759-41d8-9b2c-726f50a3c511");

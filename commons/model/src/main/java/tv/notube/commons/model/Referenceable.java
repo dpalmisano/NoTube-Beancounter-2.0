@@ -16,6 +16,7 @@ public abstract class Referenceable implements Serializable {
     @Expose
     protected UUID id;
 
+    @Expose
     protected URI reference;
 
     public Referenceable() {
