@@ -12,7 +12,6 @@ import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -200,7 +199,7 @@ public class UserService {
     }
 
     @POST
-    @Path("/{username}")
+    @Path("/authenticate/{username}")
     public Response authenticate(
             @PathParam("username") String username,
             @FormParam("password") String password
@@ -243,10 +242,10 @@ public class UserService {
             @PathParam("username") String username
     ) {
         if (service == null || username.equals("")) {
-            throw new RuntimeException("Service paramenter cannot be null");
+            throw new RuntimeException("Service parameter cannot be null");
         }
         if (username == null || username.equals("")) {
-            throw new RuntimeException("Service paramenter cannot be null");
+            throw new RuntimeException("Username parameter cannot be null");
         }
         UserManager um = instanceManager.getUserManager();
         User userObj;
@@ -365,6 +364,42 @@ public class UserService {
                 Response.Status.OK,
                 "service '" + service + " as been successfully added to user '" + username + "'",
                 null
+        );
+    }
+
+    @DELETE
+    @Path("/source/{username}/{service}")
+    public Response removeSource(
+            @PathParam("username") String username,
+            @PathParam("service") String service
+    ) {
+        if (service == null || username.equals("")) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'service' cannot be null"
+            );
+        }
+        if (username == null || username.equals("")) {
+            return new Response(
+                    Response.Status.NOK,
+                    "parameter 'username' cannot be null"
+            );
+        }
+        UserManager um = instanceManager.getUserManager();
+        User userObj;
+        try {
+            userObj = um.getUser(username);
+        } catch (UserManagerException e) {
+            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+        }
+        try {
+            um.deregisterService(service, userObj);
+        } catch (UserManagerException e) {
+            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+        }
+        return new Response(
+                Response.Status.OK,
+                "service '" + service + "' removed from user '" + username + "'"
         );
     }
 

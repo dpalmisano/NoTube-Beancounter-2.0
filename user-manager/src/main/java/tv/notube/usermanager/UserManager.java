@@ -146,4 +146,12 @@ public interface UserManager {
     public ServiceAuthorizationManager getServiceAuthorizationManager()
             throws UserManagerException;
 
+    /**
+     * Removes from the provided {@link User} a service with the name
+     * provided as input.
+     *
+     * @param service
+     * @param userObj
+     */
+    void deregisterService(String service, User userObj) throws UserManagerException;
 }

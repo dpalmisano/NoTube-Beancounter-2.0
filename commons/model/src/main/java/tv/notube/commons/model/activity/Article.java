@@ -1,5 +1,7 @@
 package tv.notube.commons.model.activity;
 
+import com.google.gson.annotations.Expose;
+
 import java.net.URL;
 
 /**
@@ -7,10 +9,13 @@ import java.net.URL;
  */
 public class Article extends Object {
 
+    @Expose
     private String summary;
 
+    @Expose
     private String content;
 
+    @Expose
     private URL permalink;
 
     public String getSummary() {

@@ -82,6 +82,10 @@ public class User extends Referenceable implements Serializable {
         services.put(service, auth);
     }
 
+    public void removeService(String service) {
+        services.remove(service);
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -110,4 +114,5 @@ public class User extends Referenceable implements Serializable {
                 ", username='" + username + '\'' +
                 "} " + super.toString();
     }
+
 }

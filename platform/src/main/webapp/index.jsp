@@ -22,7 +22,12 @@
         in JSON format only and are all in this format:</p>
 
 <p>
-        {"status": OK | NOK ,"message": <i>a success of error message</i>, "object": <i>an optional object that may be returned</i>}
+        <pre><code>
+        {
+            "status": OK | NOK ,"message": <i>a success of error message</i>,
+            "object": <i>an optional object that may be returned</i>
+        }
+        </code></pre>
         </p>
         <p>
         <strong>DISCLAIMER: responses are going to change frequently. Be aware and ofter refer to this page</strong>
@@ -37,18 +42,30 @@
             - password         <br>
             - name               <br>
             - surname          <br>
-        Description: it registers a new user to the Beancounter with username, password, name and surname.      <br>
+        Description: it registers a new user to the Beancounter with username, password, name and surname.<br>
         Example:                      <br> <br>
 
         POST http://moth.notube.tv:9090/notube-platform/rest/user/register   <br>
         with parameter body (application/x-www-form-urlencoded):                        <br>
         name=Davide&surname=Palmisano&username=dpalmisano&password=abracadabra<br>      <br>
 
-        response: {"status":"OK","message":"user successfully registered","object":"5fe903d3-c6ef-49ba-a9af-44d91f028138"}
+        response:
+        <pre><code>
+        {
+            "status":"OK",
+            "message":"user successfully registered",
+            "object":"5fe903d3-c6ef-49ba-a9af-44d91f028138"
+        }
+        </code></pre>
                                                                                                                                                 <br> <br>
         if the username is already taken, the service replies:                                                                     <br>  <br>
-                                                                                                                                                                    <br>
-        {"status":"NOK","message":"username 'dpalmisano' is already taken"}                                                           <br>
+
+        <pre><code>
+        {
+            "status":"NOK",
+            "message":"username 'dpalmisano' is already taken"
+        }
+        </code></pre>
 
         <h3>2) Get user data</h3>
 
@@ -60,7 +77,23 @@
 
         GET http://moth.notube.tv:9090/notube-platform/rest/user/dpalmisano<br><br>
 
-        response: {"status":"OK","message":"user 'dpalmisano' found","object":{"name":"Davide","surname":"Palmisano","forcedProfiling":false,"activities":[],"services":{},"username":"dpalmisano","id":"5fe903d3-c6ef-49ba-a9af-44d91f028138"}}
+        response:
+        <pre><code>
+        {
+            "status":"OK",
+            "message":"user 'dpalmisano' found",
+            "object":
+                {
+                    "name":"Davide",
+                    "surname":"Palmisano",
+                    "forcedProfiling":false,
+                    "activities":[],
+                    "services":{},
+                    "username":"dpalmisano",
+                    "id":"5fe903d3-c6ef-49ba-a9af-44d91f028138"
+                }
+        }
+        </code></pre>
 
         <h3>3) Get user activities</h3>
 
@@ -83,10 +116,30 @@
 
         curl -X DELETE http://moth.notube.tv:9090/notube-platform/rest/user/merlin
 
-                                                            <br>  <br>
+        <h3>5) Authenticate a user</h3>
 
-        <h3>5) Add a source (lastfm, gomiso.com, twitter, facebook,
-        n-screen) to the user</h3>
+        Path: /user/authenticate/{username}<br>
+        Method: POST<br>
+        Parameters:<br>
+        - {username} the Beancounter username<br>
+        - {password} the user password
+        Description: it authenticates or not a user.<br>
+        Example: with curl<br><br>
+
+        curl -d "password=abracadabra" http://moth.notube.tv:9090/notube-platform/rest/user/authenticate/dpalmisano
+
+        <h3>6) Get a user profile</h3>
+
+        Path: /user/profile/{username}<br>
+        Method: GET<br>
+        Parameters: {username} the Beancounter username<br>
+        Description: it returns a weighted interests profile in JSON.<br>
+        Example: with curl<br><br>
+
+        curl http://moth.notube.tv:9090/notube-platform/rest/user/profile/dpalmisano
+
+        <h3>7) Add a source (lastfm, gomiso.com, twitter, facebook,
+        n-screen) to a user</h3>
 
         NoTube 2.0 Beancounter APIs support only those services which are
         OAuth-compliant or OAuth-like compliant. Twitter (OAuth-compliant)
@@ -104,13 +157,33 @@
         1)  Send your user here: http://www.last.fm/api/auth/?api_key=9f57b916d7ab90a7bf562b9e6f2385f0&cb=http://moth.notube.tv:9090/notube-platform/rest/user/callback/lastfm/{username}   <br>
         where {username} is the Beancounter username<br>
         2) then your user will be asked to grant permission to NoTube on his last.fm profile page. Once done it will be redirect to a page confirming the authorization process with this response:    <br><br>
-        {"status":"OK","message":"service 'lastfm' as been successfully added to user 'dpalmisano'"}
+        <pre><code>
+        {
+            "status":"OK",
+            "message":"service 'lastfm' as been successfully added to user 'dpalmisano'"
+        }
+        </code></pre>
                                                                                                                        <br>
         you can easily verify calling:<br>
 
         GET http://moth.notube.tv:9090/notube-platform/rest/user/dpalmisano<br>
 
         to see 'lastfm' or 'twitter' as a service added on the user services list.
+
+        <h3>8) Remove a source (lastfm, gomiso.com, twitter, facebook,
+        n-screen) to a user</h3>
+
+        Path: /user/source/{username}/{service}<br>
+        Method: DELETE<br>
+        Parameters:
+        - {username} the Beancounter username<br>
+        - {service} the service you want to remove from the user
+        Description: it deletes a service from a user. That service will be
+        not used anymore until you don't add it again.
+        <br>
+        Example: with curl<br><br>
+
+        curl -X DELETE http://moth.notube.tv:9090/notube-platform/rest/user/source/merlin/lastfm
 
         <h3>Analytics APIs</h3>
 

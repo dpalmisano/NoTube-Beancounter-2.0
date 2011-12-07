@@ -1,5 +1,7 @@
 package tv.notube.commons.model.activity;
 
+import com.google.gson.annotations.Expose;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,10 +13,13 @@ import java.util.Set;
  */
 public class Tweet extends tv.notube.commons.model.activity.Object {
 
+    @Expose
     private String text;
 
+    @Expose
     private Set<String> hashTags = new HashSet<String>();
 
+    @Expose
     private List<URL> urls = new ArrayList<URL>();
 
     public String getText() {

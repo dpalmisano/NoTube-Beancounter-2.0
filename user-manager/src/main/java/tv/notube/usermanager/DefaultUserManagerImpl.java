@@ -407,6 +407,11 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
         return sam;
     }
 
+    public void deregisterService(String service, User userObj) throws UserManagerException {
+        userObj.removeService(service);
+        storeUser(userObj);
+    }
+
     private Field[] getActivityLogFields(Activity activity)
             throws SerializationManagerException {
         String what = activity.getVerb().name();
