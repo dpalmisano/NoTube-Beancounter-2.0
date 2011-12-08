@@ -3,7 +3,7 @@ package tv.notube.crawler.requester.request;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.scribe.builder.ServiceBuilder;
-import org.scribe.builder.api.TwitterApi;
+import org.scribe.builder.api.FacebookApi;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Token;
@@ -13,27 +13,28 @@ import tv.notube.commons.model.OAuthAuth;
 import tv.notube.crawler.requester.DefaultRequest;
 import tv.notube.crawler.requester.RequestException;
 import tv.notube.crawler.requester.ServiceResponse;
+import tv.notube.crawler.requester.request.facebook.FacebookResponse;
+import tv.notube.crawler.requester.request.facebook.FacebookResponseAdapter;
 import tv.notube.crawler.requester.request.twitter.TwitterResponse;
-import tv.notube.crawler.requester.request.twitter.TwitterResponseAdapter;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * <a href="http://twitter.com>twitter.com</a> specific implementation of
+ * <a href="http://facebook.com>facebook.com</a> specific implementation of
  * {@link tv.notube.crawler.requester.DefaultRequest}.
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-public class TwitterRequest extends DefaultRequest {
+public class FacebookRequest extends DefaultRequest {
 
     private Gson gson;
 
-    public TwitterRequest() {
+    public FacebookRequest() {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(
-                TwitterResponse.class,
-                new TwitterResponseAdapter()
+                FacebookResponse.class,
+                new FacebookResponseAdapter()
         );
         gson = builder.create();
     }
@@ -47,8 +48,8 @@ public class TwitterRequest extends DefaultRequest {
         String serviceEndpoint = service.getEndpoint().toString();
         OAuthAuth oaa = (OAuthAuth) auth;
 
-        OAuthService twitterOAuth = new ServiceBuilder()
-                .provider(TwitterApi.class)
+        OAuthService facebookOAuth = new ServiceBuilder()
+                .provider(FacebookApi.class)
                 .apiKey(service.getApikey())
                 .apiSecret(service.getSecret())
                 .build();
@@ -56,7 +57,7 @@ public class TwitterRequest extends DefaultRequest {
         OAuthRequest request = new OAuthRequest(
                 Verb.GET, serviceEndpoint);
         request.addQuerystringParameter("include_entities","true");
-        twitterOAuth.signRequest(
+        facebookOAuth.signRequest(
                 new Token(oaa.getSession(), oaa.getSecret()),
                 request
         );

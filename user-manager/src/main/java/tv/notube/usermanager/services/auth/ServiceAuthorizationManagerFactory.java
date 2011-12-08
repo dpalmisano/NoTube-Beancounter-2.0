@@ -1,6 +1,7 @@
 package tv.notube.usermanager.services.auth;
 
 import tv.notube.commons.model.Service;
+import tv.notube.usermanager.services.auth.facebook.FacebookAuthHandler;
 import tv.notube.usermanager.services.auth.lastfm.LastFmAuthHandler;
 import tv.notube.usermanager.services.auth.twitter.TwitterAuthHandler;
 
@@ -62,9 +63,34 @@ public class ServiceAuthorizationManagerFactory {
         try {
             sam.addHandler(twitter, new TwitterAuthHandler(twitter));
         } catch (ServiceAuthorizationManagerException e) {
-            throw new RuntimeException("Error while registering handler", e);
+            throw new RuntimeException(
+                    "Error while registering twitter handler",
+                    e
+            );
         }
 
+        Service facebook = new Service();
+        facebook.setName("facebook");
+        facebook.setDescription("Provide access to Facebook user data");
+        facebook.setApikey("313412168683100");
+        facebook.setSecret("cc040c3b120491bcec98498dd81fc2a5");
+        facebook.setSessionEndpoint("");
+        try {
+            facebook.setEndpoint(new URL("https://api.twitter.com/1/statuses/user_timeline.json"));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(
+                    "Facebook endpoint URL is not well-formed",
+                    e
+            );
+        }
+        try {
+            sam.addHandler(facebook, new FacebookAuthHandler(facebook));
+        } catch (ServiceAuthorizationManagerException e) {
+            throw new RuntimeException(
+                    "Error while registering twitter handler",
+                    e
+            );
+        }
     }
 
     public ServiceAuthorizationManager build() {

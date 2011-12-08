@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
@@ -52,6 +54,7 @@ public class ResponseWriter implements MessageBodyWriter<Response> {
             MultivaluedMap<String, Object> stringObjectMultivaluedMap,
             OutputStream outputStream
     ) throws IOException, WebApplicationException {
+        setCORSParameters(stringObjectMultivaluedMap);
         GsonBuilder builder = new GsonBuilder();
         builder.excludeFieldsWithoutExposeAnnotation();
         builder.setPrettyPrinting();
@@ -62,5 +65,30 @@ public class ResponseWriter implements MessageBodyWriter<Response> {
         BufferedOutputStream baos = new BufferedOutputStream(outputStream);
         baos.write(json.getBytes());
         baos.close();
+    }
+
+    private void setCORSParameters(MultivaluedMap<String, Object> header) {
+        List<String> headers = new ArrayList<String>();
+        headers.add("X-Requested-With");
+        headers.add("Origin");
+        header.add("Access-Control-Allow-Headers", headers);
+
+        List<String> methods = new ArrayList<String>();
+        methods.add("GET");
+        methods.add("POST");
+        methods.add("DELETE");
+        methods.add("PUT");
+        header.add("Access-Control-Allow-Methods", methods);
+
+        List<String> origin = new ArrayList<String>();
+        origin.add("*");
+        header.add("Access-Control-Allow-Origin", origin);
+
+        List<String> cache = new ArrayList<String>();
+        cache.add("no-cache");
+        cache.add("no-store");
+        cache.add("max-age=0");
+        cache.add("must-revalidate");
+        header.add("Cache-Control", cache);
     }
 }

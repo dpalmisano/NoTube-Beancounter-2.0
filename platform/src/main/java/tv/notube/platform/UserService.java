@@ -278,8 +278,9 @@ public class UserService {
             @PathParam("service") String service,
             @PathParam("username") String username,
             @QueryParam("oauth_token") String token,
-            @QueryParam("oauth_verifier") String verifier
+            @QueryParam("code") String verifier
     ) {
+        // was oauth_verifier, facebook requires code
         if (service == null || service.equals("")) {
             return new Response(
                     Response.Status.NOK,
@@ -287,18 +288,6 @@ public class UserService {
             );
         }
         if (username == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'username' cannot be null"
-            );
-        }
-        if (token == null || token.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'service' cannot be null"
-            );
-        }
-        if (verifier == null || verifier.equals("")) {
             return new Response(
                     Response.Status.NOK,
                     "parameter 'username' cannot be null"
@@ -314,12 +303,12 @@ public class UserService {
         try {
             um.registerOAuthService(service, userObj, token, verifier);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while OAuth-like exchange for service: '" + service + "'");
+            throw new RuntimeException("Error while OAuth-like exchange for " +
+                    "service: '" + service + "'", e);
         }
         return new Response(
                 Response.Status.OK,
-                "service '" + service + " as been successfully added to user '" + username + "'",
-                null
+                "service '" + service + " as been successfully added to user '" + username + "'"
         );
     }
 
