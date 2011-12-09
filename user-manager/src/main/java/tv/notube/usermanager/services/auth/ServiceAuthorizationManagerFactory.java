@@ -76,7 +76,7 @@ public class ServiceAuthorizationManagerFactory {
         facebook.setSecret("cc040c3b120491bcec98498dd81fc2a5");
         facebook.setSessionEndpoint("");
         try {
-            facebook.setEndpoint(new URL("https://api.twitter.com/1/statuses/user_timeline.json"));
+            facebook.setEndpoint(new URL("https://graph.facebook.com/me/likes"));
         } catch (MalformedURLException e) {
             throw new RuntimeException(
                     "Facebook endpoint URL is not well-formed",

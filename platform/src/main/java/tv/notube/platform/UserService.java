@@ -273,14 +273,22 @@ public class UserService {
     }
 
     @GET
+    @Path("/oauth/callback/facebook/{username}/")
+    public Response handleFacebookAuthCallback(
+            @PathParam("username") String username,
+            @QueryParam("code") String verifier
+    ) {
+        return handleAuthCallback("facebook", username, null, verifier);
+    }
+
+    @GET
     @Path("/oauth/callback/{service}/{username}/")
     public Response handleAuthCallback(
             @PathParam("service") String service,
             @PathParam("username") String username,
             @QueryParam("oauth_token") String token,
-            @QueryParam("code") String verifier
+            @QueryParam("oauth_verifier") String verifier
     ) {
-        // was oauth_verifier, facebook requires code
         if (service == null || service.equals("")) {
             return new Response(
                     Response.Status.NOK,

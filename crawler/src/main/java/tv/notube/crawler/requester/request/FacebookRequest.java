@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.FacebookApi;
-import org.scribe.model.OAuthRequest;
-import org.scribe.model.Response;
-import org.scribe.model.Token;
-import org.scribe.model.Verb;
+import org.scribe.model.*;
 import org.scribe.oauth.OAuthService;
 import tv.notube.commons.model.OAuthAuth;
 import tv.notube.crawler.requester.DefaultRequest;
@@ -27,6 +24,8 @@ import java.io.InputStreamReader;
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
 public class FacebookRequest extends DefaultRequest {
+
+    private static final String CALLBACK = "http://moth.notube.tv:9090/notube-platform/rest/user/oauth/callback/facebook/";
 
     private Gson gson;
 
@@ -52,11 +51,12 @@ public class FacebookRequest extends DefaultRequest {
                 .provider(FacebookApi.class)
                 .apiKey(service.getApikey())
                 .apiSecret(service.getSecret())
+                .scope("user_likes")
+                .callback(CALLBACK + "dpalmisano")
                 .build();
 
         OAuthRequest request = new OAuthRequest(
                 Verb.GET, serviceEndpoint);
-        request.addQuerystringParameter("include_entities","true");
         facebookOAuth.signRequest(
                 new Token(oaa.getSession(), oaa.getSecret()),
                 request
@@ -64,7 +64,7 @@ public class FacebookRequest extends DefaultRequest {
         Response response = request.send();
         InputStreamReader reader = new InputStreamReader(response.getStream());
         try {
-            return gson.fromJson(reader, TwitterResponse.class);
+            return gson.fromJson(reader, FacebookResponse.class);
         } finally {
             try {
                 reader.close();

@@ -1,5 +1,7 @@
 package tv.notube.commons.model;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * put class description here
  *

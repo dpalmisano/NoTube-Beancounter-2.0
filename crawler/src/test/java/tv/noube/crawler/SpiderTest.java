@@ -86,6 +86,12 @@ public class SpiderTest {
                 "14656799-3tA0w5Ikz9oLFjDKy9La99IDYdPRE2koaxIl2nhnB",
                 "9MAFzWyTdH6jFO4k9yRVGVp7S9kUfVhvnkVPNM8CE")
         );
+        Service facebook = new Service();
+        facebook.setName("facebook");
+        user.addService(facebook.getName(), new OAuthAuth(
+                "AAAEdCZCT7jlwBAHZAO8Ky7llWNNqSijesRdcOub1mJufEiC7DlFtEgYp5ZApXMLyPiSyUrlQSHQ97g3m32EzBm6g9cMeZAZCZAoHiQIap946reksR83uZCa",
+                null)
+        );
         um.storeUser(user);
     }
 

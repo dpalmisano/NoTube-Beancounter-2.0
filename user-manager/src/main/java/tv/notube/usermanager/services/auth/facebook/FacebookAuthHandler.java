@@ -45,6 +45,7 @@ public class FacebookAuthHandler extends DefaultAuthHandler {
                            .provider(FacebookApi.class)
                            .apiKey(service.getApikey())
                            .apiSecret(service.getSecret())
+                           .scope("user_likes")
                            .callback(CALLBACK + user.getUsername())
                            .build();
         Token requestToken = null;
@@ -61,6 +62,7 @@ public class FacebookAuthHandler extends DefaultAuthHandler {
                            .provider(FacebookApi.class)
                            .apiKey(service.getApikey())
                            .apiSecret(service.getSecret())
+                           .scope("user_likes")
                            .callback(CALLBACK + username)
                            .build();
         Token token = null;

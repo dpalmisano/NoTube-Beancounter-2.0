@@ -1,5 +1,7 @@
 package tv.notube.commons.model;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 /**
@@ -7,6 +9,7 @@ import java.io.Serializable;
  */
 public class SimpleAuth extends Auth {
 
+    @Expose
     private String username;
 
     public SimpleAuth(String session, String username) {
