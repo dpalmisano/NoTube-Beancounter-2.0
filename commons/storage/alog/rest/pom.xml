@@ -85,7 +85,7 @@
                         <type>runtime</type>
                         <properties>
                             <cargo.tomcat.manager.url>
-                                http://cibionte.cybion.eu:8080/manager
+                                http://gaia.cybion.eu:8080/manager
                             </cargo.tomcat.manager.url>
                             <cargo.remote.username>tomcat
                             </cargo.remote.username>

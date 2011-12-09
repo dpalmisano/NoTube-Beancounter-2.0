@@ -26,9 +26,9 @@ public class LoaderInstanceManager {
 
     private LoaderInstanceManager() {
         Properties properties = new Properties();
-        properties.setProperty("url", "jdbc:mysql://cibionte.cybion.eu:3306/collective-alog");
-        properties.setProperty("username", "collective");
-        properties.setProperty("password", "collective");
+        properties.setProperty("url", "jdbc:mysql://gaia.cybion.eu:3306/collective-alog");
+        properties.setProperty("username", "alog");
+        properties.setProperty("password", "alog");
         activityLog = new DefaultActivityLogImpl(properties);
 
     }

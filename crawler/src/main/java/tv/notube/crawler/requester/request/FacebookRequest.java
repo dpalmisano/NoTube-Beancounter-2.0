@@ -52,7 +52,7 @@ public class FacebookRequest extends DefaultRequest {
                 .apiKey(service.getApikey())
                 .apiSecret(service.getSecret())
                 .scope("user_likes")
-                .callback(CALLBACK + "dpalmisano")
+                .callback(CALLBACK)
                 .build();
 
         OAuthRequest request = new OAuthRequest(
