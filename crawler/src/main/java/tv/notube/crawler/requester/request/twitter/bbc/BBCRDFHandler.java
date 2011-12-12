@@ -5,7 +5,9 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
-import tv.notube.commons.model.activity.BBCProgramme;
+import tv.notube.commons.model.activity.bbc.BBCGenre;
+import tv.notube.commons.model.activity.bbc.BBCProgramme;
+import tv.notube.commons.model.activity.bbc.GenreBuilder;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -44,7 +46,14 @@ public class BBCRDFHandler implements RDFHandler {
             }
         } else if (predicate.equals(new URIImpl("http://purl.org/ontology/po/genre"))) {
             Value object = statement.getObject();
-            bbcProgramme.addGenre(getGenre(object.stringValue()));
+            URL genreUrl;
+            try {
+                genreUrl = new URL(object.stringValue());
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Malformed BBC url", e);
+            }
+            BBCGenre bbcGenre = GenreBuilder.getInstance().lookup(genreUrl);
+            bbcProgramme.addGenre(bbcGenre);
         } else if (predicate.equals(new URIImpl("http://xmlns.com/foaf/0.1/primaryTopic"))) {
             Value object = statement.getObject();
             try {
@@ -62,10 +71,6 @@ public class BBCRDFHandler implements RDFHandler {
             Value object = statement.getObject();
             bbcProgramme.setDescription(object.stringValue());
         }
-    }
-
-    private String getGenre(String genreURL) {
-        throw new UnsupportedOperationException("NIY");
     }
 
     public void handleComment(String s) throws RDFHandlerException {

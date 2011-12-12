@@ -1,4 +1,4 @@
-package tv.notube.commons.model.activity;
+package tv.notube.commons.model.activity.bbc;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public class BBCProgramme extends tv.notube.commons.model.activity.Object {
 
     private URL picture;
 
-    private List<String> genres = new ArrayList<String>();
+    private List<BBCGenre> genres = new ArrayList<BBCGenre>();
 
     private List<String> actors = new ArrayList<String>();
 
@@ -23,23 +23,23 @@ public class BBCProgramme extends tv.notube.commons.model.activity.Object {
         return picture;
     }
 
-    public void addGenre(String genre) {
+    public void addGenre(BBCGenre genre) {
         genres.add(genre);
     }
 
     public void addActor(String actor) {
-        genres.add(actor);
+        actors.add(actor);
     }
 
     public void setPicture(URL picture) {
         this.picture = picture;
     }
 
-    public List<String> getGenres() {
+    public List<BBCGenre> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<String> genres) {
+    public void setGenres(List<BBCGenre> genres) {
         this.genres = genres;
     }
 

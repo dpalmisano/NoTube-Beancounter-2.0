@@ -75,7 +75,6 @@ public class SpiderTest {
         user.setForcedProfiling(false);
         user.setReference(new URI("http://notube.tv/user/test"));
         user.setProfiledAt(new DateTime());
-
         Service lastfm = new Service();
         lastfm.setName("lastfm");
         user.addService(lastfm.getName(), new SimpleAuth("af65659c785315b90b54eea682e66433", "davidepalmisano"));

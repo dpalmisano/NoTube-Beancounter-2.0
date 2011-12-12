@@ -34,7 +34,62 @@
         <strong>DISCLAIMER: responses are going to change frequently. Be aware and ofter refer to this page</strong>
         </p>
 
-        <h3>1) Register a new user</h3>
+        <h3>Authentication API</h3>
+        <p>
+        The Beancounter is a centralized hub where data about users
+        activities and some processing on them - such as profiling or
+        analytics - are performed. The Beancounter is intended to be used by
+        third-party applications on top of its APIs. This means that all the applications
+        will share the same user base and the same analytics or profiling
+        results among them.
+        <p>
+        Every application using the Beancounter API needs to be registered in advance
+        and sign every HTTP call with the URL Query parameter.
+        <p>
+
+        <h3>1) Register a new application</h3>
+        Path: /application/register <br>
+        Method: POST         <br>
+        Parameters:            <br>
+            - name, the application uniquely identifying name.        <br>
+            - description, a human readable short text describing what you do
+             with the Beancounter<br>
+            - email, contact email - must be a human behind it :) <br>
+            - oauthCallback, the URL if I need to redirect you when the
+            OAuth process completes.<br>
+        Description: it registers a new application to the Beancounter<br>
+        Example: with curl<br> <br>
+
+        curl -d "name=test-app&description=testing&email=dpalmisano@gmail.com&oauthCallback=http://google.com" http://moth.notube.tv:9090/notube-platform/rest/application/register <br>
+
+        response:
+
+        <pre><code>
+        {
+            "status": "OK",
+            "message": "Application 'test-app' successfully registered",
+            "object": "288301728d2b446c890b5094317e775a"
+        }
+        </code></pre>
+
+        the returned object <b>value is your apikey</b>. Beware: write it down and
+        keep it - if you misplace it, <a href="mailto:dpalmisano@gmail.com">contact me</a>.
+        </br>.
+
+        <h3>2) Deregister an application</h3>
+        Path: /application/{application-name} <br>
+        Method: DELETE         <br>
+        Parameters:            <br>
+            - {application-name}, the application uniquely identifying name. <br>
+        Description: it removes the application from the Beancounter and all
+        its privilegies.<br>
+        Example: with curl<br> <br>
+
+        curl -X DELETE http://moth.notube.tv:9090/notube-platform/rest/application/test-app
+
+        <h3>User API</h3>
+
+        <h3>3) Register a new user</h3>
 
         Path: /user/register <br>
         Method: POST         <br>
@@ -43,10 +98,11 @@
             - password         <br>
             - name               <br>
             - surname          <br>
+            - apikey <br>
         Description: it registers a new user to the Beancounter with username, password, name and surname.<br>
         Example: with curl<br> <br>
 
-        curl -d "name=Davide&surname=Palmisano&username=dpalmisano&password=abracadabra" http://moth.notube.tv:9090/notube-platform/rest/user/register   <br>
+        curl -d "name=Davide&surname=Palmisano&username=dpalmisano&password=abracadabra" http://moth.notube.tv:9090/notube-platform/rest/user/register?apikey=your-app-key<br>
         with parameter body (application/x-www-form-urlencoded). <br>
 
         response:
@@ -69,15 +125,17 @@
         }
         </code></pre>
 
-        <h3>2) Get user data</h3>
+        <h3>3) Get user data</h3>
 
         Path: /user/{username}<br>
         Method: GET<br>
-        Parameters: {username} the Beancounter username<br>
+        Parameters: <br>
+        - {username} the Beancounter username<br>
+        - apikey <br>
         Description: it returns the user data but not the profile.<br>
         Example:<br><br>
 
-        GET http://moth.notube.tv:9090/notube-platform/rest/user/dpalmisano<br><br>
+        GET http://moth.notube.tv:9090/notube-platform/rest/user/dpalmisano?apikey=your-app-key<br><br>
 
         response:
         <pre><code>
@@ -97,50 +155,57 @@
         }
         </code></pre>
 
-        <h3>3) Get user activities</h3>
+        <h3>4) Get user activities</h3>
 
         Path: /user/activities{username}<br>
         Method: GET<br>
-        Parameters: {username} the Beancounter username<br>
+        Parameters: <br>
+        - {username} the Beancounter username<br>
+        - apikey <br>
         Description: it returns all the user activites on the sources he's
         subscribed to.<br>
         Example:<br><br>
 
-        GET http://moth.notube.tv:9090/notube-platform/rest/user/activities/dpalmisano
+        GET http://moth.notube.tv:9090/notube-platform/rest/user/activities/dpalmisano?apikey=your-api-key<br>
 
-        <h3>4) Delete a user</h3>
+        <h3>5) Delete a user</h3>
 
         Path: /user/{username}<br>
         Method: DELETE<br>
-        Parameters: {username} the Beancounter username<br>
+        Parameters: <br>
+        - {username} the Beancounter username<br>
+        - apikey <>br
         Description: it deletes all the user data and activities.<br>
         Example: with curl<br><br>
 
-        curl -X DELETE http://moth.notube.tv:9090/notube-platform/rest/user/merlin
+        curl -X DELETE http://moth.notube.tv:9090/notube-platform/rest/user/merlin?apikey=your-api-key
 
-        <h3>5) Authenticate a user</h3>
+        <h3>6) Authenticate a user</h3>
 
         Path: /user/authenticate/{username}<br>
         Method: POST<br>
         Parameters:<br>
         - {username} the Beancounter username<br>
-        - {password} the user password
+        - {password} the user password <br>
+        - apikey <br>
         Description: it authenticates or not a user.<br>
         Example: with curl<br><br>
 
-        curl -d "password=abracadabra" http://moth.notube.tv:9090/notube-platform/rest/user/authenticate/dpalmisano
+        curl -d "password=abracadabra" http://moth.notube.tv:9090/notube-platform/rest/user/authenticate/dpalmisano?apikey=your-api-key
 
-        <h3>6) Get a user profile</h3>
+        <h3>7) Get a user profile</h3>
 
         Path: /user/profile/{username}<br>
         Method: GET<br>
-        Parameters: {username} the Beancounter username<br>
+        Parameters:                               <br>
+        - {username} the Beancounter username<br>
+        - apikey <br>
         Description: it returns a weighted interests profile in JSON.<br>
         Example: with curl<br><br>
 
-        curl http://moth.notube.tv:9090/notube-platform/rest/user/profile/dpalmisano
+        curl http://moth.notube.tv:9090/notube-platform/rest/user/profile/dpalmisano?apikey=your-app-key
 
-        <h3>7) Add a source (lastfm, gomiso.com, twitter, facebook,
+        <h3>8) Add a source (lastfm, gomiso.com, twitter, facebook,
         n-screen) to a user</h3>
 
         NoTube 2.0 Beancounter APIs support only those services which are
@@ -151,7 +216,10 @@
         1) Send your Beancounter user with {username} to this url:<br>
         http://moth.notube.tv:9090/notube-platform/rest/user/oauth/token/twitter/{username}<br>
         2) Then, the user will be redirected to his Twitter account home
-        page to authorize the Beancounter application.
+        page to authorize the Beancounter application.<br>
+
+        <b>BBC iPlayer tweets</b>: Tweets from the BBC iPlayer are now represented
+        as <i>WATCHED</i> actions in the activity stream.
 
         <h4> Facebook </h4>
         1) Send your Beancounter user with {username} to this url:<br>
@@ -177,20 +245,21 @@
 
         to see 'lastfm' or 'twitter' as a service added on the user services list.
 
-        <h3>8) Remove a source (lastfm, gomiso.com, twitter, facebook,
+        <h3>9) Remove a source (lastfm, gomiso.com, twitter, facebook,
         n-screen) to a user</h3>
 
         Path: /user/source/{username}/{service}<br>
         Method: DELETE<br>
-        Parameters:
+        Parameters: <br>
         - {username} the Beancounter username<br>
-        - {service} the service you want to remove from the user
+        - {service} the service you want to remove from the user <br>
+        - apikey <br>
         Description: it deletes a service from a user. That service will be
         not used anymore until you don't add it again.
         <br>
         Example: with curl<br><br>
 
-        curl -X DELETE http://moth.notube.tv:9090/notube-platform/rest/user/source/merlin/lastfm
+        curl -X DELETE http://moth.notube.tv:9090/notube-platform/rest/user/source/merlin/lastfm?apikey=your-app-key
 
         <h3>Analytics APIs</h3>
 

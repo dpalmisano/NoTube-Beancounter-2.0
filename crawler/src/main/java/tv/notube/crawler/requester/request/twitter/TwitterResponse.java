@@ -1,11 +1,12 @@
 package tv.notube.crawler.requester.request.twitter;
 
 import tv.notube.commons.model.activity.*;
+import tv.notube.commons.model.activity.bbc.BBCGenre;
+import tv.notube.commons.model.activity.bbc.BBCProgramme;
 import tv.notube.crawler.requester.ServiceResponse;
 import tv.notube.crawler.requester.ServiceResponseException;
 import tv.notube.crawler.requester.request.twitter.bbc.BBC;
 import tv.notube.crawler.requester.request.twitter.bbc.BBCException;
-import tv.notube.commons.model.activity.BBCProgramme;
 
 import java.lang.Object;
 import java.net.MalformedURLException;
@@ -81,8 +82,8 @@ public class TwitterResponse  implements ServiceResponse<List<Activity>> {
                                 bbcProgramme.getName(),
                                 fields
                         );
-                        for (String genre : bbcProgramme.getGenres()) {
-                            ab.objectSetField("addGenre", genre, String.class);
+                        for (BBCGenre genre : bbcProgramme.getGenres()) {
+                            ab.objectSetField("addGenre", genre, BBCGenre.class);
                         }
                         for (String genre : bbcProgramme.getActors()) {
                             ab.objectSetField("addActor", genre, String.class);

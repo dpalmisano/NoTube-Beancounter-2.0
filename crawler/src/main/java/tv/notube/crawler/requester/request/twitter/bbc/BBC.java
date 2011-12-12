@@ -9,7 +9,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.rdfxml.RDFXMLParser;
-import tv.notube.commons.model.activity.BBCProgramme;
+import tv.notube.commons.model.activity.bbc.BBCProgramme;
 
 import java.io.IOException;
 import java.io.InputStream;
