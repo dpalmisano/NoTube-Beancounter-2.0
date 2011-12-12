@@ -69,12 +69,15 @@ public class DefaultActivityBuilder implements ActivityBuilder {
         for(String methodName : fields.keySet()) {
             Method method;
             try {
-                method = clazz.getDeclaredMethod(
+                method = clazz.getMethod(
                         methodName,
                         fields.get(methodName).getClass()
                 );
             } catch (NoSuchMethodException e) {
-                throw new ActivityBuilderException("", e);
+                throw new ActivityBuilderException(
+                        "Method '" + methodName + "' not found",
+                        e
+                );
             }
             try {
                 method.invoke(obj, fields.get(methodName));

@@ -3,8 +3,6 @@ package tv.notube.extension.profilingline;
 import tv.notube.commons.alchemyapi.*;
 import tv.notube.commons.model.activity.Activity;
 import tv.notube.commons.model.activity.Tweet;
-import tv.notube.extension.profilingline.lupedia.DefaultLupediaImpl;
-import tv.notube.extension.profilingline.lupedia.Lupedia;
 import tv.notube.extension.profilingline.tagdef.TagDef;
 import tv.notube.extension.profilingline.tagdef.TagDefException;
 import tv.notube.profiler.line.ProfilingLineItem;
@@ -26,13 +24,10 @@ public class TwitterLinkerProfilingLineItem extends ProfilingLineItem {
 
     private static String TWITTER = "http://twitter.com";
 
-    private Lupedia lupedia;
-
     private AlchemyAPI alchemyAPI;
 
     public TwitterLinkerProfilingLineItem(String name, String description) {
         super(name, description);
-        lupedia = new DefaultLupediaImpl();
         alchemyAPI = new AlchemyAPI(API_KEY);
     }
 
@@ -66,6 +61,7 @@ public class TwitterLinkerProfilingLineItem extends ProfilingLineItem {
                     for(String hashTag : tweet.getHashTags()) {
                         resources.addAll(getResourcesFromHashTag(hashTag));
                     }
+
                     intermediate.addLinkedActivity(activity, resources);
                     activitiesToBeRemoved.add(activity);
                 }
@@ -79,13 +75,16 @@ public class TwitterLinkerProfilingLineItem extends ProfilingLineItem {
         super.getNextProfilingLineItem().execute(intermediate);
     }
 
-    private List<URI> getResourcesFromHashTag(String hashTag) throws ProfilingLineItemException {
+   private List<URI> getResourcesFromHashTag(String hashTag) throws ProfilingLineItemException {
         TagDef tagDef = new TagDef();
         List<String> defs;
         try {
             defs = tagDef.getDefinitions(hashTag);
         } catch (TagDefException e) {
-            throw new ProfilingLineItemException("", e);
+            throw new ProfilingLineItemException(
+                    "Error while accessing to TagDef for '" + hashTag + "'",
+                    e
+            );
         }
         List<URI> resources = new ArrayList<URI>();
         for (String def : defs) {

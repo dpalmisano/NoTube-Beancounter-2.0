@@ -9,6 +9,7 @@ import com.google.gson.annotations.Expose;
  */
 public class OAuthAuth extends Auth {
 
+    @Expose
     private String secret;
 
     public OAuthAuth(String session, String secret) {

@@ -1,9 +1,14 @@
 package tv.notube.platform;
 
 import com.sun.jersey.api.core.InjectParam;
+import tv.notube.applications.Application;
+import tv.notube.applications.ApplicationsManager;
+import tv.notube.applications.ApplicationsManagerException;
+import tv.notube.applications.Permission;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.UserProfile;
 import tv.notube.commons.model.activity.Activity;
+import tv.notube.platform.utils.ParametersUtil;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreException;
 import tv.notube.usermanager.UserManager;
@@ -32,30 +37,25 @@ public class UserService {
             @FormParam("name") String name,
             @FormParam("surname") String surname,
             @FormParam("username") String username,
-            @FormParam("password") String password
+            @FormParam("password") String password,
+            @QueryParam("apikey") String apiKey
     ) {
-        if (username == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'username' cannot be null"
+        ParametersUtil.check(name, surname, username, password, apiKey);
+
+        ApplicationsManager am = instanceManager.getApplicationManager();
+        boolean isAuth;
+        try {
+            isAuth = am.isAuthorized(apiKey);
+        } catch (ApplicationsManagerException e) {
+            throw new RuntimeException(
+                    "Error while authorizing your application",
+                    e
             );
         }
-        if (username == null || username.equals("")) {
+        if(!isAuth) {
             return new Response(
                     Response.Status.NOK,
-                    "parameter 'username' cannot be null"
-            );
-        }
-        if (username == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'username' cannot be null"
-            );
-        }
-        if (username == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'username' cannot be null"
+                    "Your application is not authorized.Sorry."
             );
         }
         UserManager um = instanceManager.getUserManager();
@@ -68,6 +68,7 @@ public class UserService {
             final String errMsg = "Error while calling the UserManager";
             throw new RuntimeException(errMsg, e);
         }
+
         User user = new User();
         user.setName(name);
         user.setSurname(surname);
@@ -79,6 +80,38 @@ public class UserService {
             final String errMsg = "Error while storing user '" + user + "'.";
             throw new RuntimeException(errMsg);
         }
+
+        Application application;
+        try {
+            application = am.getApplicationByApiKey(apiKey);
+        } catch (ApplicationsManagerException e) {
+            throw new RuntimeException(
+                    "Error while getting application with key '" + apiKey + "'" ,
+                    e
+            );
+        }
+        if(application == null) {
+            throw new RuntimeException("Application not found");
+        }
+
+        try {
+            am.grantPermission(
+                    application.getName(),
+                    user.getId(),
+                    Permission.Action.DELETE
+            );
+            am.grantPermission(
+                    application.getName(),
+                    user.getId(),
+                    Permission.Action.UPDATE
+            );
+        } catch (ApplicationsManagerException e) {
+            throw new RuntimeException(
+                    "Error while granting permissions on user " + user.getId(),
+                    e
+            );
+        }
+
         return new Response(
                 Response.Status.OK,
                 "user successfully registered",
@@ -88,14 +121,31 @@ public class UserService {
 
     @GET
     @Path("/{username}")
-    public Response getUser(@PathParam("username") String username) {
-        if (username == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'username' cannot be null"
+    public Response getUser(
+            @PathParam("username") String username,
+            @QueryParam("apikey") String apiKey
+    ) {
+        ParametersUtil.check(username, apiKey);
+        UserManager um = instanceManager.getUserManager();
+        ApplicationsManager am = instanceManager.getApplicationManager();
+
+        boolean isAuth;
+        try {
+            isAuth = am.isAuthorized(apiKey);
+        } catch (ApplicationsManagerException e) {
+            throw new RuntimeException(
+                    "Error while authenticating you application",
+                    e
             );
         }
-        UserManager um = instanceManager.getUserManager();
+
+        if(!isAuth) {
+            return new Response(
+                    Response.Status.NOK,
+                    "Sorry. You're not allowed to do that."
+            );
+        }
+
         User user;
         try {
             user = um.getUser(username);
@@ -120,15 +170,32 @@ public class UserService {
     @GET
     @Path("activities/{username}")
     public Response getActivities(
-            @PathParam("username") String username
+            @PathParam("username") String username,
+            @QueryParam("apikey") String apiKey
     ) {
-        if (username == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'username' cannot be null"
+        ParametersUtil.check(username, apiKey);
+
+        UserManager um = instanceManager.getUserManager();
+
+        ApplicationsManager am = instanceManager.getApplicationManager();
+
+        boolean isAuth;
+        try {
+            isAuth = am.isAuthorized(apiKey);
+        } catch (ApplicationsManagerException e) {
+            throw new RuntimeException(
+                    "Error while authenticating you application",
+                    e
             );
         }
-        UserManager um = instanceManager.getUserManager();
+
+        if(!isAuth) {
+            return new Response(
+                    Response.Status.NOK,
+                    "Sorry. You're not allowed to do that."
+            );
+        }
+
         User user;
         try {
             user = um.getUser(username);
@@ -158,16 +225,15 @@ public class UserService {
     @DELETE
     @Path("/{username}")
     public Response deleteUser(
-            @PathParam("username") String username
+            @PathParam("username") String username,
+            @QueryParam("apikey") String apiKey
     ) {
-        if (username == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'username' cannot be null"
-            );
-        }
+        ParametersUtil.check(username, apiKey);
+
         UserManager um = instanceManager.getUserManager();
         ProfileStore ps = instanceManager.getProfileStore();
+        ApplicationsManager am = instanceManager.getApplicationManager();
+
         User user;
         try {
             user = um.getUser(username);
@@ -180,6 +246,27 @@ public class UserService {
                     "user with username '" + username + "' not found"
             );
         }
+
+        boolean isAuth;
+        try {
+            isAuth = am.isAuthorized(
+                    apiKey,
+                    user.getId(),
+                    Permission.Action.DELETE
+            );
+        } catch (ApplicationsManagerException e) {
+            throw new RuntimeException(
+                    "Error while authorizing your application",
+                    e
+            );
+        }
+        if(!isAuth) {
+            return new Response(
+                    Response.Status.NOK,
+                    "Sorry, you're not allowed to do that"
+            );
+        }
+
         try {
             um.deleteUser(user.getId());
         } catch (UserManagerException e) {
@@ -202,15 +289,31 @@ public class UserService {
     @Path("/authenticate/{username}")
     public Response authenticate(
             @PathParam("username") String username,
-            @FormParam("password") String password
+            @FormParam("password") String password,
+            @QueryParam("apikey") String apiKey
     ) {
-        if (username == null || username.equals("")) {
-            throw new RuntimeException("username parameter cannot be null");
-        }
-        if (password == null || username.equals("")) {
-            throw new RuntimeException("password parameter cannot be null");
-        }
+        ParametersUtil.check(username, password, apiKey);
         UserManager um = instanceManager.getUserManager();
+
+        ApplicationsManager am = instanceManager.getApplicationManager();
+
+        boolean isAuth;
+        try {
+            isAuth = am.isAuthorized(apiKey);
+        } catch (ApplicationsManagerException e) {
+            throw new RuntimeException(
+                    "Error while authenticating your application",
+                    e
+            );
+        }
+
+        if(!isAuth) {
+            return new Response(
+                    Response.Status.NOK,
+                    "Sorry. You're not allowed to do that."
+            );
+        }
+
         User user;
         try {
             user = um.getUser(username);
@@ -241,12 +344,6 @@ public class UserService {
             @PathParam("service") String service,
             @PathParam("username") String username
     ) {
-        if (service == null || username.equals("")) {
-            throw new RuntimeException("Service parameter cannot be null");
-        }
-        if (username == null || username.equals("")) {
-            throw new RuntimeException("Username parameter cannot be null");
-        }
         UserManager um = instanceManager.getUserManager();
         User userObj;
         try {
@@ -278,6 +375,8 @@ public class UserService {
             @PathParam("username") String username,
             @QueryParam("code") String verifier
     ) {
+        // Facebook OAuth exchange quite different from Twitter's one.
+        ParametersUtil.check(username, verifier);
         return handleAuthCallback("facebook", username, null, verifier);
     }
 
@@ -289,18 +388,6 @@ public class UserService {
             @QueryParam("oauth_token") String token,
             @QueryParam("oauth_verifier") String verifier
     ) {
-        if (service == null || service.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'service' cannot be null"
-            );
-        }
-        if (username == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'username' cannot be null"
-            );
-        }
         UserManager um = instanceManager.getUserManager();
         User userObj;
         try {
@@ -327,24 +414,6 @@ public class UserService {
             @PathParam("username") String username,
             @QueryParam("token") String token
     ) {
-        if (service == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'service' cannot be null"
-            );
-        }
-        if (username == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'username' cannot be null"
-            );
-        }
-        if (token == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'token' cannot be null"
-            );
-        }
         UserManager um = instanceManager.getUserManager();
         User userObj;
         try {
@@ -368,20 +437,11 @@ public class UserService {
     @Path("/source/{username}/{service}")
     public Response removeSource(
             @PathParam("username") String username,
-            @PathParam("service") String service
+            @PathParam("service") String service,
+            @QueryParam("apikey") String apiKey
     ) {
-        if (service == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'service' cannot be null"
-            );
-        }
-        if (username == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'username' cannot be null"
-            );
-        }
+        ParametersUtil.check(username, service, apiKey);
+
         UserManager um = instanceManager.getUserManager();
         User userObj;
         try {
@@ -389,6 +449,29 @@ public class UserService {
         } catch (UserManagerException e) {
             throw new RuntimeException("Error while retrieving user '" + username + "'", e);
         }
+
+        ApplicationsManager am = instanceManager.getApplicationManager();
+
+        boolean isAuth;
+        try {
+            isAuth = am.isAuthorized(
+                    apiKey,
+                    userObj.getId(),
+                    Permission.Action.UPDATE
+            );
+        } catch (ApplicationsManagerException e) {
+            throw new RuntimeException(
+                    "Error while asking for permissions",
+                    e
+            );
+        }
+        if(!isAuth) {
+            return new Response(
+                    Response.Status.NOK,
+                    "You're not allow to do that. Sorry."
+            );
+        }
+
         try {
             um.deregisterService(service, userObj);
         } catch (UserManagerException e) {
@@ -402,13 +485,31 @@ public class UserService {
 
     @GET
     @Path("/profile/{username}")
-    public Response getProfile(@PathParam("username") String username) {
-        if (username == null || username.equals("")) {
-            return new Response(
-                    Response.Status.NOK,
-                    "parameter 'username' cannot be null"
+    public Response getProfile(
+            @PathParam("username") String username,
+            @QueryParam("apikey") String apiKey
+    ) {
+        ParametersUtil.check(username, apiKey);
+
+        ApplicationsManager am = instanceManager.getApplicationManager();
+
+        boolean isAuth;
+        try {
+            isAuth = am.isAuthorized(apiKey);
+        } catch (ApplicationsManagerException e) {
+            throw new RuntimeException(
+                    "Error while authenticating you application",
+                    e
             );
         }
+
+        if(!isAuth) {
+            return new Response(
+                    Response.Status.NOK,
+                    "Sorry. You're not allowed to do that."
+            );
+        }
+
         ProfileStore ps = instanceManager.getProfileStore();
         UserProfile up;
         try {

@@ -83,13 +83,13 @@ public class SpiderTest {
         Service twitter = new Service();
         twitter.setName("twitter");
         user.addService(twitter.getName(), new OAuthAuth(
-                "14656799-3tA0w5Ikz9oLFjDKy9La99IDYdPRE2koaxIl2nhnB",
-                "9MAFzWyTdH6jFO4k9yRVGVp7S9kUfVhvnkVPNM8CE")
+                "14656799-yAIIzOoFT8ILah3AaDLX4eG3DEPUNhP9d8tqafys",
+                "em5rrY6IzNwmauUlecsf7zbdaUXZaDdLj4jNRq6TI50")
         );
         Service facebook = new Service();
         facebook.setName("facebook");
         user.addService(facebook.getName(), new OAuthAuth(
-                "AAAEdCZCT7jlwBAMk9hKOnLIhEpwZB2PsiBU6zR70Eil9GKf4VvwyBFMXOoJH1ZBNDusg0BgH1MdZA5zuP71WqX0IMdRUQNua003goRFdZB2qAnTtUUmY8",
+                "AAAEdCZCT7jlwBACmL69H9HgqDJlZC3tJTBzSxTCnaVKAE1uTwextb0lgSfZAY8ybgWPjMnSFo37QhjU7SOImT0bRxTpiokZD",
                 null)
         );
         um.storeUser(user);

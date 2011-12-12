@@ -24,7 +24,8 @@
 <p>
         <pre><code>
         {
-            "status": OK | NOK ,"message": <i>a success of error message</i>,
+            "status": OK | NOK ,
+            "message": <i>a success of error message</i>,
             "object": <i>an optional object that may be returned</i>
         }
         </code></pre>
@@ -43,11 +44,10 @@
             - name               <br>
             - surname          <br>
         Description: it registers a new user to the Beancounter with username, password, name and surname.<br>
-        Example:                      <br> <br>
+        Example: with curl<br> <br>
 
-        POST http://moth.notube.tv:9090/notube-platform/rest/user/register   <br>
-        with parameter body (application/x-www-form-urlencoded):                        <br>
-        name=Davide&surname=Palmisano&username=dpalmisano&password=abracadabra<br>      <br>
+        curl -d "name=Davide&surname=Palmisano&username=dpalmisano&password=abracadabra" http://moth.notube.tv:9090/notube-platform/rest/user/register   <br>
+        with parameter body (application/x-www-form-urlencoded). <br>
 
         response:
         <pre><code>
@@ -57,8 +57,10 @@
             "object":"5fe903d3-c6ef-49ba-a9af-44d91f028138"
         }
         </code></pre>
-                                                                                                                                                <br> <br>
-        if the username is already taken, the service replies:                                                                     <br>  <br>
+
+        The value in the 'object' fields is the unique user identifier in the
+        Beancounte plaform. Could be considered equivalent to the user name. <br>
+        If the username is already taken, the service replies: <br>
 
         <pre><code>
         {
@@ -146,10 +148,15 @@
         and Last.fm (OAuth-like) examples follow:<br>
 
         <h4> Twitter </h4>
-        1) Send your Beancounte user with {username} to this url:<br>
-        http://moth.notube.tv:9090/notube-platform/rest/user/oauth/token
-        /twitter/{username}<br>
+        1) Send your Beancounter user with {username} to this url:<br>
+        http://moth.notube.tv:9090/notube-platform/rest/user/oauth/token/twitter/{username}<br>
         2) Then, the user will be redirected to his Twitter account home
+        page to authorize the Beancounter application.
+
+        <h4> Facebook </h4>
+        1) Send your Beancounter user with {username} to this url:<br>
+        http://moth.notube.tv:9090/notube-platform/rest/user/oauth/token/facebook/dpalmisano<br>
+        2) Then, the user will be redirected to his Facebook account home
         page to authorize the Beancounter application.
 
         <h4> Last.fm </h4>
@@ -279,8 +286,6 @@
     }
 </code>
 </pre>
-
         which means that on that day, the user performed that number of activities, grouped by services and verb.
-
     </body>
 </html>

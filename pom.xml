@@ -55,7 +55,8 @@
         <module>user-manager</module>
         <module>profile-manager</module>
         <module>extensions</module>
-    <module>analytics</module>
+        <module>analytics</module>
+        <module>applications</module>
   </modules>
 
     <distributionManagement>

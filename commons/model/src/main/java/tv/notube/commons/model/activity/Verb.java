@@ -6,7 +6,6 @@ import java.io.Serializable;
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
 public enum Verb implements Serializable {
-
     LOCATED,
     SAVE,
     FOLLOWING,
@@ -19,5 +18,6 @@ public enum Verb implements Serializable {
     LIKE,
     LISTEN,
     TWEET,
+    WATCHED,
     CHECKIN
 }

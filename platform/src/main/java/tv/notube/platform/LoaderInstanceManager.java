@@ -3,6 +3,8 @@ package tv.notube.platform;
 import org.apache.log4j.Logger;
 import tv.notube.analytics.Analyzer;
 import tv.notube.analytics.DefaultAnalyzerImpl;
+import tv.notube.applications.ApplicationsManager;
+import tv.notube.applications.DefaultApplicationsManagerImpl;
 import tv.notube.commons.storage.alog.DefaultActivityLogImpl;
 import tv.notube.commons.storage.kvs.KVStore;
 import tv.notube.commons.storage.kvs.mybatis.MyBatisKVStore;
@@ -36,6 +38,8 @@ public class LoaderInstanceManager {
     private Analyzer analyzer;
 
     private Random recommender;
+
+    private ApplicationsManager applicationsManager;
 
     public static LoaderInstanceManager getInstance() {
         if (instance == null)
@@ -79,6 +83,8 @@ public class LoaderInstanceManager {
         analyzer = new DefaultAnalyzerImpl(kVStore, alog);
 
         recommender = new Random(125811727);
+
+        applicationsManager = new DefaultApplicationsManagerImpl(kVStore);
     }
 
     public UserManager getUserManager() {
@@ -95,5 +101,9 @@ public class LoaderInstanceManager {
 
     public Random getRecommender() {
         return recommender;
+    }
+
+    public ApplicationsManager getApplicationsManager() {
+        return applicationsManager;
     }
 }

@@ -51,7 +51,7 @@ public class FacebookRequest extends DefaultRequest {
                 .provider(FacebookApi.class)
                 .apiKey(service.getApikey())
                 .apiSecret(service.getSecret())
-                .scope("user_likes")
+                .scope("offline_access,user_likes")
                 .callback(CALLBACK)
                 .build();
 
