@@ -78,6 +78,7 @@ public class ResponseWriter implements MessageBodyWriter<Response> {
         methods.add("POST");
         methods.add("DELETE");
         methods.add("PUT");
+        methods.add("OPTIONS");
         header.add("Access-Control-Allow-Methods", methods);
 
         List<String> origin = new ArrayList<String>();
