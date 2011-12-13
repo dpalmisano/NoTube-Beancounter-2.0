@@ -1,5 +1,7 @@
 package tv.notube.commons.model.activity.bbc;
 
+import com.google.gson.annotations.Expose;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +13,16 @@ import java.util.List;
  */
 public class BBCProgramme extends tv.notube.commons.model.activity.Object {
 
+    @Expose
     private URL picture;
 
+    @Expose
     private List<BBCGenre> genres = new ArrayList<BBCGenre>();
 
+    @Expose
     private List<String> actors = new ArrayList<String>();
 
+    @Expose
     private String mediumSynopsis;
 
     public URL getPicture() {
