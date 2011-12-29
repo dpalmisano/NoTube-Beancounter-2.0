@@ -17,8 +17,12 @@ import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -26,10 +30,19 @@ import java.util.List;
  */
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
-public class UserService {
+public class UserService extends Service {
 
     @InjectParam
     private InstanceManager instanceManager;
+
+    @OPTIONS
+    @Path("/register")
+    public Response corsSignUp(
+            @HeaderParam("Access-Control-Request-Headers") String requestH
+    ) {
+        _corsHeaders = requestH;
+        return makeCORS(Response.ok(), requestH);
+    }
 
     @POST
     @Path("/register")
@@ -52,11 +65,13 @@ public class UserService {
                     e
             );
         }
-        if(!isAuth) {
-            return new Response(
-                    Response.Status.NOK,
-                    "Your application is not authorized.Sorry."
+        if (!isAuth) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Your application is not authorized.Sorry.")
             );
+            return makeCORS(rb);
         }
         UserManager um = instanceManager.getUserManager();
         try {
@@ -86,11 +101,11 @@ public class UserService {
             application = am.getApplicationByApiKey(apiKey);
         } catch (ApplicationsManagerException e) {
             throw new RuntimeException(
-                    "Error while getting application with key '" + apiKey + "'" ,
+                    "Error while getting application with key '" + apiKey + "'",
                     e
             );
         }
-        if(application == null) {
+        if (application == null) {
             throw new RuntimeException("Application not found");
         }
 
@@ -111,12 +126,22 @@ public class UserService {
                     e
             );
         }
-
-        return new Response(
-                Response.Status.OK,
+        Response.ResponseBuilder rb = Response.ok();
+        rb.entity(new PlatformResponse(
+                PlatformResponse.Status.OK,
                 "user successfully registered",
-                user.getId()
+                user.getId())
         );
+        return makeCORS(rb);
+    }
+
+    @OPTIONS
+    @Path("/{username}")
+    public Response corsGetUser(
+            @HeaderParam("Access-Control-Request-Headers") String requestH
+    ) {
+        _corsHeaders = requestH;
+        return makeCORS(Response.ok(), requestH);
     }
 
     @GET
@@ -134,16 +159,17 @@ public class UserService {
             isAuth = am.isAuthorized(apiKey);
         } catch (ApplicationsManagerException e) {
             throw new RuntimeException(
-                    "Error while authenticating you application",
+                    "Error while authenticating your application",
                     e
             );
         }
-
-        if(!isAuth) {
-            return new Response(
-                    Response.Status.NOK,
-                    "Sorry. You're not allowed to do that."
+        if (!isAuth) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Sorry. You're not allowed to do that.")
             );
+            return makeCORS(rb);
         }
 
         User user;
@@ -154,17 +180,30 @@ public class UserService {
             throw new RuntimeException(errMsg);
         }
         if (user == null) {
-            return new Response(
-                    Response.Status.NOK,
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
                     "user '" + username + "' not found",
-                    null
+                    null)
             );
+            return makeCORS(rb);
         }
-        return new Response(
-                Response.Status.OK,
+        Response.ResponseBuilder rb = Response.ok();
+        rb.entity(new PlatformResponse(
+                PlatformResponse.Status.OK,
                 "user '" + username + "' found",
-                user
+                user)
         );
+        return makeCORS(rb);
+    }
+
+    @OPTIONS
+    @Path("activities/{username}")
+    public Response corsGetActivities(
+            @HeaderParam("Access-Control-Request-Headers") String requestH
+    ) {
+        _corsHeaders = requestH;
+        return makeCORS(Response.ok(), requestH);
     }
 
     @GET
@@ -174,9 +213,7 @@ public class UserService {
             @QueryParam("apikey") String apiKey
     ) {
         ParametersUtil.check(username, apiKey);
-
         UserManager um = instanceManager.getUserManager();
-
         ApplicationsManager am = instanceManager.getApplicationManager();
 
         boolean isAuth;
@@ -188,14 +225,14 @@ public class UserService {
                     e
             );
         }
-
-        if(!isAuth) {
-            return new Response(
-                    Response.Status.NOK,
-                    "Sorry. You're not allowed to do that."
+        if (!isAuth) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Sorry. You're not allowed to do that.")
             );
+            return makeCORS(rb);
         }
-
         User user;
         try {
             user = um.getUser(username);
@@ -203,10 +240,13 @@ public class UserService {
             throw new RuntimeException("Error while retrieving user '" + username + "'", e);
         }
         if (user == null) {
-            return new Response(
-                    Response.Status.NOK,
-                    "user with username '" + username + "' not found"
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(
+                    new PlatformResponse(
+                            PlatformResponse.Status.NOK,
+                            "user with username '" + username + "' not found")
             );
+            return makeCORS(rb);
         }
         List<Activity> activities;
         try {
@@ -215,11 +255,13 @@ public class UserService {
             throw new RuntimeException("Error while getting user '" + username
                     + "' activities", e);
         }
-        return new Response(
-                Response.Status.OK,
+        Response.ResponseBuilder rb = Response.ok();
+        rb.entity(new PlatformResponse(
+                PlatformResponse.Status.OK,
                 "user '" + username + "' activities found",
-                activities
+                activities)
         );
+        return makeCORS(rb);
     }
 
     @DELETE
@@ -241,10 +283,13 @@ public class UserService {
             throw new RuntimeException("Error while retrieving user '" + username + "'", e);
         }
         if (user == null) {
-            return new Response(
-                    Response.Status.NOK,
-                    "user with username '" + username + "' not found"
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(
+                    new PlatformResponse(
+                            PlatformResponse.Status.NOK,
+                            "user with username '" + username + "' not found")
             );
+            return makeCORS(rb);
         }
 
         boolean isAuth;
@@ -260,11 +305,13 @@ public class UserService {
                     e
             );
         }
-        if(!isAuth) {
-            return new Response(
-                    Response.Status.NOK,
-                    "Sorry, you're not allowed to do that"
+        if (!isAuth) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Sorry, you're not allowed to do that")
             );
+            return makeCORS(rb);
         }
 
         try {
@@ -279,14 +326,25 @@ public class UserService {
             throw new RuntimeException("Error while deleting user '" + username +
                     "'");
         }
-        return new Response(
-                Response.Status.OK,
-                "user with username '" + username + "' not found"
+        Response.ResponseBuilder rb = Response.serverError();
+        rb.entity(new PlatformResponse(
+                PlatformResponse.Status.OK,
+                "user with username '" + username + "' deleted")
         );
+        return makeCORS(rb);
+    }
+
+    @OPTIONS
+    @Path("authenticate/{username}")
+    public Response corsAuthenticate(
+            @HeaderParam("Access-Control-Request-Headers") String requestH
+    ) {
+        _corsHeaders = requestH;
+        return makeCORS(Response.ok(), requestH);
     }
 
     @POST
-    @Path("/authenticate/{username}")
+    @Path("authenticate/{username}")
     public Response authenticate(
             @PathParam("username") String username,
             @FormParam("password") String password,
@@ -306,12 +364,13 @@ public class UserService {
                     e
             );
         }
-
-        if(!isAuth) {
-            return new Response(
-                    Response.Status.NOK,
-                    "Sorry. You're not allowed to do that."
+        if (!isAuth) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Sorry, you're not allowed to do that")
             );
+            return makeCORS(rb);
         }
 
         User user;
@@ -321,28 +380,35 @@ public class UserService {
             throw new RuntimeException("Error while retrieving user '" + username + "'", e);
         }
         if (user == null) {
-            return new Response(
-                    Response.Status.NOK,
-                    "user with username '" + username + "' not found"
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "user with username '" + username + "' not found")
             );
+            return makeCORS(rb);
         }
         if (!user.getPassword().equals(password)) {
-            return new Response(
-                    Response.Status.NOK,
-                    "password for '" + username + "' incorrect"
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "password for '" + username + "' incorrect")
             );
+            return makeCORS(rb);
         }
-        return new Response(
-                Response.Status.OK,
-                "user '" + username + "' authenticated"
+        Response.ResponseBuilder rb = Response.ok();
+        rb.entity(new PlatformResponse(
+                PlatformResponse.Status.OK,
+                "user '" + username + "' authenticated")
         );
+        return makeCORS(rb);
     }
 
     @GET
     @Path("/oauth/token/{service}/{username}")
-    public javax.ws.rs.core.Response getOAuthToken(
+    public Response getOAuthToken(
             @PathParam("service") String service,
-            @PathParam("username") String username
+            @PathParam("username") String username,
+            @QueryParam("redirect") String finalRedirect
     ) {
         UserManager um = instanceManager.getUserManager();
         User userObj;
@@ -361,9 +427,28 @@ public class UserService {
                     e
             );
         }
+        URL finalRedirectUrl;
+        try {
+            finalRedirectUrl = new URL(finalRedirect);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(
+                    "Error while getting token for user '" + username + "' " +
+                            "on service '" + service + "'",
+                    e
+            );
+        }
+        try {
+            um.setUserFinalRedirect(userObj.getUsername(), finalRedirectUrl);
+        } catch (UserManagerException e) {
+            throw new RuntimeException(
+                    "Error while setting temporary final redirect URL " +
+                            "for user '" + username + "' " + "on service '" + service + "'",
+                    e
+            );
+        }
         URL redirect = oAuthToken.getRedirectPage();
         try {
-            return javax.ws.rs.core.Response.temporaryRedirect(redirect.toURI()).build();
+            return Response.temporaryRedirect(redirect.toURI()).build();
         } catch (URISyntaxException e) {
             throw new RuntimeException("Malformed redirect URL", e);
         }
@@ -382,7 +467,7 @@ public class UserService {
 
     @GET
     @Path("/oauth/callback/{service}/{username}/")
-    public Response handleAuthCallback(
+    public Response handleOAuthCallback(
             @PathParam("service") String service,
             @PathParam("username") String username,
             @QueryParam("oauth_token") String token,
@@ -401,17 +486,27 @@ public class UserService {
             throw new RuntimeException("Error while OAuth-like exchange for " +
                     "service: '" + service + "'", e);
         }
-        return new Response(
-                Response.Status.OK,
-                "service '" + service + " as been successfully added to user '" + username + "'"
-        );
+        URL finalRedirectUrl;
+        try {
+            finalRedirectUrl = um.consumeUserFinalRedirect(userObj.getUsername());
+        } catch (UserManagerException e) {
+            throw new RuntimeException("Error while getting final redirect " +
+                    "URL for user '" + username + "' for service '" + service + "'",
+                    e);
+        }
+        try {
+            return Response.temporaryRedirect(finalRedirectUrl.toURI()).build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Malformed redirect URL", e);
+        }
     }
 
     @GET
-    @Path("/callback/{service}/{username}/")
+    @Path("/auth/callback/{service}/{username}/{redirect}")
     public Response handleAuthCallback(
             @PathParam("service") String service,
             @PathParam("username") String username,
+            @PathParam("redirect") String redirect,
             @QueryParam("token") String token
     ) {
         UserManager um = instanceManager.getUserManager();
@@ -426,15 +521,42 @@ public class UserService {
         } catch (UserManagerException e) {
             throw new RuntimeException("Error while OAuth-like exchange for service: '" + service + "'");
         }
-        return new Response(
-                Response.Status.OK,
-                "service '" + service + " as been successfully added to user '" + username + "'",
-                null
-        );
+        URL finalRedirectUrl;
+        try {
+            finalRedirectUrl = new URL(
+                    "http://" + URLDecoder.decode(redirect, "UTF-8")
+            );
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(
+                    "Error while getting token for user '" + username + "' " +
+                            "on service '" + service + "'",
+                    e
+            );
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(
+                    "Error while getting token for user '" + username + "' " +
+                            "on service '" + service + "'",
+                    e
+            );
+        }
+        try {
+            return Response.temporaryRedirect(finalRedirectUrl.toURI()).build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Malformed redirect URL", e);
+        }
+    }
+
+    @OPTIONS
+    @Path("source/{username}/{service}")
+    public Response corsRemoveSource(
+            @HeaderParam("Access-Control-Request-Headers") String requestH
+    ) {
+        _corsHeaders = requestH;
+        return makeCORS(Response.ok(), requestH);
     }
 
     @DELETE
-    @Path("/source/{username}/{service}")
+    @Path("source/{username}/{service}")
     public Response removeSource(
             @PathParam("username") String username,
             @PathParam("service") String service,
@@ -451,7 +573,6 @@ public class UserService {
         }
 
         ApplicationsManager am = instanceManager.getApplicationManager();
-
         boolean isAuth;
         try {
             isAuth = am.isAuthorized(
@@ -465,11 +586,13 @@ public class UserService {
                     e
             );
         }
-        if(!isAuth) {
-            return new Response(
-                    Response.Status.NOK,
-                    "You're not allow to do that. Sorry."
+        if (!isAuth) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "You're not allow to do that. Sorry.")
             );
+            return makeCORS(rb);
         }
 
         try {
@@ -477,20 +600,30 @@ public class UserService {
         } catch (UserManagerException e) {
             throw new RuntimeException("Error while retrieving user '" + username + "'", e);
         }
-        return new Response(
-                Response.Status.OK,
-                "service '" + service + "' removed from user '" + username + "'"
+        Response.ResponseBuilder rb = Response.ok();
+        rb.entity(new PlatformResponse(
+                PlatformResponse.Status.OK,
+                "service '" + service + "' removed from user '" + username + "'")
         );
+        return makeCORS(rb);
+    }
+
+    @OPTIONS
+    @Path("profile/{username}")
+    public Response corsGetProfile(
+            @HeaderParam("Access-Control-Request-Headers") String requestH
+    ) {
+        _corsHeaders = requestH;
+        return makeCORS(Response.ok(), requestH);
     }
 
     @GET
-    @Path("/profile/{username}")
+    @Path("profile/{username}")
     public Response getProfile(
             @PathParam("username") String username,
             @QueryParam("apikey") String apiKey
     ) {
         ParametersUtil.check(username, apiKey);
-
         ApplicationsManager am = instanceManager.getApplicationManager();
 
         boolean isAuth;
@@ -502,14 +635,14 @@ public class UserService {
                     e
             );
         }
-
-        if(!isAuth) {
-            return new Response(
-                    Response.Status.NOK,
-                    "Sorry. You're not allowed to do that."
+        if (!isAuth) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Sorry. You're not allowed to do that.")
             );
+            return makeCORS(rb);
         }
-
         ProfileStore ps = instanceManager.getProfileStore();
         UserProfile up;
         try {
@@ -517,11 +650,14 @@ public class UserService {
         } catch (ProfileStoreException e) {
             throw new RuntimeException("Error while retrieving profile for user '" + username + "'", e);
         }
-        return new Response(
-                Response.Status.OK,
+        Response.ResponseBuilder rb = Response.ok();
+        rb.entity(new PlatformResponse(
+                PlatformResponse.Status.OK,
                 "profile for user '" + username + "' found",
                 up
+        )
         );
+        return makeCORS(rb);
     }
 
 }

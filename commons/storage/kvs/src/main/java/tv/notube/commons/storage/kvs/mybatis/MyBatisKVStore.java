@@ -30,6 +30,11 @@ public class MyBatisKVStore extends AbstractKVStore {
         dao = new KVStoreDao(properties);
     }
 
+    public List<String> search(String table, Query query, int limit, int offset)
+            throws KVStoreException {
+        return dao.selectByQuery(table, query, limit, offset);
+    }
+
     public List<String> search(String table, Query query) throws KVStoreException {
         return dao.selectByQuery(table, query);
     }
@@ -40,7 +45,7 @@ public class MyBatisKVStore extends AbstractKVStore {
 
     public Object getValue(String table, String key) throws KVStoreException {
         byte[] bytes = dao.getObject(table, key);
-        if(bytes == null) {
+        if (bytes == null) {
             return null;
         }
         try {
@@ -62,6 +67,7 @@ public class MyBatisKVStore extends AbstractKVStore {
             String table,
             String key,
             Object object,
+            boolean autoCommit,
             StringField... fields
     ) throws KVStoreException {
         Bytes bytes;
@@ -73,11 +79,32 @@ public class MyBatisKVStore extends AbstractKVStore {
             throw new KVStoreException(errMsg, e);
         }
         final byte[] serialization = bytes.getBytes();
-        dao.insertObject(table, key, serialization, fields);
+        if (autoCommit) {
+            dao.insertObject(table, key, serialization, fields);
+        } else {
+            dao.bulkInsertObject(table, key, serialization, fields);
+        }
+    }
+
+    public synchronized void setValue(
+            String table,
+            String key,
+            Object object,
+            StringField... fields
+    ) throws KVStoreException {
+        setValue(table, key, object, true, fields);
     }
 
     public synchronized void deleteValue(String table, String key) throws KVStoreException {
         dao.deleteByKey(table, key);
+    }
+
+    public void commit() throws KVStoreException {
+        try {
+        dao.commit();
+        } catch (Exception e) {
+            throw new KVStoreException("Error while committing", e);
+        }
     }
 
 }

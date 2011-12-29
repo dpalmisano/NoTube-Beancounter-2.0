@@ -35,6 +35,14 @@
         WHERE ${query}
     </select>
 
+    <select id="selectByQueryWithLimit" parameterType="map" resultType="java.lang.String">
+        SELECT data.kvskey
+        FROM data LEFT JOIN stringfield ON data.kvstable = stringfield.kvstable AND data.kvskey = stringfield.kvskey
+        WHERE ${query}
+        LIMIT #{limit}
+        OFFSET #{offset}
+    </select>
+
     <select id="selectByTable" parameterType="map" resultType="java.lang.String">
         SELECT data.kvskey
         FROM data

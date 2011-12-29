@@ -22,7 +22,7 @@ public class ApplicationService {
 
     @POST
     @Path("/register")
-    public Response register(
+    public PlatformResponse register(
             @FormParam("name") String name,
             @FormParam("description") String description,
             @FormParam("email") String email,
@@ -47,8 +47,8 @@ public class ApplicationService {
                     e
             );
         }
-        return new Response(
-                Response.Status.OK,
+        return new PlatformResponse(
+                PlatformResponse.Status.OK,
                 "Application '" + name + "' successfully registered",
                 apiKey
         );
@@ -56,7 +56,7 @@ public class ApplicationService {
 
     @DELETE
     @Path("/{name}")
-    public Response deregisterApplication(
+    public PlatformResponse deregisterApplication(
             @PathParam("name") String name
     ) {
         ApplicationsManager am = instanceManager.getApplicationManager();
@@ -68,8 +68,8 @@ public class ApplicationService {
                     e
             );
         }
-        return new Response(
-                Response.Status.OK,
+        return new PlatformResponse(
+                PlatformResponse.Status.OK,
                 "Application '" + name + "' successfully removed"
         );
     }

@@ -5,6 +5,7 @@ import tv.notube.commons.model.activity.Activity;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManager;
 import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
+import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 
@@ -154,4 +155,28 @@ public interface UserManager {
      * @param userObj
      */
     void deregisterService(String service, User userObj) throws UserManagerException;
+
+    /**
+     * a temporary in-memory store for the final url where a user will be
+     * redirected at the very end of all the authorization exchanges.
+     *
+     * @param username
+     * @param url
+     */
+    public void setUserFinalRedirect(
+            String username,
+            URL url
+    ) throws UserManagerException;
+
+    /**
+     * get the user temporary final url where the user will be redirected
+     * at the end of all the authorization exchange process. Once the url has
+     * been consumed he needs to be set again.
+     *
+     * @param username
+     * @return
+     * @throws UserManagerException
+     */
+    public URL consumeUserFinalRedirect(String username) throws UserManagerException;
+
 }

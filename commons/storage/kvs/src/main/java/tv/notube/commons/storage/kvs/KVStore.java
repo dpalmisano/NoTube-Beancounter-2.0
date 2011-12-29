@@ -11,6 +11,9 @@ import java.util.List;
  */
 public interface KVStore {
 
+    public List<String> search(String table, Query query, int limit, int offset)
+        throws KVStoreException;
+
     public List<String> search(String table, Query query)
         throws KVStoreException;
 
@@ -27,9 +30,19 @@ public interface KVStore {
             String table,
             String key,
             Object object,
+            boolean autoCommit,
+            StringField... fields
+    ) throws KVStoreException;
+
+    public void setValue(
+            String table,
+            String key,
+            Object object,
             StringField... fields
     ) throws KVStoreException;
 
     void deleteValue(String table, String key) throws KVStoreException;
+
+    public void commit() throws KVStoreException;
 
 }

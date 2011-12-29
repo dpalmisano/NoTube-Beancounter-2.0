@@ -51,4 +51,11 @@ public interface KVSMapper {
     public List<String> selectByTable(
             @Param("kvstable") String table
     );
+
+    public List<String> selectByQueryWithLimit(
+            @Param("kvstable") String table,
+            @Param("query") String query,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
 }

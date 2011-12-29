@@ -124,9 +124,7 @@ public class DefaultApplicationsManagerImpl implements ApplicationsManager {
             ApplicationsManagerException {
         Application application = getApplicationByApiKey(apiKey);
         if(application == null) {
-            throw new ApplicationsManagerException(
-                    "Application not found"
-            );
+            return false;
         }
         if(!application.getApiKey().equals(apiKey)) {
             return false;

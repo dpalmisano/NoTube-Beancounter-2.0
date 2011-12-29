@@ -214,7 +214,8 @@
 
         <h4> Twitter </h4>
         1) Send your Beancounter user with {username} to this url:<br>
-        http://moth.notube.tv:9090/notube-platform/rest/user/oauth/token/twitter/{username}<br>
+        http://moth.notube.tv:9090/notube-platform/rest/user/oauth/token/twitter/{username}?redirect={redirect} where:<br>
+        - {redirect} is the URL of the user final landing page destination. <br>
         2) Then, the user will be redirected to his Twitter account home
         page to authorize the Beancounter application.<br>
 
@@ -223,23 +224,25 @@
 
         <h4> Facebook </h4>
         1) Send your Beancounter user with {username} to this url:<br>
-        http://moth.notube.tv:9090/notube-platform/rest/user/oauth/token/facebook/dpalmisano<br>
+        http://moth.notube.tv:9090/notube-platform/rest/user/oauth/token/facebook/dpalmisano?redirect={redirect} where:<br>
+        - {redirect} is the URL of the user final landing page destination. <br>
         2) Then, the user will be redirected to his Facebook account home
         page to authorize the Beancounter application.
 
         <h4> Last.fm </h4>
         It's a bit different since it uses an OAuth-like exchange mechanism.<br>
-        1)  Send your user here: http://www.last.fm/api/auth/?api_key=9f57b916d7ab90a7bf562b9e6f2385f0&cb=http://moth.notube.tv:9090/notube-platform/rest/user/callback/lastfm/{username}   <br>
-        where {username} is the Beancounter username<br>
-        2) then your user will be asked to grant permission to NoTube on his last.fm profile page. Once done it will be redirect to a page confirming the authorization process with this response:    <br><br>
-        <pre><code>
-        {
-            "status":"OK",
-            "message":"service 'lastfm' as been successfully added to user 'dpalmisano'"
-        }
-        </code></pre>
+        1)  Send your user here: http://www.last
+        .fm/api/auth/?api_key=9f57b916d7ab90a7bf562b9e6f2385f0&cb=http://moth
+        .notube.tv:9090/notube-platform/rest/user/auth/callback/lastfm/{username}/{redirect}   <br>
+        where:<br>
+        - {username} is the Beancounter username, and<br>
+        - {redirect} is the url of a page your user will be redirected. It
+        must be without the 'http://' prefix and UTF-8 url-encoded. <br>
+        2) then your user will be asked to grant permission to NoTube on his
+        last.fm profile page. If successful the user will be redirected to
+        the url you provided at step 1.
                                                                                                                        <br>
-        you can easily verify calling:<br>
+        To verify please call:<br>
 
         GET http://moth.notube.tv:9090/notube-platform/rest/user/dpalmisano<br>
 
@@ -277,19 +280,21 @@
         <h4>Get available analysis</h4>
         Path: /analytics/analysis<br>
         Method: GET<br>
-        Parameters: none<br>
+        Parameters: apikey<br>
         Description: it returns all the user analysis the Beancounter is able
         to perform.<br>
-        Example: http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis<br><br>
+        Example: http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis?apikey=your-app-key<br><br>
 
 
         <h4>Get a description of a specific analysis</h4>
         Path: /analytics/analysis/{name}<br>
         Method: GET<br>
-        Parameters: {name} the name identifiyng the analysis<br>
+        Parameters: <br>
+        - {name} the name identifiyng the analysis<br>
+        - apikey<br>
         Description: it returns a description of the specified analysis.<br>
-        Example: http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis/timeframe-analysis<br><br>
-
+        Example: http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis/timeframe-analysis?apikey=your-app-key
+        <br><br>
 
         <h4>Calling a method of an analysis for a specific user</h4>
         Path: /analytics/analysis/{name}/{user}/{method}?param={param}<br>
@@ -299,14 +304,19 @@
         - {user} the user id on which the analysis has been performed<br>
         - {method} the analysis specific <b>method</b> <br>
         - {param} the method parameter, could be omitted for some methods<br>
+        - apikey <br>
         Description: it returns some statistics as speficied by the analysis
         and its method descriptions.<br>
-        Example: http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis/timeframe-analysis/8c33b0e6-d3cf-4909-b04c-df93056e64a8/getStatistics?param=4<br><br>
+        Example: http://moth.notube
+        .tv:9090/notube-platform/rest/analytics/analysis/timeframe-analysis
+        /8c33b0e6-d3cf-4909-b04c-df93056e64a8/getStatistics?param=4&apikey=your-app-key<br><br>
 
         Let's go through and example.<br>
         1) Firstly, retrieve some information on the
         <i>timeframe-analysis</i>:<br>
-        curl http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis/timeframe-analysis <br>
+        curl http://moth.notube
+        .tv:9090/notube-platform/rest/analytics/analysis/timeframe-analysis?apikey=your-app-key
+        <br>
 
         as you can see from the response:<br>
         <pre>
@@ -332,7 +342,8 @@
         how many tweets, songs listened or shares the user did on the 4th
         day of the last month you can simply call:<br><br>
 
-        http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis/timeframe-analysis/8c33b0e6-d3cf-4909-b04c-df93056e64a8/getStatistics?param=4<br>
+        http://moth.notube.tv:9090/notube-platform/rest/analytics/analysis
+        /timeframe-analysis/8c33b0e6-d3cf-4909-b04c-df93056e64a8/getStatistics?param=4&apikey=your-app-key<br>
 
         <br>
         obtaining a result looking like:<br>
@@ -354,7 +365,7 @@
         }
     }
 </code>
-</pre>
-        which means that on that day, the user performed that number of activities, grouped by services and verb.
+</pre> which means that on that day, the user performed that number of
+activities, grouped by services and verb.
     </body>
 </html>

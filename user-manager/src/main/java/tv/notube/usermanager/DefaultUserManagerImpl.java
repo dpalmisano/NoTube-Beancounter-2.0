@@ -34,6 +34,8 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
 
     private static final String USER_ACTIVITY_OWNER = COMPONENT + "-%s";
 
+    private Map<String, URL> redirects = new HashMap<String, URL>();
+
     private KVStore kvs;
 
     private ActivityLog alog;
@@ -410,6 +412,23 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
     public void deregisterService(String service, User userObj) throws UserManagerException {
         userObj.removeService(service);
         storeUser(userObj);
+    }
+
+    public void setUserFinalRedirect(String username, URL url) throws UserManagerException {
+        if(redirects.containsKey(username)) {
+            throw new UserManagerException("It seems that a temporary url " +
+                    "already exists for user '" + username + "'");
+        }
+        redirects.put(username, url);
+    }
+
+    public URL consumeUserFinalRedirect(String username) throws UserManagerException {
+        if(redirects.containsKey(username)) {
+            URL redirect = redirects.get(username);
+            redirects.remove(username);
+            return redirect;
+        }
+        throw new UserManagerException("It seems that a temporary url for this user has not been set yet.");
     }
 
     private Field[] getActivityLogFields(Activity activity)

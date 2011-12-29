@@ -20,7 +20,7 @@ public class RecommendationService {
 
     @POST
     @Path("/similarity/{username}")
-    public Response getSimilarityIndex(
+    public PlatformResponse getSimilarityIndex(
             @PathParam("username") String username,
             @FormParam("nic") String nic
     ) {
@@ -28,8 +28,8 @@ public class RecommendationService {
         // TODO (low) this class is a mockup mainly
         double similarity = generator.nextDouble();
 
-        return new Response(
-                Response.Status.OK,
+        return new PlatformResponse(
+                PlatformResponse.Status.OK,
                 "similarity index for '" + username + "'",
                 similarity
         );

@@ -91,9 +91,35 @@ public class MyBatisKVStoreTestCase {
 
         List<String> keys = kVStore.search(TABLE, query);
         Assert.assertEquals(1, keys.size());
+
         Assert.assertEquals(keys.get(0), "key-50");
         for (int i = 0; i < 100; i++) {
             kVStore.deleteValue(TABLE, "key-" + i);
+        }
+    }
+
+    @Test
+    public void testWithLimitAndOffset() throws MalformedURLException, KVStoreException {
+        for (int i = 0; i < 100; i++) {
+            TestClass obj = new TestClass();
+            obj.setBool(false);
+            obj.setMillis(System.currentTimeMillis());
+            String name = "name-" + i;
+            obj.setString(name);
+            obj.setUrl(new URL("http://test.com"));
+
+            StringField field = new StringField("boolean", "true");
+            kVStore.setValue(TABLE, name, obj, field);
+        }
+
+        Query q = new Query();
+        q.push(new StringField("boolean", "true"), Query.Math.EQ);
+
+        kVStore.search(TABLE, q, 10, 0);
+        kVStore.search(TABLE, q, 10, 5);
+
+        for (int i = 0; i < 100; i++) {
+            kVStore.deleteValue(TABLE, "name-" + i);
         }
     }
 

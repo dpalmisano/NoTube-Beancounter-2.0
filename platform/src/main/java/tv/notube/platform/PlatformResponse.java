@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Produces(MediaType.APPLICATION_JSON)
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Response {
+public class PlatformResponse {
 
     public enum Status {
         OK,
@@ -32,14 +32,14 @@ public class Response {
     @Expose
     private Object object;
 
-    public Response(){}
+    public PlatformResponse(){}
 
-    public Response(Status s, String m) {
+    public PlatformResponse(Status s, String m) {
         status = s;
         message = m;
     }
 
-    public Response(Status s, String m, Object o) {
+    public PlatformResponse(Status s, String m, Object o) {
         status = s;
         message = m;
         object = o;

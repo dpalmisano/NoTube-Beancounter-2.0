@@ -33,6 +33,24 @@ public class KVStoreDao extends ConfigurableDao {
         }
     }
 
+        public void bulkInsertObject(
+                String table,
+                String key,
+                byte[] bytes,
+                StringField[] fields
+        ) {
+        SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
+        KVSMapper mapper = session.getMapper(KVSMapper.class);
+        try {
+            mapper.insertObject(table, key, bytes);
+            for (StringField field : fields) {
+                mapper.insertField(table, key, field.getName(), field.getValue());
+            }
+        } finally {
+            session.close();
+        }
+    }
+
     public byte[] getObject(String table, String key) {
         SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
         KVSMapper mapper = session.getMapper(KVSMapper.class);
@@ -93,4 +111,29 @@ public class KVStoreDao extends ConfigurableDao {
         }
     }
 
+    public List<String> selectByQuery(String table, Query query, int limit, int offset) {
+        SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
+        KVSMapper mapper = session.getMapper(KVSMapper.class);
+        List<String> keys;
+        try {
+            keys = mapper.selectByQueryWithLimit(
+                    table,
+                    query.compile(),
+                    limit,
+                    offset
+            );
+        } finally {
+            session.close();
+        }
+        return keys;
+    }
+
+    public void commit() {
+        SqlSession session = ConnectionFactory.getSession(super.properties).openSession();
+        try {
+            session.commit();
+        } finally {
+            session.close();
+        }
+    }
 }

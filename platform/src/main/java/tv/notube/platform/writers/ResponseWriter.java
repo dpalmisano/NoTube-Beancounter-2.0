@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.joda.time.DateTime;
 import tv.notube.commons.model.gson.DateTimeAdapter;
-import tv.notube.platform.Response;
+import tv.notube.platform.PlatformResponse;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class ResponseWriter implements MessageBodyWriter<Response> {
+public class ResponseWriter implements MessageBodyWriter<PlatformResponse> {
 
     public boolean isWriteable(
             Class<?> aClass,
@@ -32,11 +32,11 @@ public class ResponseWriter implements MessageBodyWriter<Response> {
             Annotation[] annotations,
             MediaType mediaType
     ) {
-        return Response.class.isAssignableFrom(aClass);
+        return PlatformResponse.class.isAssignableFrom(aClass);
     }
 
     public long getSize(
-            Response response,
+            PlatformResponse platformResponse,
             Class<?> aClass,
             Type type,
             Annotation[] annotations,
@@ -46,7 +46,7 @@ public class ResponseWriter implements MessageBodyWriter<Response> {
     }
 
     public void writeTo(
-            Response response,
+            PlatformResponse platformResponse,
             Class<?> aClass,
             Type type,
             Annotation[] annotations,
@@ -61,7 +61,7 @@ public class ResponseWriter implements MessageBodyWriter<Response> {
         DateTimeAdapter dta = new DateTimeAdapter();
         builder.registerTypeAdapter(DateTime.class, dta);
         Gson gson = builder.create();
-        String json = gson.toJson(response);
+        String json = gson.toJson(platformResponse);
         BufferedOutputStream baos = new BufferedOutputStream(outputStream);
         baos.write(json.getBytes());
         baos.close();
