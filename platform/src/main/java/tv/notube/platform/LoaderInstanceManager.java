@@ -80,10 +80,10 @@ public class LoaderInstanceManager {
         prop.setProperty("username", "alog");
         prop.setProperty("password", "alog");
         ActivityLog alog = new DefaultActivityLogImpl(prop);
+
         analyzer = new DefaultAnalyzerImpl(kVStore, alog);
 
         recommender = new Random(125811727);
-
         applicationsManager = new DefaultApplicationsManagerImpl(kVStore);
     }
 

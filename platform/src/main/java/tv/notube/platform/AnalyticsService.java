@@ -242,9 +242,9 @@ public class AnalyticsService extends Service {
                             getActualSignature(md.getParameterTypes(), params)
                     );
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException("method not found");
+                    throw new RuntimeException("method not found", e);
                 } catch (InvocationTargetException e) {
-                    throw new RuntimeException("method not found");
+                    throw new RuntimeException("method not found", e);
                 }
             }
         }

@@ -51,7 +51,7 @@ public class SpiderTest {
         spider = new Spider(
                 "test-spider",
                 um,
-                UUID.fromString("9550da4c-42c2-4ad7-9a94-962b8e4ac3e3")
+                UUID.fromString(USERID)
         );
     }
 
@@ -75,9 +75,14 @@ public class SpiderTest {
         user.setForcedProfiling(false);
         user.setReference(new URI("http://notube.tv/user/test"));
         user.setProfiledAt(new DateTime());
+
+        /*
+
         Service lastfm = new Service();
         lastfm.setName("lastfm");
         user.addService(lastfm.getName(), new SimpleAuth("af65659c785315b90b54eea682e66433", "davidepalmisano"));
+
+        */
 
         Service twitter = new Service();
         twitter.setName("twitter");
@@ -85,12 +90,13 @@ public class SpiderTest {
                 "14656799-yAIIzOoFT8ILah3AaDLX4eG3DEPUNhP9d8tqafys",
                 "em5rrY6IzNwmauUlecsf7zbdaUXZaDdLj4jNRq6TI50")
         );
+        /**
         Service facebook = new Service();
         facebook.setName("facebook");
         user.addService(facebook.getName(), new OAuthAuth(
                 "AAAEdCZCT7jlwBACmL69H9HgqDJlZC3tJTBzSxTCnaVKAE1uTwextb0lgSfZAY8ybgWPjMnSFo37QhjU7SOImT0bRxTpiokZD",
                 null)
-        );
+        );   */
         um.storeUser(user);
     }
 

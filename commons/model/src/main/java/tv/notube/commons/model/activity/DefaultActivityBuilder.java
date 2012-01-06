@@ -67,6 +67,9 @@ public class DefaultActivityBuilder implements ActivityBuilder {
         obj.setUrl(url);
         obj.setName(name);
         for(String methodName : fields.keySet()) {
+            if(fields.get(methodName) == null) {
+                continue;
+            }
             Method method;
             try {
                 method = clazz.getMethod(

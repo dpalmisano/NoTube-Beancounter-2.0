@@ -162,6 +162,9 @@ public class Runner {
         query.push(Query.Boolean.OR);
         Field listen = new StringField("verb", "LISTEN");
         query.push(listen, Query.Math.EQ);
+        query.push(Query.Boolean.OR);
+        Field watched = new StringField("verb", "WATCHED");
+        query.push(watched, Query.Math.EQ);
         return query;
     }
 
