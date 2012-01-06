@@ -14,36 +14,30 @@ import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreException;
 import tv.notube.usermanager.UserManager;
 import tv.notube.usermanager.UserManagerException;
-import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.List;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-@Path("/user")
-@Produces(MediaType.APPLICATION_JSON)
-public class UserService extends Service {
+@Path("/jsonp/user")
+@Produces("application/x-javascript")
+public class JsonpUserService {
 
     @InjectParam
     private InstanceManager instanceManager;
 
     @POST
     @Path("/register")
-    public Response signUp(
+    public JSONWithPadding signUp(
             @FormParam("name") String name,
             @FormParam("surname") String surname,
             @FormParam("username") String username,
             @FormParam("password") String password,
-            @QueryParam("apikey") String apiKey
+            @QueryParam("apikey") String apiKey,
+            @QueryParam("callback") String callback
     ) {
         ParametersUtil.check(name, surname, username, password, apiKey);
 
@@ -58,12 +52,10 @@ public class UserService extends Service {
             );
         }
         if (!isAuth) {
-            Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(new PlatformResponse(
-                    PlatformResponse.Status.NOK,
-                    "Your application is not authorized.Sorry.")
+            return new JSONWithPadding(new JsonpPlatformResponse(
+                    JsonpPlatformResponse.Status.NOK,
+                    "Your application is not authorized.Sorry."), callback
             );
-            return rb.build();
         }
         UserManager um = instanceManager.getUserManager();
         try {
@@ -118,20 +110,19 @@ public class UserService extends Service {
                     e
             );
         }
-        Response.ResponseBuilder rb = Response.ok();
-        rb.entity(new PlatformResponse(
-                PlatformResponse.Status.OK,
+        return new JSONWithPadding(new JsonpPlatformResponse(
+                JsonpPlatformResponse.Status.OK,
                 "user successfully registered",
-                user.getId())
+                user.getId()), callback
         );
-        return rb.build();
     }
 
     @GET
     @Path("/{username}")
-    public Response getUser(
+    public JSONWithPadding getUser(
             @PathParam("username") String username,
-            @QueryParam("apikey") String apiKey
+            @QueryParam("apikey") String apiKey,
+            @QueryParam("callback") String callback
     ) {
         ParametersUtil.check(username, apiKey);
         UserManager um = instanceManager.getUserManager();
@@ -147,12 +138,10 @@ public class UserService extends Service {
             );
         }
         if (!isAuth) {
-            Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(new PlatformResponse(
-                    PlatformResponse.Status.NOK,
-                    "Sorry. You're not allowed to do that.")
+            return new JSONWithPadding(new JsonpPlatformResponse(
+                    JsonpPlatformResponse.Status.NOK,
+                    "Sorry. You're not allowed to do that."), callback
             );
-            return rb.build();
         }
 
         User user;
@@ -163,30 +152,25 @@ public class UserService extends Service {
             throw new RuntimeException(errMsg);
         }
         if (user == null) {
-            Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(new PlatformResponse(
-                    PlatformResponse.Status.NOK,
+            return new JSONWithPadding(new JsonpPlatformResponse(
+                    JsonpPlatformResponse.Status.NOK,
                     "user '" + username + "' not found",
-                    null)
+                    null), callback
             );
-            return rb.build();
         }
-
-        Response.ResponseBuilder rb = Response.ok();
-        rb.entity(new PlatformResponse(
-                PlatformResponse.Status.OK,
+        return new JSONWithPadding(new JsonpPlatformResponse(
+                JsonpPlatformResponse.Status.OK,
                 "user '" + username + "' found",
-                user)
+                user), callback
         );
-
-        return rb.build();
     }
 
     @GET
     @Path("activities/{username}")
-    public Response getActivities(
+    public JSONWithPadding getActivities(
             @PathParam("username") String username,
-            @QueryParam("apikey") String apiKey
+            @QueryParam("apikey") String apiKey,
+            @QueryParam("callback") String callback
     ) {
         ParametersUtil.check(username, apiKey);
         UserManager um = instanceManager.getUserManager();
@@ -202,12 +186,10 @@ public class UserService extends Service {
             );
         }
         if (!isAuth) {
-            Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(new PlatformResponse(
-                    PlatformResponse.Status.NOK,
-                    "Sorry. You're not allowed to do that.")
+            return new JSONWithPadding(new JsonpPlatformResponse(
+                    JsonpPlatformResponse.Status.NOK,
+                    "Sorry. You're not allowed to do that."), callback
             );
-            return rb.build();
         }
         User user;
         try {
@@ -218,11 +200,16 @@ public class UserService extends Service {
         if (user == null) {
             Response.ResponseBuilder rb = Response.serverError();
             rb.entity(
-                    new PlatformResponse(
-                            PlatformResponse.Status.NOK,
+                    new JsonpPlatformResponse(
+                            JsonpPlatformResponse.Status.NOK,
                             "user with username '" + username + "' not found")
             );
-            return rb.build();
+            return new JSONWithPadding(
+                    new JsonpPlatformResponse(
+                            JsonpPlatformResponse.Status.NOK,
+                            "user with username '" + username + "' not found")
+                    ,callback
+            );
         }
         List<Activity> activities;
         try {
@@ -232,19 +219,26 @@ public class UserService extends Service {
                     + "' activities", e);
         }
         Response.ResponseBuilder rb = Response.ok();
-        rb.entity(new PlatformResponse(
-                PlatformResponse.Status.OK,
+        rb.entity(new JsonpPlatformResponse(
+                JsonpPlatformResponse.Status.OK,
                 "user '" + username + "' activities found",
                 activities)
         );
-        return rb.build();
+        return new JSONWithPadding(
+                new JsonpPlatformResponse(
+                        JsonpPlatformResponse.Status.OK,
+                        "user '" + username + "' activities found",
+                        activities)
+                , callback
+        );
     }
 
     @DELETE
     @Path("/{username}")
-    public Response deleteUser(
+    public JSONWithPadding deleteUser(
             @PathParam("username") String username,
-            @QueryParam("apikey") String apiKey
+            @QueryParam("apikey") String apiKey,
+            @QueryParam("callback") String callback
     ) {
         ParametersUtil.check(username, apiKey);
 
@@ -259,13 +253,12 @@ public class UserService extends Service {
             throw new RuntimeException("Error while retrieving user '" + username + "'", e);
         }
         if (user == null) {
-            Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(
-                    new PlatformResponse(
-                            PlatformResponse.Status.NOK,
+            return new JSONWithPadding(
+                    new JsonpPlatformResponse(
+                            JsonpPlatformResponse.Status.NOK,
                             "user with username '" + username + "' not found")
+                    , callback
             );
-            return rb.build();
         }
 
         boolean isAuth;
@@ -283,13 +276,17 @@ public class UserService extends Service {
         }
         if (!isAuth) {
             Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(new PlatformResponse(
-                    PlatformResponse.Status.NOK,
+            rb.entity(new JsonpPlatformResponse(
+                    JsonpPlatformResponse.Status.NOK,
                     "Sorry, you're not allowed to do that")
             );
-            return rb.build();
+            return new JSONWithPadding(
+                    new JsonpPlatformResponse(
+                            JsonpPlatformResponse.Status.NOK,
+                            "Sorry, you're not allowed to do that")
+                    , callback
+            );
         }
-
         try {
             um.deleteUser(user.getId());
         } catch (UserManagerException e) {
@@ -302,20 +299,21 @@ public class UserService extends Service {
             throw new RuntimeException("Error while deleting user '" + username +
                     "'");
         }
-        Response.ResponseBuilder rb = Response.serverError();
-        rb.entity(new PlatformResponse(
-                PlatformResponse.Status.OK,
-                "user with username '" + username + "' deleted")
+        return new JSONWithPadding(
+                new JsonpPlatformResponse(
+                        JsonpPlatformResponse.Status.OK,
+                        "user with username '" + username + "' deleted")
+                , callback
         );
-        return rb.build();
     }
 
     @POST
     @Path("authenticate/{username}")
-    public Response authenticate(
+    public JSONWithPadding authenticate(
             @PathParam("username") String username,
             @FormParam("password") String password,
-            @QueryParam("apikey") String apiKey
+            @QueryParam("apikey") String apiKey,
+            @QueryParam("callback") String callback
     ) {
         ParametersUtil.check(username, password, apiKey);
         UserManager um = instanceManager.getUserManager();
@@ -332,12 +330,12 @@ public class UserService extends Service {
             );
         }
         if (!isAuth) {
-            Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(new PlatformResponse(
-                    PlatformResponse.Status.NOK,
-                    "Sorry, you're not allowed to do that")
+            return new JSONWithPadding(
+                    new JsonpPlatformResponse(
+                            JsonpPlatformResponse.Status.NOK,
+                            "Sorry, you're not allowed to do that")
+                    , callback
             );
-            return rb.build();
         }
 
         User user;
@@ -347,179 +345,41 @@ public class UserService extends Service {
             throw new RuntimeException("Error while retrieving user '" + username + "'", e);
         }
         if (user == null) {
-            Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(new PlatformResponse(
-                    PlatformResponse.Status.NOK,
-                    "user with username '" + username + "' not found")
+            return new JSONWithPadding(
+                    new JsonpPlatformResponse(
+                            JsonpPlatformResponse.Status.NOK,
+                            "user with username '" + username + "' not found")
+                    , callback
             );
-            return rb.build();
         }
         if (!user.getPassword().equals(password)) {
-            Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(new PlatformResponse(
-                    PlatformResponse.Status.NOK,
-                    "password for '" + username + "' incorrect")
+            return new JSONWithPadding(
+                    new JsonpPlatformResponse(
+                            JsonpPlatformResponse.Status.NOK,
+                            "password for '" + username + "' incorrect")
+                    , callback
             );
-            return rb.build();
         }
         Response.ResponseBuilder rb = Response.ok();
         rb.entity(new PlatformResponse(
                 PlatformResponse.Status.OK,
                 "user '" + username + "' authenticated")
         );
-        return rb.build();
-    }
-
-    @GET
-    @Path("/oauth/token/{service}/{username}")
-    public Response getOAuthToken(
-            @PathParam("service") String service,
-            @PathParam("username") String username,
-            @QueryParam("redirect") String finalRedirect
-    ) {
-        UserManager um = instanceManager.getUserManager();
-        User userObj;
-        try {
-            userObj = um.getUser(username);
-        } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
-        }
-        OAuthToken oAuthToken;
-        try {
-            oAuthToken = um.getOAuthToken(service, userObj.getUsername());
-        } catch (UserManagerException e) {
-            throw new RuntimeException(
-                    "Error while getting token for user '" + username + "' " +
-                            "on service '" + service + "'",
-                    e
-            );
-        }
-        URL finalRedirectUrl;
-        try {
-            finalRedirectUrl = new URL(finalRedirect);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(
-                    "Error while getting token for user '" + username + "' " +
-                            "on service '" + service + "'",
-                    e
-            );
-        }
-        try {
-            um.setUserFinalRedirect(userObj.getUsername(), finalRedirectUrl);
-        } catch (UserManagerException e) {
-            throw new RuntimeException(
-                    "Error while setting temporary final redirect URL " +
-                            "for user '" + username + "' " + "on service '" + service + "'",
-                    e
-            );
-        }
-        URL redirect = oAuthToken.getRedirectPage();
-        try {
-            return Response.temporaryRedirect(redirect.toURI()).build();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Malformed redirect URL", e);
-        }
-    }
-
-    @GET
-    @Path("/oauth/callback/facebook/{username}/")
-    public Response handleFacebookAuthCallback(
-            @PathParam("username") String username,
-            @QueryParam("code") String verifier
-    ) {
-        // Facebook OAuth exchange quite different from Twitter's one.
-        ParametersUtil.check(username, verifier);
-        return handleOAuthCallback("facebook", username, null, verifier);
-    }
-
-    @GET
-    @Path("/oauth/callback/{service}/{username}/")
-    public Response handleOAuthCallback(
-            @PathParam("service") String service,
-            @PathParam("username") String username,
-            @QueryParam("oauth_token") String token,
-            @QueryParam("oauth_verifier") String verifier
-    ) {
-        UserManager um = instanceManager.getUserManager();
-        User userObj;
-        try {
-            userObj = um.getUser(username);
-        } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
-        }
-        try {
-            um.registerOAuthService(service, userObj, token, verifier);
-        } catch (UserManagerException e) {
-            throw new RuntimeException("Error while OAuth-like exchange for " +
-                    "service: '" + service + "'", e);
-        }
-        URL finalRedirectUrl;
-        try {
-            finalRedirectUrl = um.consumeUserFinalRedirect(userObj.getUsername());
-        } catch (UserManagerException e) {
-            throw new RuntimeException("Error while getting final redirect " +
-                    "URL for user '" + username + "' for service '" + service + "'",
-                    e);
-        }
-        try {
-            return Response.temporaryRedirect(finalRedirectUrl.toURI()).build();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Malformed redirect URL", e);
-        }
-    }
-
-    @GET
-    @Path("/auth/callback/{service}/{username}/{redirect}")
-    public Response handleAuthCallback(
-            @PathParam("service") String service,
-            @PathParam("username") String username,
-            @PathParam("redirect") String redirect,
-            @QueryParam("token") String token
-    ) {
-        UserManager um = instanceManager.getUserManager();
-        User userObj;
-        try {
-            userObj = um.getUser(username);
-        } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
-        }
-        try {
-            um.registerService(service, userObj, token);
-        } catch (UserManagerException e) {
-            throw new RuntimeException(
-                    "Error while OAuth-like exchange for service: '" + service + "'", e);
-        }
-        URL finalRedirectUrl;
-        try {
-            finalRedirectUrl = new URL(
-                    "http://" + URLDecoder.decode(redirect, "UTF-8")
-            );
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(
-                    "Error while getting token for user '" + username + "' " +
-                            "on service '" + service + "'",
-                    e
-            );
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(
-                    "Error while getting token for user '" + username + "' " +
-                            "on service '" + service + "'",
-                    e
-            );
-        }
-        try {
-            return Response.temporaryRedirect(finalRedirectUrl.toURI()).build();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Malformed redirect URL", e);
-        }
+        return new JSONWithPadding(
+                new PlatformResponse(
+                        PlatformResponse.Status.OK,
+                        "user '" + username + "' authenticated")
+                , callback
+        );
     }
 
     @DELETE
     @Path("source/{username}/{service}")
-    public Response removeSource(
+    public JSONWithPadding removeSource(
             @PathParam("username") String username,
             @PathParam("service") String service,
-            @QueryParam("apikey") String apiKey
+            @QueryParam("apikey") String apiKey,
+            @QueryParam("callback") String callback
     ) {
         ParametersUtil.check(username, service, apiKey);
 
@@ -546,12 +406,12 @@ public class UserService extends Service {
             );
         }
         if (!isAuth) {
-            Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(new PlatformResponse(
-                    PlatformResponse.Status.NOK,
-                    "You're not allow to do that. Sorry.")
+            return new JSONWithPadding(
+                    new JsonpPlatformResponse(
+                            JsonpPlatformResponse.Status.NOK,
+                            "You're not allow to do that. Sorry.")
+                    , callback
             );
-            return rb.build();
         }
 
         try {
@@ -559,19 +419,21 @@ public class UserService extends Service {
         } catch (UserManagerException e) {
             throw new RuntimeException("Error while retrieving user '" + username + "'", e);
         }
-        Response.ResponseBuilder rb = Response.ok();
-        rb.entity(new PlatformResponse(
-                PlatformResponse.Status.OK,
-                "service '" + service + "' removed from user '" + username + "'")
+
+        return new JSONWithPadding(
+                new JsonpPlatformResponse(
+                        JsonpPlatformResponse.Status.OK,
+                        "service '" + service + "' removed from user '" + username + "'")
+                , callback
         );
-        return rb.build();
     }
 
     @GET
     @Path("profile/{username}")
-    public Response getProfile(
+    public JSONWithPadding getProfile(
             @PathParam("username") String username,
-            @QueryParam("apikey") String apiKey
+            @QueryParam("apikey") String apiKey,
+            @QueryParam("callback") String callback
     ) {
         ParametersUtil.check(username, apiKey);
         ApplicationsManager am = instanceManager.getApplicationManager();
@@ -586,12 +448,12 @@ public class UserService extends Service {
             );
         }
         if (!isAuth) {
-            Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(new PlatformResponse(
-                    PlatformResponse.Status.NOK,
-                    "Sorry. You're not allowed to do that.")
+            return new JSONWithPadding(
+                    new JsonpPlatformResponse(
+                            JsonpPlatformResponse.Status.NOK,
+                            "Sorry. You're not allowed to do that.")
+                    , callback
             );
-            return rb.build();
         }
         ProfileStore ps = instanceManager.getProfileStore();
         UserProfile up;
@@ -600,14 +462,13 @@ public class UserService extends Service {
         } catch (ProfileStoreException e) {
             throw new RuntimeException("Error while retrieving profile for user '" + username + "'", e);
         }
-        Response.ResponseBuilder rb = Response.ok();
-        rb.entity(new PlatformResponse(
-                PlatformResponse.Status.OK,
-                "profile for user '" + username + "' found",
-                up
-        )
+        return new JSONWithPadding(
+                new JsonpPlatformResponse(
+                        JsonpPlatformResponse.Status.OK,
+                        "profile for user '" + username + "' found",
+                        up)
+                , callback
         );
-        return rb.build();
     }
 
 }

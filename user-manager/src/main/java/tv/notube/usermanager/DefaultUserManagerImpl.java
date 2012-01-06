@@ -415,10 +415,6 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
     }
 
     public void setUserFinalRedirect(String username, URL url) throws UserManagerException {
-        if(redirects.containsKey(username)) {
-            throw new UserManagerException("It seems that a temporary url " +
-                    "already exists for user '" + username + "'");
-        }
         redirects.put(username, url);
     }
 

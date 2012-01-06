@@ -4,7 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.joda.time.DateTime;
 import tv.notube.commons.model.gson.DateTimeAdapter;
-import tv.notube.platform.PlatformResponse;
+import tv.notube.platform.JsonpPlatformResponse;
+
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -21,8 +22,8 @@ import java.lang.reflect.Type;
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
 @Provider
-@Produces(MediaType.APPLICATION_JSON)
-public class ResponseWriter implements MessageBodyWriter<PlatformResponse> {
+@Produces("application/x-javascript")
+public class JsonpResponseWriter implements MessageBodyWriter<JsonpPlatformResponse> {
 
     public boolean isWriteable(
             Class<?> aClass,
@@ -30,11 +31,11 @@ public class ResponseWriter implements MessageBodyWriter<PlatformResponse> {
             Annotation[] annotations,
             MediaType mediaType
     ) {
-        return PlatformResponse.class.isAssignableFrom(aClass);
+        return JsonpPlatformResponse.class.isAssignableFrom(aClass);
     }
 
     public long getSize(
-            PlatformResponse platformResponse,
+            JsonpPlatformResponse platformResponse,
             Class<?> aClass,
             Type type,
             Annotation[] annotations,
@@ -44,7 +45,7 @@ public class ResponseWriter implements MessageBodyWriter<PlatformResponse> {
     }
 
     public void writeTo(
-            PlatformResponse platformResponse,
+            JsonpPlatformResponse platformResponse,
             Class<?> aClass,
             Type type,
             Annotation[] annotations,

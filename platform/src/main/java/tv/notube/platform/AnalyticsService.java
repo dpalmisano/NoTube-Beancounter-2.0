@@ -33,21 +33,11 @@ public class AnalyticsService extends Service {
     @InjectParam
     private InstanceManager instanceManager;
 
-    @OPTIONS
-    @Path("/analysis")
-    public Response corsGetAvailableAnalysis(
-            @HeaderParam("Access-Control-Request-Headers") String requestH
-    ) {
-        _corsHeaders = requestH;
-        return makeCORS(Response.ok(), requestH);
-    }
-
     @GET
     @Path("/analysis")
     public Response getAvailableAnalysis(
             @QueryParam("apikey") String apiKey
     ) {
-
         ApplicationsManager am = instanceManager.getApplicationManager();
         boolean isAuth;
         try {
@@ -64,7 +54,7 @@ public class AnalyticsService extends Service {
                     PlatformResponse.Status.NOK,
                     "Your application is not authorized.Sorry.")
             );
-            return makeCORS(rb);
+            return rb.build();
         }
 
         Analyzer analyzer = instanceManager.getAnalyzer();
@@ -83,16 +73,7 @@ public class AnalyticsService extends Service {
                 "analysis found",
                 Arrays.asList(analysisDescriptions))
         );
-        return makeCORS(rb);
-    }
-
-    @OPTIONS
-    @Path("/analysis/{name}")
-    public Response corsGetAnalysisDescription(
-            @HeaderParam("Access-Control-Request-Headers") String requestH
-    ) {
-        _corsHeaders = requestH;
-        return makeCORS(Response.ok(), requestH);
+        return rb.build();
     }
 
     @GET
@@ -118,7 +99,7 @@ public class AnalyticsService extends Service {
                     PlatformResponse.Status.NOK,
                     "Your application is not authorized.Sorry.")
             );
-            return makeCORS(rb);
+            return rb.build();
         }
         Analyzer analyzer = instanceManager.getAnalyzer();
         AnalysisDescription analysisDescription;
@@ -136,16 +117,7 @@ public class AnalyticsService extends Service {
                 "analysis description",
                 analysisDescription)
         );
-        return makeCORS(rb);
-    }
-
-    @OPTIONS
-    @Path("/analysis/{name}/{user}/{method}")
-    public Response corsGetAnalysisResult(
-            @HeaderParam("Access-Control-Request-Headers") String requestH
-    ) {
-        _corsHeaders = requestH;
-        return makeCORS(Response.ok(), requestH);
+        return rb.build();
     }
 
     @GET
@@ -174,7 +146,7 @@ public class AnalyticsService extends Service {
                     PlatformResponse.Status.NOK,
                     "Your application is not authorized.Sorry.")
             );
-            return makeCORS(rb);
+            return rb.build();
         }
         Analyzer analyzer = instanceManager.getAnalyzer();
         AnalysisDescription analysisDescription;
@@ -201,7 +173,7 @@ public class AnalyticsService extends Service {
                     PlatformResponse.Status.NOK,
                     "analysis without result")
             );
-            return makeCORS(rb);
+            return rb.build();
         }
         String resultClassName = analysisDescription.getResultClassName();
         MethodDescription mds[] =
@@ -217,7 +189,7 @@ public class AnalyticsService extends Service {
         );
         Response.ResponseBuilder rb = Response.ok();
         rb.entity(new PlatformResponse(PlatformResponse.Status.OK, "analysis result", result));
-        return makeCORS(rb);
+        return rb.build();
     }
 
     private String[] getParams(List<String> values) {
