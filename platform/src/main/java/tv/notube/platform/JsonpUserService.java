@@ -58,10 +58,7 @@ public class JsonpUserService extends JsonpService {
         try {
             isAuth = am.isAuthorized(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authorizing your application",
-                    e
-            );
+            return error(e, "Error while authorizing your application", callback);
         }
         if (!isAuth) {
             return new JSONWithPadding(new JsonpPlatformResponse(
@@ -73,11 +70,16 @@ public class JsonpUserService extends JsonpService {
         try {
             if (um.getUser(username) != null) {
                 final String errMsg = "username '" + username + "' is already taken";
-                throw new RuntimeException(errMsg);
+                return new JSONWithPadding(
+                        new JsonpPlatformResponse(
+                                JsonpPlatformResponse.Status.NOK,
+                                errMsg
+                        ), callback
+                );
             }
         } catch (UserManagerException e) {
             final String errMsg = "Error while calling the UserManager";
-            throw new RuntimeException(errMsg, e);
+            return error(e, errMsg, callback);
         }
 
         User user = new User();
@@ -89,20 +91,23 @@ public class JsonpUserService extends JsonpService {
             um.storeUser(user);
         } catch (UserManagerException e) {
             final String errMsg = "Error while storing user '" + user + "'.";
-            throw new RuntimeException(errMsg);
+            return error(e, errMsg, callback);
         }
 
         Application application;
         try {
             application = am.getApplicationByApiKey(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while getting application with key '" + apiKey + "'",
-                    e
-            );
+            final String errMsg = "Error while getting application with key '" + apiKey + "'";
+            return error(e, errMsg, callback);
         }
         if (application == null) {
-            throw new RuntimeException("Application not found");
+            return new JSONWithPadding(
+                        new JsonpPlatformResponse(
+                                JsonpPlatformResponse.Status.NOK,
+                                "Application not found"
+                        ), callback
+                );
         }
 
         try {
@@ -117,10 +122,8 @@ public class JsonpUserService extends JsonpService {
                     Permission.Action.UPDATE
             );
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while granting permissions on user " + user.getId(),
-                    e
-            );
+            final String errMsg = "Error while granting permissions on user " + user.getId();
+            return error(e, errMsg, callback);
         }
         return new JSONWithPadding(new JsonpPlatformResponse(
                 JsonpPlatformResponse.Status.OK,
@@ -211,10 +214,7 @@ public class JsonpUserService extends JsonpService {
         try {
             isAuth = am.isAuthorized(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authenticating you application",
-                    e
-            );
+            return error(e, "Error while authenticating you application", callback);
         }
         if (!isAuth) {
             return new JSONWithPadding(new JsonpPlatformResponse(
@@ -226,7 +226,7 @@ public class JsonpUserService extends JsonpService {
         try {
             user = um.getUser(username);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'", callback);
         }
         if (user == null) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -246,8 +246,7 @@ public class JsonpUserService extends JsonpService {
         try {
             activities = um.getUserActivities(user.getId());
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while getting user '" + username
-                    + "' activities", e);
+            return error(e, "Error while getting user '" + username + "' activities", callback);
         }
         return new JSONWithPadding(
                 new JsonpPlatformResponse(
@@ -284,7 +283,7 @@ public class JsonpUserService extends JsonpService {
         try {
             user = um.getUser(username);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'", callback);
         }
         if (user == null) {
             return new JSONWithPadding(
@@ -303,10 +302,8 @@ public class JsonpUserService extends JsonpService {
                     Permission.Action.DELETE
             );
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authorizing your application",
-                    e
-            );
+            return error(e, "Error while authorizing your application", callback);
+
         }
         if (!isAuth) {
             return new JSONWithPadding(
@@ -319,14 +316,12 @@ public class JsonpUserService extends JsonpService {
         try {
             um.deleteUser(user.getId());
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while deleting user '" + username
-                    + "'", e);
+            return error(e, "Error while deleting user '" + username + "'", callback);
         }
         try {
             ps.deleteUserProfile(username);
         } catch (ProfileStoreException e) {
-            throw new RuntimeException("Error while deleting user '" + username +
-                    "'");
+            return error(e, "Error while deleting user '" + username + "'", callback);
         }
         return new JSONWithPadding(
                 new JsonpPlatformResponse(
@@ -363,10 +358,7 @@ public class JsonpUserService extends JsonpService {
         try {
             isAuth = am.isAuthorized(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authenticating your application",
-                    e
-            );
+            return error(e, "Error while authenticating your application", callback);
         }
         if (!isAuth) {
             return new JSONWithPadding(
@@ -381,7 +373,8 @@ public class JsonpUserService extends JsonpService {
         try {
             user = um.getUser(username);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'", callback);
+
         }
         if (user == null) {
             return new JSONWithPadding(
@@ -432,7 +425,7 @@ public class JsonpUserService extends JsonpService {
         try {
             userObj = um.getUser(username);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'", callback);
         }
 
         ApplicationsManager am = instanceManager.getApplicationManager();
@@ -444,10 +437,7 @@ public class JsonpUserService extends JsonpService {
                     Permission.Action.UPDATE
             );
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while asking for permissions",
-                    e
-            );
+            return error(e, "Error while asking for permissions", callback);
         }
         if (!isAuth) {
             return new JSONWithPadding(
@@ -461,7 +451,7 @@ public class JsonpUserService extends JsonpService {
         try {
             um.deregisterService(service, userObj);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'", callback);
         }
 
         return new JSONWithPadding(
@@ -495,10 +485,7 @@ public class JsonpUserService extends JsonpService {
         try {
             isAuth = am.isAuthorized(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authenticating you application",
-                    e
-            );
+            return error(e, "Error while authenticating you application", callback);
         }
         if (!isAuth) {
             return new JSONWithPadding(
@@ -513,7 +500,7 @@ public class JsonpUserService extends JsonpService {
         try {
             up = ps.getUserProfile(username);
         } catch (ProfileStoreException e) {
-            throw new RuntimeException("Error while retrieving profile for user '" + username + "'", e);
+            return error(e, "Error while retrieving profile for user '" + username + "'", callback);
         }
         return new JSONWithPadding(
                 new JsonpPlatformResponse(
