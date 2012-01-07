@@ -9,7 +9,6 @@ import tv.notube.applications.Permission;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.UserProfile;
 import tv.notube.commons.model.activity.Activity;
-import tv.notube.platform.utils.ParametersUtil;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreException;
 import tv.notube.usermanager.UserManager;
@@ -24,7 +23,7 @@ import java.util.List;
  */
 @Path("/jsonp/user")
 @Produces("application/x-javascript")
-public class JsonpUserService {
+public class JsonpUserService extends JsonpService {
 
     @InjectParam
     private InstanceManager instanceManager;
@@ -39,7 +38,20 @@ public class JsonpUserService {
             @QueryParam("apikey") String apiKey,
             @QueryParam("callback") String callback
     ) {
-        ParametersUtil.check(name, surname, username, password, apiKey);
+        try {
+            check(
+                    this.getClass(),
+                    "signUp",
+                    name,
+                    surname,
+                    username,
+                    password,
+                    apiKey,
+                    callback
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters", callback);
+        }
 
         ApplicationsManager am = instanceManager.getApplicationManager();
         boolean isAuth;
@@ -120,11 +132,22 @@ public class JsonpUserService {
     @GET
     @Path("/{username}")
     public JSONWithPadding getUser(
-            @PathParam("username") String username,
-            @QueryParam("apikey") String apiKey,
+            @PathParam("username")  String username,
+            @QueryParam("apikey")   String apiKey,
             @QueryParam("callback") String callback
     ) {
-        ParametersUtil.check(username, apiKey);
+        try {
+            check(
+                    this.getClass(),
+                    "getUser",
+                    username,
+                    apiKey,
+                    callback
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters", callback);
+        }
+
         UserManager um = instanceManager.getUserManager();
         ApplicationsManager am = instanceManager.getApplicationManager();
 
@@ -132,10 +155,7 @@ public class JsonpUserService {
         try {
             isAuth = am.isAuthorized(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authenticating your application",
-                    e
-            );
+            return error(e, "Error while authenticating your application", callback);
         }
         if (!isAuth) {
             return new JSONWithPadding(new JsonpPlatformResponse(
@@ -149,8 +169,9 @@ public class JsonpUserService {
             user = um.getUser(username);
         } catch (UserManagerException e) {
             final String errMsg = "Error while getting user '" + username + "'.";
-            throw new RuntimeException(errMsg);
+            return error(e, errMsg, callback);
         }
+
         if (user == null) {
             return new JSONWithPadding(new JsonpPlatformResponse(
                     JsonpPlatformResponse.Status.NOK,
@@ -172,7 +193,17 @@ public class JsonpUserService {
             @QueryParam("apikey") String apiKey,
             @QueryParam("callback") String callback
     ) {
-        ParametersUtil.check(username, apiKey);
+        try {
+            check(
+                    this.getClass(),
+                    "getActivities",
+                    username,
+                    apiKey,
+                    callback
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters", callback);
+        }
         UserManager um = instanceManager.getUserManager();
         ApplicationsManager am = instanceManager.getApplicationManager();
 
@@ -218,12 +249,6 @@ public class JsonpUserService {
             throw new RuntimeException("Error while getting user '" + username
                     + "' activities", e);
         }
-        Response.ResponseBuilder rb = Response.ok();
-        rb.entity(new JsonpPlatformResponse(
-                JsonpPlatformResponse.Status.OK,
-                "user '" + username + "' activities found",
-                activities)
-        );
         return new JSONWithPadding(
                 new JsonpPlatformResponse(
                         JsonpPlatformResponse.Status.OK,
@@ -240,8 +265,17 @@ public class JsonpUserService {
             @QueryParam("apikey") String apiKey,
             @QueryParam("callback") String callback
     ) {
-        ParametersUtil.check(username, apiKey);
-
+        try {
+            check(
+                    this.getClass(),
+                    "deleteUser",
+                    username,
+                    apiKey,
+                    callback
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters", callback);
+        }
         UserManager um = instanceManager.getUserManager();
         ProfileStore ps = instanceManager.getProfileStore();
         ApplicationsManager am = instanceManager.getApplicationManager();
@@ -275,11 +309,6 @@ public class JsonpUserService {
             );
         }
         if (!isAuth) {
-            Response.ResponseBuilder rb = Response.serverError();
-            rb.entity(new JsonpPlatformResponse(
-                    JsonpPlatformResponse.Status.NOK,
-                    "Sorry, you're not allowed to do that")
-            );
             return new JSONWithPadding(
                     new JsonpPlatformResponse(
                             JsonpPlatformResponse.Status.NOK,
@@ -315,9 +344,19 @@ public class JsonpUserService {
             @QueryParam("apikey") String apiKey,
             @QueryParam("callback") String callback
     ) {
-        ParametersUtil.check(username, password, apiKey);
+        try {
+            check(
+                    this.getClass(),
+                    "authenticate",
+                    username,
+                    password,
+                    apiKey,
+                    callback
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters", callback);
+        }
         UserManager um = instanceManager.getUserManager();
-
         ApplicationsManager am = instanceManager.getApplicationManager();
 
         boolean isAuth;
@@ -360,14 +399,9 @@ public class JsonpUserService {
                     , callback
             );
         }
-        Response.ResponseBuilder rb = Response.ok();
-        rb.entity(new PlatformResponse(
-                PlatformResponse.Status.OK,
-                "user '" + username + "' authenticated")
-        );
         return new JSONWithPadding(
-                new PlatformResponse(
-                        PlatformResponse.Status.OK,
+                new JsonpPlatformResponse(
+                        JsonpPlatformResponse.Status.OK,
                         "user '" + username + "' authenticated")
                 , callback
         );
@@ -381,8 +415,18 @@ public class JsonpUserService {
             @QueryParam("apikey") String apiKey,
             @QueryParam("callback") String callback
     ) {
-        ParametersUtil.check(username, service, apiKey);
-
+        try {
+            check(
+                    this.getClass(),
+                    "authenticate",
+                    username,
+                    service,
+                    apiKey,
+                    callback
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters", callback);
+        }
         UserManager um = instanceManager.getUserManager();
         User userObj;
         try {
@@ -435,9 +479,18 @@ public class JsonpUserService {
             @QueryParam("apikey") String apiKey,
             @QueryParam("callback") String callback
     ) {
-        ParametersUtil.check(username, apiKey);
+        try {
+            check(
+                    this.getClass(),
+                    "getProfile",
+                    username,
+                    apiKey,
+                    callback
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters", callback);
+        }
         ApplicationsManager am = instanceManager.getApplicationManager();
-
         boolean isAuth;
         try {
             isAuth = am.isAuthorized(apiKey);

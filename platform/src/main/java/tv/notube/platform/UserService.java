@@ -1,7 +1,6 @@
 package tv.notube.platform;
 
 import com.sun.jersey.api.core.InjectParam;
-import com.sun.jersey.api.json.JSONWithPadding;
 import tv.notube.applications.Application;
 import tv.notube.applications.ApplicationsManager;
 import tv.notube.applications.ApplicationsManagerException;
@@ -9,7 +8,6 @@ import tv.notube.applications.Permission;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.UserProfile;
 import tv.notube.commons.model.activity.Activity;
-import tv.notube.platform.utils.ParametersUtil;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreException;
 import tv.notube.usermanager.UserManager;
@@ -45,8 +43,6 @@ public class UserService extends Service {
             @FormParam("password") String password,
             @QueryParam("apikey") String apiKey
     ) {
-        ParametersUtil.check(name, surname, username, password, apiKey);
-
         ApplicationsManager am = instanceManager.getApplicationManager();
         boolean isAuth;
         try {
@@ -133,7 +129,6 @@ public class UserService extends Service {
             @PathParam("username") String username,
             @QueryParam("apikey") String apiKey
     ) {
-        ParametersUtil.check(username, apiKey);
         UserManager um = instanceManager.getUserManager();
         ApplicationsManager am = instanceManager.getApplicationManager();
 
@@ -188,7 +183,6 @@ public class UserService extends Service {
             @PathParam("username") String username,
             @QueryParam("apikey") String apiKey
     ) {
-        ParametersUtil.check(username, apiKey);
         UserManager um = instanceManager.getUserManager();
         ApplicationsManager am = instanceManager.getApplicationManager();
 
@@ -246,8 +240,6 @@ public class UserService extends Service {
             @PathParam("username") String username,
             @QueryParam("apikey") String apiKey
     ) {
-        ParametersUtil.check(username, apiKey);
-
         UserManager um = instanceManager.getUserManager();
         ProfileStore ps = instanceManager.getProfileStore();
         ApplicationsManager am = instanceManager.getApplicationManager();
@@ -317,7 +309,6 @@ public class UserService extends Service {
             @FormParam("password") String password,
             @QueryParam("apikey") String apiKey
     ) {
-        ParametersUtil.check(username, password, apiKey);
         UserManager um = instanceManager.getUserManager();
 
         ApplicationsManager am = instanceManager.getApplicationManager();
@@ -428,7 +419,6 @@ public class UserService extends Service {
             @QueryParam("code") String verifier
     ) {
         // Facebook OAuth exchange quite different from Twitter's one.
-        ParametersUtil.check(username, verifier);
         return handleOAuthCallback("facebook", username, null, verifier);
     }
 
@@ -521,8 +511,6 @@ public class UserService extends Service {
             @PathParam("service") String service,
             @QueryParam("apikey") String apiKey
     ) {
-        ParametersUtil.check(username, service, apiKey);
-
         UserManager um = instanceManager.getUserManager();
         User userObj;
         try {
@@ -573,7 +561,6 @@ public class UserService extends Service {
             @PathParam("username") String username,
             @QueryParam("apikey") String apiKey
     ) {
-        ParametersUtil.check(username, apiKey);
         ApplicationsManager am = instanceManager.getApplicationManager();
 
         boolean isAuth;
