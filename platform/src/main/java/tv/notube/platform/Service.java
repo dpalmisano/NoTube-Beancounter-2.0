@@ -1,7 +1,9 @@
 package tv.notube.platform;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -83,33 +85,21 @@ public abstract class Service {
     }
 
     public static void check(Class clazz, String name, Object... values) throws ServiceException {
-        Method m;
-        Class<?>[] signature = getSignature(values);
-        try {
-            m = clazz.getMethod(
-                    name,
-                    signature
-            );
-        } catch (NoSuchMethodException e) {
-            throw new ServiceException("Method not found", e);
-        }
-        check(m, values);
-    }
-
-    private static Class<?>[] getSignature(Object[] values) {
-        Class<?>[] signature = new Class<?>[values.length];
-        int i = 0;
-        for(Object o : values) {
-            if(o == null) {
-                // let's assume it's a String
-                signature[i] = String.class;
-                i++;
+        Method[] methods = clazz.getMethods();
+        Method m = null;
+        for(Method candidate : methods) {
+            if(candidate.getParameterTypes().length != values.length) {
                 continue;
             }
-            signature[i] = o.getClass();
-            i++;
+            if(!candidate.getName().equals(name)) {
+                continue;
+            }
+            m = candidate;
         }
-        return signature;
+        if(m == null) {
+            throw new ServiceException("Method not found");
+        }
+        check(m, values);
     }
 
     private static void check(Method m, Object... values) throws
@@ -133,7 +123,12 @@ public abstract class Service {
         int i = 0;
         for (Annotation a[] : annotations) {
             for (Annotation aa : a) {
-                if (aa.annotationType().equals(QueryParam.class) || aa.annotationType().equals(PathParam.class)) {
+                if (
+                        aa.annotationType().equals(FormParam.class) ||
+                                aa.annotationType().equals(QueryParam.class) ||
+                                aa.annotationType().equals(PathParam.class) ||
+                                aa.annotationType().equals(Context.class)
+                        ) {
                     result.put(aa.toString(), types[i]);
                 }
             }

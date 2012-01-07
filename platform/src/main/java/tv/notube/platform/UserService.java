@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
-public class UserService extends Service {
+public class UserService extends JsonService {
 
     @InjectParam
     private InstanceManager instanceManager;
@@ -43,15 +43,25 @@ public class UserService extends Service {
             @FormParam("password") String password,
             @QueryParam("apikey") String apiKey
     ) {
+        try {
+            check(
+                    this.getClass(),
+                    "signUp",
+                    name,
+                    surname,
+                    username,
+                    password,
+                    apiKey
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters");
+        }
         ApplicationsManager am = instanceManager.getApplicationManager();
         boolean isAuth;
         try {
             isAuth = am.isAuthorized(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authorizing your application",
-                    e
-            );
+            return error(e, "Error while authorizing your application");
         }
         if (!isAuth) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -65,11 +75,16 @@ public class UserService extends Service {
         try {
             if (um.getUser(username) != null) {
                 final String errMsg = "username '" + username + "' is already taken";
-                throw new RuntimeException(errMsg);
+                Response.ResponseBuilder rb = Response.serverError();
+                rb.entity(new PlatformResponse(
+                        PlatformResponse.Status.NOK,
+                        errMsg)
+                );
+                return rb.build();
             }
         } catch (UserManagerException e) {
             final String errMsg = "Error while calling the UserManager";
-            throw new RuntimeException(errMsg, e);
+            return error(e, errMsg);
         }
 
         User user = new User();
@@ -81,20 +96,22 @@ public class UserService extends Service {
             um.storeUser(user);
         } catch (UserManagerException e) {
             final String errMsg = "Error while storing user '" + user + "'.";
-            throw new RuntimeException(errMsg);
+            return error(e, errMsg);
         }
 
         Application application;
         try {
             application = am.getApplicationByApiKey(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while getting application with key '" + apiKey + "'",
-                    e
-            );
+            return error(e, "Error while getting application with key '" + apiKey + "'");
         }
         if (application == null) {
-            throw new RuntimeException("Application not found");
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Application not found")
+            );
+            return rb.build();
         }
 
         try {
@@ -109,10 +126,7 @@ public class UserService extends Service {
                     Permission.Action.UPDATE
             );
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while granting permissions on user " + user.getId(),
-                    e
-            );
+            return error(e, "Error while granting permissions on user " +  user.getId());
         }
         Response.ResponseBuilder rb = Response.ok();
         rb.entity(new PlatformResponse(
@@ -129,17 +143,23 @@ public class UserService extends Service {
             @PathParam("username") String username,
             @QueryParam("apikey") String apiKey
     ) {
+        try {
+            check(
+                    this.getClass(),
+                    "getUser",
+                    username,
+                    apiKey
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters");
+        }
         UserManager um = instanceManager.getUserManager();
         ApplicationsManager am = instanceManager.getApplicationManager();
-
         boolean isAuth;
         try {
             isAuth = am.isAuthorized(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authenticating your application",
-                    e
-            );
+            return error(e, "Error while authenticating your application");
         }
         if (!isAuth) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -155,7 +175,7 @@ public class UserService extends Service {
             user = um.getUser(username);
         } catch (UserManagerException e) {
             final String errMsg = "Error while getting user '" + username + "'.";
-            throw new RuntimeException(errMsg);
+            return error(e, errMsg);
         }
         if (user == null) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -173,7 +193,6 @@ public class UserService extends Service {
                 "user '" + username + "' found",
                 user)
         );
-
         return rb.build();
     }
 
@@ -183,6 +202,16 @@ public class UserService extends Service {
             @PathParam("username") String username,
             @QueryParam("apikey") String apiKey
     ) {
+        try {
+            check(
+                    this.getClass(),
+                    "getActivities",
+                    username,
+                    apiKey
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters");
+        }
         UserManager um = instanceManager.getUserManager();
         ApplicationsManager am = instanceManager.getApplicationManager();
 
@@ -190,10 +219,7 @@ public class UserService extends Service {
         try {
             isAuth = am.isAuthorized(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authenticating you application",
-                    e
-            );
+            return error(e, "Error while authenticating you application");
         }
         if (!isAuth) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -207,7 +233,7 @@ public class UserService extends Service {
         try {
             user = um.getUser(username);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'");
         }
         if (user == null) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -222,8 +248,7 @@ public class UserService extends Service {
         try {
             activities = um.getUserActivities(user.getId());
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while getting user '" + username
-                    + "' activities", e);
+            return error(e, "Error while getting user '" + username + "' activities");
         }
         Response.ResponseBuilder rb = Response.ok();
         rb.entity(new PlatformResponse(
@@ -240,6 +265,16 @@ public class UserService extends Service {
             @PathParam("username") String username,
             @QueryParam("apikey") String apiKey
     ) {
+        try {
+            check(
+                    this.getClass(),
+                    "deleteUser",
+                    username,
+                    apiKey
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters");
+        }
         UserManager um = instanceManager.getUserManager();
         ProfileStore ps = instanceManager.getProfileStore();
         ApplicationsManager am = instanceManager.getApplicationManager();
@@ -248,7 +283,7 @@ public class UserService extends Service {
         try {
             user = um.getUser(username);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'");
         }
         if (user == null) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -268,10 +303,7 @@ public class UserService extends Service {
                     Permission.Action.DELETE
             );
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authorizing your application",
-                    e
-            );
+            return error(e, "Error while authorizing your application");
         }
         if (!isAuth) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -291,8 +323,7 @@ public class UserService extends Service {
         try {
             ps.deleteUserProfile(username);
         } catch (ProfileStoreException e) {
-            throw new RuntimeException("Error while deleting user '" + username +
-                    "'");
+            return error(e, "Error while deleting user '" + username + "'");
         }
         Response.ResponseBuilder rb = Response.serverError();
         rb.entity(new PlatformResponse(
@@ -309,18 +340,24 @@ public class UserService extends Service {
             @FormParam("password") String password,
             @QueryParam("apikey") String apiKey
     ) {
+        try {
+            check(
+                    this.getClass(),
+                    "authenticate",
+                    username,
+                    password,
+                    apiKey
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters");
+        }
         UserManager um = instanceManager.getUserManager();
-
         ApplicationsManager am = instanceManager.getApplicationManager();
-
         boolean isAuth;
         try {
             isAuth = am.isAuthorized(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authenticating your application",
-                    e
-            );
+            return error(e, "Error while authenticating your application");
         }
         if (!isAuth) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -330,12 +367,11 @@ public class UserService extends Service {
             );
             return rb.build();
         }
-
         User user;
         try {
             user = um.getUser(username);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'");
         }
         if (user == null) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -373,42 +409,33 @@ public class UserService extends Service {
         try {
             userObj = um.getUser(username);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'");
         }
         OAuthToken oAuthToken;
         try {
             oAuthToken = um.getOAuthToken(service, userObj.getUsername());
         } catch (UserManagerException e) {
-            throw new RuntimeException(
-                    "Error while getting token for user '" + username + "' " +
-                            "on service '" + service + "'",
-                    e
-            );
+            return error(e, "Error while getting token for user '" + username + "' " +
+                            "on service '" + service + "'");
         }
         URL finalRedirectUrl;
         try {
             finalRedirectUrl = new URL(finalRedirect);
         } catch (MalformedURLException e) {
-            throw new RuntimeException(
-                    "Error while getting token for user '" + username + "' " +
-                            "on service '" + service + "'",
-                    e
-            );
+            return error(e, "Error while getting token for user '" + username + "' " +
+                            "on service '" + service + "'");
         }
         try {
             um.setUserFinalRedirect(userObj.getUsername(), finalRedirectUrl);
         } catch (UserManagerException e) {
-            throw new RuntimeException(
-                    "Error while setting temporary final redirect URL " +
-                            "for user '" + username + "' " + "on service '" + service + "'",
-                    e
-            );
+            return error(e, "Error while setting temporary final redirect URL " +
+                            "for user '" + username + "' " + "on service '" + service + "'");
         }
         URL redirect = oAuthToken.getRedirectPage();
         try {
             return Response.temporaryRedirect(redirect.toURI()).build();
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Malformed redirect URL", e);
+            return error(e, "Malformed redirect URL");
         }
     }
 
@@ -435,26 +462,23 @@ public class UserService extends Service {
         try {
             userObj = um.getUser(username);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'");
         }
         try {
             um.registerOAuthService(service, userObj, token, verifier);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while OAuth-like exchange for " +
-                    "service: '" + service + "'", e);
+            return error(e, "Error while OAuth-like exchange for service: '" + service + "'");
         }
         URL finalRedirectUrl;
         try {
             finalRedirectUrl = um.consumeUserFinalRedirect(userObj.getUsername());
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while getting final redirect " +
-                    "URL for user '" + username + "' for service '" + service + "'",
-                    e);
+            return error(e, "Error while getting final redirect URL for user '" + username + "' for service '" + service + "'");
         }
         try {
             return Response.temporaryRedirect(finalRedirectUrl.toURI()).build();
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Malformed redirect URL", e);
+            return error(e, "Malformed redirect URL");
         }
     }
 
@@ -471,13 +495,12 @@ public class UserService extends Service {
         try {
             userObj = um.getUser(username);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'");
         }
         try {
             um.registerService(service, userObj, token);
         } catch (UserManagerException e) {
-            throw new RuntimeException(
-                    "Error while OAuth-like exchange for service: '" + service + "'", e);
+            return error(e, "Error while OAuth-like exchange for service: '" + service + "'");
         }
         URL finalRedirectUrl;
         try {
@@ -485,22 +508,16 @@ public class UserService extends Service {
                     "http://" + URLDecoder.decode(redirect, "UTF-8")
             );
         } catch (MalformedURLException e) {
-            throw new RuntimeException(
-                    "Error while getting token for user '" + username + "' " +
-                            "on service '" + service + "'",
-                    e
-            );
+            return error(e, "Error while getting token for user '" + username + "' " +
+                            "on service '" + service + "'");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(
-                    "Error while getting token for user '" + username + "' " +
-                            "on service '" + service + "'",
-                    e
-            );
+            return error(e, "Error while getting token for user '" + username + "' " +
+                            "on service '" + service + "'");
         }
         try {
             return Response.temporaryRedirect(finalRedirectUrl.toURI()).build();
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Malformed redirect URL", e);
+            return error(e, "Malformed redirect URL");
         }
     }
 
@@ -511,12 +528,23 @@ public class UserService extends Service {
             @PathParam("service") String service,
             @QueryParam("apikey") String apiKey
     ) {
+        try {
+            check(
+                    this.getClass(),
+                    "removeSource",
+                    username,
+                    service,
+                    apiKey
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters");
+        }
         UserManager um = instanceManager.getUserManager();
         User userObj;
         try {
             userObj = um.getUser(username);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'");
         }
 
         ApplicationsManager am = instanceManager.getApplicationManager();
@@ -528,10 +556,7 @@ public class UserService extends Service {
                     Permission.Action.UPDATE
             );
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while asking for permissions",
-                    e
-            );
+            return error(e, "Error while asking for permissions");
         }
         if (!isAuth) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -545,7 +570,7 @@ public class UserService extends Service {
         try {
             um.deregisterService(service, userObj);
         } catch (UserManagerException e) {
-            throw new RuntimeException("Error while retrieving user '" + username + "'", e);
+            return error(e, "Error while retrieving user '" + username + "'");
         }
         Response.ResponseBuilder rb = Response.ok();
         rb.entity(new PlatformResponse(
@@ -561,16 +586,22 @@ public class UserService extends Service {
             @PathParam("username") String username,
             @QueryParam("apikey") String apiKey
     ) {
+        try {
+            check(
+                    this.getClass(),
+                    "getProfile",
+                    username,
+                    apiKey
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters");
+        }
         ApplicationsManager am = instanceManager.getApplicationManager();
-
         boolean isAuth;
         try {
             isAuth = am.isAuthorized(apiKey);
         } catch (ApplicationsManagerException e) {
-            throw new RuntimeException(
-                    "Error while authenticating you application",
-                    e
-            );
+            return error(e, "Error while authenticating you application");
         }
         if (!isAuth) {
             Response.ResponseBuilder rb = Response.serverError();
@@ -585,7 +616,7 @@ public class UserService extends Service {
         try {
             up = ps.getUserProfile(username);
         } catch (ProfileStoreException e) {
-            throw new RuntimeException("Error while retrieving profile for user '" + username + "'", e);
+            return error(e, "Error while retrieving profile for user '" + username + "'");
         }
         Response.ResponseBuilder rb = Response.ok();
         rb.entity(new PlatformResponse(

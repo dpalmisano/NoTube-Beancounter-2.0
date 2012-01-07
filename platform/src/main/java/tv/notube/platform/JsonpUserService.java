@@ -411,7 +411,7 @@ public class JsonpUserService extends JsonpService {
         try {
             check(
                     this.getClass(),
-                    "authenticate",
+                    "removeSource",
                     username,
                     service,
                     apiKey,

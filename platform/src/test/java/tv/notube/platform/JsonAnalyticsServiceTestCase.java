@@ -12,9 +12,9 @@ import java.io.IOException;
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-public class AnalyticsServiceTestCase extends AbstractJerseyTestCase {
+public class JsonAnalyticsServiceTestCase extends AbstractJerseyTestCase {
 
-    public AnalyticsServiceTestCase() {
+    public JsonAnalyticsServiceTestCase() {
         super(9995);
     }
 
