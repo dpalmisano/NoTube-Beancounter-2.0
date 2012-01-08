@@ -5,10 +5,7 @@ import tv.notube.analytics.AnalyzerException;
 import tv.notube.analytics.DefaultAnalyzerImpl;
 import tv.notube.analytics.analysis.AnalysisDescription;
 import tv.notube.analytics.analysis.MethodDescription;
-import tv.notube.analytics.analysis.custom.ActivityAnalysis;
-import tv.notube.analytics.analysis.custom.ActivityAnalysisResult;
-import tv.notube.analytics.analysis.custom.TimeFrameAnalysis;
-import tv.notube.analytics.analysis.custom.TimeFrameAnalysisResult;
+import tv.notube.analytics.analysis.custom.*;
 import tv.notube.commons.storage.alog.DefaultActivityLogImpl;
 import tv.notube.commons.storage.kvs.KVStore;
 import tv.notube.commons.storage.kvs.mybatis.MyBatisKVStore;
@@ -35,6 +32,8 @@ public class Runner {
     private static final String TIMEFRAME_ANALYSIS = "timeframe-analysis";
 
     private static final String ACTIVITY_ANALYSIS = "activity-analysis";
+
+    private static final String WYWOL_ANALYSIS = "wywol-analysis";
 
     private static String OWNER = "user-manager-%s";
 
@@ -137,8 +136,33 @@ public class Runner {
                 TimeFrameAnalysisResult.class.getCanonicalName(),
                 tfdMds
         );
+
+        MethodDescription getPercentage;
+        getPercentage = new MethodDescription(
+                "getPercentages",
+                "returns watch or listen percentages per each time slice 0 to 3",
+                new String[] { "java.lang.Integer" }
+        );
+        MethodDescription getNumbers;
+        getNumbers = new MethodDescription(
+                "getNumbers",
+                "returns watch or listen absolute numbers per each time slice 0 to 3",
+                new String[] { "java.lang.Integer" }
+        );
+        Set<MethodDescription> wywoladmds = new HashSet<MethodDescription>();
+        wywoladmds.add(getPercentage);
+        wywoladmds.add(getNumbers);
+        AnalysisDescription wywolad =  new AnalysisDescription(
+                WYWOL_ANALYSIS,
+                "returns watch or listen absolute numbers per each time slice 0 to 3",
+                getWywolQuery(),
+                WhenYouWatchOrListenAnalysis.class.getCanonicalName(),
+                WhenYouWatchOrListenAnalysisResult.class.getCanonicalName(),
+                wywoladmds
+        );
         analyzer.registerAnalysis(aad, true);
         analyzer.registerAnalysis(tad, true);
+        analyzer.registerAnalysis(wywolad, true);
     }
 
     private static Analyzer getAnalyzer() {
@@ -165,6 +189,16 @@ public class Runner {
         query.push(Query.Boolean.OR);
         Field watched = new StringField("verb", "WATCHED");
         query.push(watched, Query.Math.EQ);
+        return query;
+    }
+
+    private static Query getWywolQuery() {
+        Query query = new Query();
+        Field tweet = new StringField("verb", "LISTEN");
+        query.push(tweet, Query.Math.EQ);
+        query.push(Query.Boolean.OR);
+        Field listen = new StringField("verb", "WATCHED");
+        query.push(listen, Query.Math.EQ);
         return query;
     }
 
