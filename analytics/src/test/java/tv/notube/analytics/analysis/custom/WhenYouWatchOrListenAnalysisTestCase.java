@@ -47,7 +47,7 @@ public class WhenYouWatchOrListenAnalysisTestCase {
     @Test
     public void testRun() throws AnalysisException {
         AnalysisResult analysisResult =
-                analysis.run("user-manager-cf227e63-f01d-4a2c-a747-90362b2d0531");
+                analysis.run("user-manager-d894906e-c0be-4b2f-9049-eb56a614c3f2");
         WhenYouWatchOrListenAnalysisResult tar =
                 (WhenYouWatchOrListenAnalysisResult) analysisResult;
         Assert.assertNotNull(tar);

@@ -10,6 +10,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
 
 /**
  * put class description here
@@ -73,6 +77,15 @@ public class ServiceTestCase {
             return;
         }
         Assert.assertTrue(false);
+    }
+
+    @Test
+    public void testUrl() throws UnsupportedEncodingException, MalformedURLException {
+        URL finalRedirectUrl;
+            finalRedirectUrl = new URL(
+                    "http://" + URLDecoder.decode("demos.polymedia.it%2FNotube_Portal%2Fprofile.jsp%3Fid%3D5071%26session%3DjbPVkK40xX9S0htTsfXdi878N%26return%3Dsocialsubscription", "UTF-8")
+            );
+        System.out.print(finalRedirectUrl);
     }
 
 }
