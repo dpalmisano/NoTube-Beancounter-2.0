@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-public class SkosProfilingLineItemTestCase {
+public class DBpediaProfilingLineItemTestCase {
 
     private ProfilingLineItem initItem;
 
