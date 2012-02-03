@@ -4,22 +4,13 @@ import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import tv.notube.profiler.container.ProfilingLineContainer;
 import tv.notube.profiler.container.ProfilingLineContainerException;
-import tv.notube.profiler.data.DataManager;
 import tv.notube.profiler.data.DataManagerConfiguration;
 import tv.notube.profiler.data.DataManagerException;
-import tv.notube.profiler.line.ProfilingLine;
-import tv.notube.profiler.line.ProfilingLineItem;
-import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreConfiguration;
 import tv.notube.profiler.storage.ProfileStoreException;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Reference test class for {@link ConfigurationManager}.

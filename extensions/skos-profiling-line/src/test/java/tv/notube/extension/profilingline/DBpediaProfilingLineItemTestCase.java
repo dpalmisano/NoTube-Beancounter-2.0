@@ -4,31 +4,31 @@ import org.joda.time.DateTime;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import tv.notube.commons.model.UserActivities;
-import tv.notube.commons.model.activity.Activity;
-import tv.notube.commons.model.activity.Context;
-import tv.notube.commons.model.activity.Song;
-import tv.notube.commons.model.activity.Tweet;
-import tv.notube.commons.model.activity.Verb;
+import tv.notube.commons.model.activity.*;
 import tv.notube.profiler.line.ProfilingLineItem;
 import tv.notube.profiler.line.ProfilingLineItemException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
 public class DBpediaProfilingLineItemTestCase {
 
+    // private static final String API_KEY = "04490000a72fe7ec5cb3497f14e77f338c86f2fe";
+
+    private static final String API_KEY = "682289043b579238db5b7cb0aa25b88be3e2ef0e";
+
     private ProfilingLineItem initItem;
 
     private ProfilingLineItem textItem;
 
     private ProfilingLineItem mbItem;
-
-    private ProfilingLineItem skos;
 
     private ProfilingLineItem weight;
 
@@ -38,14 +38,15 @@ public class DBpediaProfilingLineItemTestCase {
     @BeforeTest
     public void setUp() {
         initItem = new InitProfilingLineItem("init", "prepares the objects");
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("apikey", API_KEY);
         textItem = new TwitterLinkerProfilingLineItem(
                 "twitter-linker",
-                "it provides dbpedia URLs from Tweets"
-        );
+                "it provides dbpedia URLs from Tweets",
+                parameters);
         mbItem = new MusicBrainzLinkerProfilingLineItem(
                 "music-brainz", "links to dbpedia resolving mbrainz ids"
         );
-        skos = new SkosProfilingLineItem("skos", "resolving SKOS subjects");
         weight = new WeightingProfilingLineItem("weight", "weighting interests");
 
         building = new ProfileBuildingProfilingLineItem("build",
@@ -55,8 +56,7 @@ public class DBpediaProfilingLineItemTestCase {
                 "this just dumps")
         );
         weight.setNextProfilingLineItem(building);
-        skos.setNextProfilingLineItem(weight);
-        mbItem.setNextProfilingLineItem(skos);
+        mbItem.setNextProfilingLineItem(weight);
         textItem.setNextProfilingLineItem(mbItem);
         initItem.setNextProfilingLineItem(textItem);
     }

@@ -5,6 +5,8 @@ import tv.notube.usermanager.services.auth.facebook.FacebookAuthHandler;
 import tv.notube.usermanager.services.auth.lastfm.LastFmAuthHandler;
 import tv.notube.usermanager.services.auth.twitter.TwitterAuthHandler;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -14,82 +16,62 @@ import java.net.URL;
  */
 public class ServiceAuthorizationManagerFactory {
 
-    private static ServiceAuthorizationManagerFactory instance =
-            new ServiceAuthorizationManagerFactory();
+    private static ServiceAuthorizationManagerFactory instance;
 
-    public static ServiceAuthorizationManagerFactory getInstance() {
+    public static ServiceAuthorizationManagerFactory getInstance(
+            ServiceAuthorizationManagerConfiguration samc
+    ) {
+        if(instance == null) {
+            instance = new ServiceAuthorizationManagerFactory(samc);
+        }
         return instance;
     }
 
     private ServiceAuthorizationManager sam;
 
-    private ServiceAuthorizationManagerFactory() {
+    private ServiceAuthorizationManagerFactory(
+            ServiceAuthorizationManagerConfiguration samc
+    ) {
         sam = new DefaultServiceAuthorizationManager();
-        // TODO (high) this should be done via configuration file
-        Service lastfm = new Service();
-        lastfm.setName("lastfm");
-        lastfm.setDescription("Provides access to Lastfm user data");
-        lastfm.setApikey("9f57b916d7ab90a7bf562b9e6f2385f0");
-        lastfm.setSecret("c57210237463dc19277b840727b7f11d");
-        lastfm.setSessionEndpoint("http://ws.audioscrobbler.com/2.0/?");
-        try {
-            lastfm.setEndpoint(new URL("http://ws.audioscrobbler.com/2.0/?"));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(
-                    "LastFM endpoint URL is not wellformed",
-                    e
-            );
+        for(Service service : samc.getServices()) {
+            Class<? extends AuthHandler> handlerClass = samc.getServiceHandler(service.getName());
+            AuthHandler handler = getHandlerInstance(handlerClass, service);
+            try {
+                sam.addHandler(service, handler);
+            } catch (ServiceAuthorizationManagerException e) {
+                final String errMsg = "Error while registering handler for " +
+                        "service [" + service.getName() + "]";
+                throw new RuntimeException(errMsg, e);
+            }
         }
-        try {
-            sam.addHandler(lastfm, new LastFmAuthHandler(lastfm));
-        } catch (ServiceAuthorizationManagerException e) {
-            throw new RuntimeException("Error while registering handler", e);
-        }
+    }
 
-        Service twitter = new Service();
-        twitter.setName("twitter");
-        twitter.setDescription("Provide access to Twitter user data");
-        twitter.setApikey("Vs9UkC1ZhE3pT9P4JwbA");
-        twitter.setSecret("BRDzw6MFJB3whzmm1rWlzjsD5LoXJmlmYT40lhravRs");
-        twitter.setSessionEndpoint("https://api.twitter.com/oauth/request_token");
+    private AuthHandler getHandlerInstance(
+            Class<? extends AuthHandler> handlerClass,
+            Service service
+    ) {
+        Constructor<AuthHandler> constructor;
         try {
-            twitter.setEndpoint(new URL("https://api.twitter.com/1/statuses/user_timeline.json"));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(
-                    "LastFM endpoint URL is not wellformed",
-                    e
-            );
+            constructor = (Constructor<AuthHandler>) handlerClass.getConstructor(Service.class);
+        } catch (NoSuchMethodException e) {
+            final String errMsg = "cannot find auth handler constructor for" +
+                    "for service [" + service.getName() + "]";
+            throw new RuntimeException(errMsg, e);
         }
         try {
-            sam.addHandler(twitter, new TwitterAuthHandler(twitter));
-        } catch (ServiceAuthorizationManagerException e) {
-            throw new RuntimeException(
-                    "Error while registering twitter handler",
-                    e
-            );
-        }
-
-        Service facebook = new Service();
-        facebook.setName("facebook");
-        facebook.setDescription("Provide access to Facebook user data");
-        facebook.setApikey("313412168683100");
-        facebook.setSecret("cc040c3b120491bcec98498dd81fc2a5");
-        facebook.setSessionEndpoint("");
-        try {
-            facebook.setEndpoint(new URL("https://graph.facebook.com/me/likes"));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(
-                    "Facebook endpoint URL is not well-formed",
-                    e
-            );
-        }
-        try {
-            sam.addHandler(facebook, new FacebookAuthHandler(facebook));
-        } catch (ServiceAuthorizationManagerException e) {
-            throw new RuntimeException(
-                    "Error while registering twitter handler",
-                    e
-            );
+            return constructor.newInstance(service);
+        } catch (InstantiationException e) {
+            final String errMsg = "Error while instantiating authhandler for " +
+                    "service [" + service.getName() + "]";
+            throw new RuntimeException(errMsg, e);
+        } catch (IllegalAccessException e) {
+            final String errMsg = "Error while accessing authhandler " +
+                    "constructor for service [" + service.getName() + "]";
+            throw new RuntimeException(errMsg, e);
+        } catch (InvocationTargetException e) {
+            final String errMsg = "Error while invoking authhandler for " +
+                    "service [" + service.getName() + "]";
+            throw new RuntimeException(errMsg, e);
         }
     }
 

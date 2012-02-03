@@ -84,8 +84,7 @@ public class SpiderTest {
 
         */
 
-        Service twitter = new Service();
-        twitter.setName("twitter");
+        Service twitter = new Service("twitter");
         user.addService(twitter.getName(), new OAuthAuth(
                 "14656799-yAIIzOoFT8ILah3AaDLX4eG3DEPUNhP9d8tqafys",
                 "em5rrY6IzNwmauUlecsf7zbdaUXZaDdLj4jNRq6TI50")

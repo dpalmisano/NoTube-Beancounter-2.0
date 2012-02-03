@@ -4,14 +4,19 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
+import tv.notube.commons.model.Service;
 import tv.notube.commons.storage.kvs.configuration.KVStoreConfiguration;
 import tv.notube.profiler.data.DataManagerConfiguration;
 import tv.notube.profiler.data.DataManagerConfigurationException;
 import tv.notube.profiler.data.DataManagerException;
 import tv.notube.profiler.storage.ProfileStoreConfiguration;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
+import tv.notube.usermanager.services.auth.AuthHandler;
+import tv.notube.usermanager.services.auth.ServiceAuthorizationManagerConfiguration;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -81,9 +86,23 @@ public class ConfigurationManager {
                 String itemName = plineItem.getString("name");
                 String itemDescription = plineItem.getString("description");
                 String itemClazz = plineItem.getString("class");
-                ProfilingLineItemDescription plid = new ProfilingLineItemDescription(itemName, itemDescription, itemClazz);
+                List<HierarchicalConfiguration> parameters =
+                        plineItem.configurationsAt("parameters");
+                Map<String, String> parametersMap = new HashMap<String, String>();
+                if(parameters != null) {
+                    for (HierarchicalConfiguration parameter : parameters) {
+                        String parameterName = parameter.getString("parameter.name");
+                        String parameterValue = parameter.getString("parameter.value");
+                        parametersMap.put(parameterName, parameterValue);
+                    }
+                }
+                ProfilingLineItemDescription plid = new ProfilingLineItemDescription(
+                        itemName,
+                        itemDescription,
+                        itemClazz,
+                        parametersMap
+                );
                 itemsDescriptions.add(plid);
-
             }
             ProfilingLineDescription pld = new ProfilingLineDescription(name, description, clazz, itemsDescriptions);
             configuration.add(pld);
@@ -123,7 +142,15 @@ public class ConfigurationManager {
         String password = kvs.getString("password");
 
         KVStoreConfiguration kvsConf = new KVStoreConfiguration(host, port, db, username, password);
-        UserManagerConfiguration umc = new UserManagerConfiguration(1000, kvsConf);
+        ServiceAuthorizationManagerConfiguration samc =
+                initServiceAuthorizationManagerConfiguration();
+        Properties alogProperties = initAlogProperties();
+        UserManagerConfiguration umc = new UserManagerConfiguration(
+                1000,
+                kvsConf,
+                samc,
+                alogProperties
+        );
         dataManagerConfiguration = new DataManagerConfiguration(umc);
 
         List<HierarchicalConfiguration> keys = dmc.configurationsAt("keys.key");
@@ -141,6 +168,20 @@ public class ConfigurationManager {
             }
         }
         configuration.setDataManagerConfiguration(dataManagerConfiguration);
+    }
+
+    private Properties initAlogProperties() {
+                HierarchicalConfiguration alog = xmlConfiguration.configurationAt("alog");
+        String host = alog.getString("host");
+        int port = alog.getInt("port");
+        String db = alog.getString("db");
+        String username = alog.getString("username");
+        String password = alog.getString("password");
+        Properties alogProperties = new Properties();
+        alogProperties.setProperty("url", "jdbc:mysql://"+ host + ":" + port + "/" + db);
+        alogProperties.setProperty("username", username);
+        alogProperties.setProperty("password", password);
+        return alogProperties;
     }
 
     private void checkKeysIntegrity() throws DataManagerException {
@@ -162,6 +203,58 @@ public class ConfigurationManager {
 
     public ProfilerConfiguration getConfiguration() {
         return configuration;
+    }
+
+    private ServiceAuthorizationManagerConfiguration initServiceAuthorizationManagerConfiguration() {
+        List<HierarchicalConfiguration> serviceConfs = xmlConfiguration
+                .configurationsAt("services.service");
+
+        ServiceAuthorizationManagerConfiguration samc = new ServiceAuthorizationManagerConfiguration();
+        for(HierarchicalConfiguration serviceConf : serviceConfs) {
+            String name = serviceConf.getString("[@name]");
+            String handler = serviceConf.getString("[@handler]");
+            String description = serviceConf.getString("description");
+            String apikey = serviceConf.getString("apikey");
+            String secret = serviceConf.getString("secret");
+            String session = serviceConf.getString("session");
+            String endpoint = serviceConf.getString("endpoint");
+            Service service =  new Service(name);
+            service.setApikey(apikey);
+            service.setDescription(description);
+            service.setSecret(secret);
+            try {
+                service.setEndpoint(new URL(endpoint));
+            } catch (MalformedURLException e) {
+                final String errMsg = "endpoint for service [" + name + "]" +
+                        "is not well-formed";
+                throw new RuntimeException(errMsg, e);
+            }
+            if (session.equals("")) {
+                service.setSessionEndpoint(null);
+            } else {
+                try {
+                    service.setSessionEndpoint(new URL(session));
+                } catch (MalformedURLException e) {
+                    final String errMsg = "session for service [" + name + "]" +
+                            "is not well-formed";
+                    throw new RuntimeException(errMsg, e);
+                }
+            }
+            Class<? extends AuthHandler> handlerClass = getHandler(handler);
+            samc.addService(service, handlerClass);
+        }
+        return samc;
+    }
+
+    private Class<? extends AuthHandler> getHandler(String handler) {
+        Class<? extends AuthHandler> handlerClass;
+        try {
+            handlerClass = (Class<? extends AuthHandler>) Class.forName(handler);
+        } catch (ClassNotFoundException e) {
+            final String errMsg = "Class [" + handler + "] not found";
+            throw new RuntimeException(errMsg, e);
+        }
+        return handlerClass;
     }
 
 }

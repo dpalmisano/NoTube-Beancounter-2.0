@@ -135,8 +135,6 @@ public class TwitterResponse  implements ServiceResponse<List<Activity>> {
                 try {
                     bbcProgramme = bbc.getProgramme(programmeUrl);
                 } catch (BBCException e) {
-                    // just skip but log
-                    // TODO add log
                     continue;
                 }
                 programmes.add(bbcProgramme);

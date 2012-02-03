@@ -4,6 +4,7 @@ import junit.framework.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import tv.notube.commons.skos.ConfigurationManager;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,7 +21,10 @@ public class SkosTestCase {
 
     @BeforeTest
     public void setUp() {
-        skos = new Skos();
+        SkosConfiguration skosConfiguration = ConfigurationManager
+                .getInstance("skos-configuration.xml")
+                .getSkosConfiguration();
+        skos = new Skos(skosConfiguration);
     }
 
     @AfterTest

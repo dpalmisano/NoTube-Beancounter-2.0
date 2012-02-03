@@ -13,22 +13,24 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
 public class TwitterLinkerProfilingLineItem extends ProfilingLineItem {
 
-    // TODO (high) this should be passed as configuration parameter.
-    private static final String API_KEY = "04490000a72fe7ec5cb3497f14e77f338c86f2fe";
-
     private static String TWITTER = "http://twitter.com";
 
     private AlchemyAPI alchemyAPI;
 
-    public TwitterLinkerProfilingLineItem(String name, String description) {
-        super(name, description);
-        alchemyAPI = new AlchemyAPI(API_KEY);
+    public TwitterLinkerProfilingLineItem(
+            String name,
+            String description,
+            Map<String, String> parameters
+    ) {
+        super(name, description, parameters);
+        alchemyAPI = new AlchemyAPI(parameters.get("apikey"));
     }
 
     @Override

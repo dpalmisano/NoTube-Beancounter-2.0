@@ -23,7 +23,11 @@ public class Service implements Serializable {
 
     private String authRequest;
 
-    private String sessionEndpoint;
+    private URL sessionEndpoint;
+
+    public Service(String name) {
+        this.name = name;
+    }
 
     public String getName() {
         return name;
@@ -94,11 +98,11 @@ public class Service implements Serializable {
         return name != null ? name.hashCode() : 0;
     }
 
-    public void setSessionEndpoint(String sessionEndpoint) {
+    public void setSessionEndpoint(URL sessionEndpoint) {
         this.sessionEndpoint = sessionEndpoint;
     }
 
-    public String getSessionEndpoint() {
+    public URL getSessionEndpoint() {
         return sessionEndpoint;
     }
 }

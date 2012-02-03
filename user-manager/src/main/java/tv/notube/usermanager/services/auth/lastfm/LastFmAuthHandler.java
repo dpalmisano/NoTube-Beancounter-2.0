@@ -16,6 +16,7 @@ import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class LastFmAuthHandler extends DefaultAuthHandler {
     }
 
     public User auth(User user, String token) throws AuthHandlerException {
-        String authEndpoint = service.getSessionEndpoint();
+        String authEndpointString = service.getSessionEndpoint().toString();
         String apikey = service.getApikey();
         Map<String, String> params = new HashMap<String, String>();
         params.put("api_key", apikey);
@@ -47,12 +48,12 @@ public class LastFmAuthHandler extends DefaultAuthHandler {
         String api_sig = getApiSig(params, service.getSecret());
         params.put("format", "json");
         for (String name : asSortedList(params.keySet())) {
-            authEndpoint += name + "=" + params.get(name) + "&";
+            authEndpointString += name + "=" + params.get(name) + "&";
         }
-        authEndpoint += "api_sig=" + api_sig;
-        logger.info("auth endpoint=" + authEndpoint);
+        authEndpointString += "api_sig=" + api_sig;
+        logger.info("auth endpoint=" + authEndpointString);
 
-        HttpGet method = new HttpGet(authEndpoint);
+        HttpGet method = new HttpGet(authEndpointString);
         LastFmResponse response;
         ResponseHandler<LastFmResponse> lrh = new LastFmResponseHandler();
         try {

@@ -3,6 +3,8 @@ package tv.notube.analytics.analysis.custom;
 import org.joda.time.DateTime;
 import tv.notube.analytics.analysis.AnalysisResult;
 
+import java.sql.Time;
+
 /**
  * put class description here
  *
@@ -30,8 +32,20 @@ public class WhenYouWatchOrListenAnalysisResult extends AnalysisResult {
         return this.slice[slice] / (double) total * 100;
     }
 
-    public int getNumber(Integer slice) {
+    public int getNumbers(Integer slice) {
         return this.slice[slice];
+    }
+
+    public TimeSlice getSlice() {
+        double[] percentage = new double[4];
+        for(int i=0; i < percentage.length; i++) {
+            if(total == 0) {
+                percentage[i] = 0.0;
+            } else {
+                percentage[i] = slice[i] / (double) total * 100;
+            }
+        }
+        return new TimeSlice(percentage);
     }
 
 }

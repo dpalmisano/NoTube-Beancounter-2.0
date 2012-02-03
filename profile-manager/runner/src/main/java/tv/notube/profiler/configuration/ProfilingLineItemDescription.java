@@ -1,5 +1,8 @@
 package tv.notube.profiler.configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
@@ -11,6 +14,8 @@ public class ProfilingLineItemDescription {
 
     private String clazz;
 
+    private Map<String, String> parameters = new HashMap<String, String>();
+
     public ProfilingLineItemDescription(
             String name,
             String description,
@@ -19,6 +24,16 @@ public class ProfilingLineItemDescription {
         this.name = name;
         this.description = description;
         this.clazz = clazz;
+    }
+
+    public ProfilingLineItemDescription(
+            String name,
+            String description,
+            String clazz,
+            Map<String, String> parameters
+    ) {
+        this(name, description, clazz);
+        this.parameters = parameters;
     }
 
     public String getName() {
@@ -43,5 +58,15 @@ public class ProfilingLineItemDescription {
 
     public void setClazz(String clazz) {
         this.clazz = clazz;
+    }
+
+    @Override
+    public String toString() {
+        return "ProfilingLineItemDescription{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", clazz='" + clazz + '\'' +
+                ", parameters=" + parameters +
+                '}';
     }
 }

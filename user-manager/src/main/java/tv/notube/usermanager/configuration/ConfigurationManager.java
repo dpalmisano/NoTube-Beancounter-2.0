@@ -3,8 +3,15 @@ package tv.notube.usermanager.configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.log4j.Logger;
+import tv.notube.commons.model.Service;
 import tv.notube.commons.storage.kvs.configuration.KVStoreConfiguration;
+import tv.notube.usermanager.services.auth.AuthHandler;
+import tv.notube.usermanager.services.auth.ServiceAuthorizationManagerConfiguration;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Davide Palmiaano ( dpalmisano@gmail.com )
@@ -17,9 +24,11 @@ public class ConfigurationManager {
 
     private KVStoreConfiguration KVStoreConfiguration;
 
+    private ServiceAuthorizationManagerConfiguration samc;
+
     private UserManagerConfiguration userManagerConfiguration;
 
-    private static Logger logger = Logger.getLogger(ConfigurationManager.class);
+    private Properties alogProperties;
 
     public static ConfigurationManager getInstance(String filePath) {
         if (instance == null)
@@ -42,7 +51,78 @@ public class ConfigurationManager {
         }
         long pr = initProfilingRate();
         initRecommenderStorageConfiguration();
-        userManagerConfiguration = new UserManagerConfiguration(pr, KVStoreConfiguration);
+        initServiceAuthorizationManagerConfiguration();
+        initActivityLog();
+        userManagerConfiguration = new UserManagerConfiguration(
+                pr,
+                KVStoreConfiguration,
+                samc,
+                alogProperties
+        );
+    }
+
+    private void initActivityLog() {
+        HierarchicalConfiguration alog = xmlConfiguration.configurationAt("alog");
+        String host = alog.getString("host");
+        int port = alog.getInt("port");
+        String db = alog.getString("db");
+        String username = alog.getString("username");
+        String password = alog.getString("password");
+        alogProperties = new Properties();
+        alogProperties.setProperty("url", "jdbc:mysql://"+ host + ":" + port + "/" + db);
+        alogProperties.setProperty("username", username);
+        alogProperties.setProperty("password", password);
+    }
+
+    private void initServiceAuthorizationManagerConfiguration() {
+        List<HierarchicalConfiguration> serviceConfs = xmlConfiguration
+                .configurationsAt("services.service");
+
+        samc = new ServiceAuthorizationManagerConfiguration();
+        for (HierarchicalConfiguration serviceConf : serviceConfs) {
+            String name = serviceConf.getString("[@name]");
+            String handler = serviceConf.getString("[@handler]");
+            String description = serviceConf.getString("description");
+            String apikey = serviceConf.getString("apikey");
+            String secret = serviceConf.getString("secret");
+            String session = serviceConf.getString("session");
+            String endpoint = serviceConf.getString("endpoint");
+            Service service = new Service(name);
+            service.setApikey(apikey);
+            service.setDescription(description);
+            service.setSecret(secret);
+            try {
+                service.setEndpoint(new URL(endpoint));
+            } catch (MalformedURLException e) {
+                final String errMsg = "endpoint for service [" + name + "]" +
+                        "is not well-formed";
+                throw new RuntimeException(errMsg, e);
+            }
+            if (session.equals("")) {
+                service.setSessionEndpoint(null);
+            } else {
+                try {
+                    service.setSessionEndpoint(new URL(session));
+                } catch (MalformedURLException e) {
+                    final String errMsg = "session for service [" + name + "]" +
+                            "is not well-formed";
+                    throw new RuntimeException(errMsg, e);
+                }
+            }
+            Class<? extends AuthHandler> handlerClass = getHandler(handler);
+            samc.addService(service, handlerClass);
+        }
+    }
+
+    private Class<? extends AuthHandler> getHandler(String handler) {
+        Class<? extends AuthHandler> handlerClass;
+        try {
+            handlerClass = (Class<? extends AuthHandler>) Class.forName(handler);
+        } catch (ClassNotFoundException e) {
+            final String errMsg = "Class [" + handler + "] not found";
+            throw new RuntimeException(errMsg, e);
+        }
+        return handlerClass;
     }
 
     private long initProfilingRate() {
@@ -50,7 +130,7 @@ public class ConfigurationManager {
     }
 
     private void initRecommenderStorageConfiguration() {
-        HierarchicalConfiguration pstore = xmlConfiguration.configurationAt("relational");
+        HierarchicalConfiguration pstore = xmlConfiguration.configurationAt("kvs");
         String host = pstore.getString("host");
         int port = pstore.getInt("port");
         String db = pstore.getString("db");

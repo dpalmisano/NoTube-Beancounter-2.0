@@ -10,7 +10,7 @@ public class InstanceManager {
     private Skos skosService;
 
     public InstanceManager() {
-        skosService = new Skos();
+        skosService = LoaderInstanceManager.getInstance().getSkos();
     }
 
     public Skos getSkos() {

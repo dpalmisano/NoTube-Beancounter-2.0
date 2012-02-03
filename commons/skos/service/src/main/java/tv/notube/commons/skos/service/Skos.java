@@ -4,7 +4,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * put class description here
@@ -17,13 +16,8 @@ public class Skos {
 
     private SkosDao skosDao;
 
-    public Skos() {
-        // TODO (high) make this configuarable
-        Properties properties = new Properties();
-        properties.setProperty("url", "jdbc:mysql://moth.notube.tv:3306/beancounter");
-        properties.setProperty("username", "notube");
-        properties.setProperty("password", "notubepass");
-        skosDao = new SkosDao(properties);
+    public Skos(SkosConfiguration skosConfiguration) {
+        skosDao = new SkosDao(skosConfiguration.getProperties());
     }
 
     public List<URI> getSkos(URI resourceUri) throws SkosException {

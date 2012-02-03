@@ -46,13 +46,11 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
         super(configuration);
         Properties prop = configuration.getKvStoreConfiguration().getProperties();
         kvs = new MyBatisKVStore(prop, new SerializationManager());
-        // TODO (high) - refactor and make configurable
-        Properties properties = new Properties();
-        properties.setProperty("url", "jdbc:mysql://127.0.0.1:3306/alog");
-        properties.setProperty("username", "alog");
-        properties.setProperty("password", "alog");
-        alog = new DefaultActivityLogImpl(properties);
-        sam = ServiceAuthorizationManagerFactory.getInstance().build();
+        Properties alogProperties = configuration.getActivityLogProperties();
+        alog = new DefaultActivityLogImpl(alogProperties);
+        ServiceAuthorizationManagerConfiguration samc = configuration
+                .getServiceAuthorizationManagerConfiguration();
+        sam = ServiceAuthorizationManagerFactory.getInstance(samc).build();
     }
 
     public void storeUser(User user) throws UserManagerException {
@@ -198,9 +196,12 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
             throw new UserManagerException(errMsg);
         }
         tv.notube.commons.storage.model.Activity activities[];
+        DateTime now = new DateTime();
+        DateTime monthAgo = now.minusMonths(1);
         try {
             activities = alog.filter(
-                    new DateTime(),
+                    monthAgo,
+                    now,
                     String.format(USER_ACTIVITY_OWNER, userId.toString())
             );
         } catch (ActivityLogException e) {

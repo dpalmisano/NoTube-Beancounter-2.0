@@ -77,6 +77,7 @@ public class Runner {
     }
 
     private static void initAnalyzer(Analyzer analyzer) throws AnalyzerException {
+        // TODO (high) this should be done programmatically
         MethodDescription getAmount;
         getAmount = new MethodDescription(
                 "getNumberOfActivitiesByVerb",
@@ -149,9 +150,16 @@ public class Runner {
                 "returns watch or listen absolute numbers per each time slice 0 to 3",
                 new String[] { "java.lang.Integer" }
         );
+        MethodDescription getSlice;
+        getSlice = new MethodDescription(
+                "getSlice",
+                "returns watch or listen percentage in one single call",
+                new String[] { }
+        );
         Set<MethodDescription> wywoladmds = new HashSet<MethodDescription>();
         wywoladmds.add(getPercentage);
         wywoladmds.add(getNumbers);
+        wywoladmds.add(getSlice);
         AnalysisDescription wywolad =  new AnalysisDescription(
                 WYWOL_ANALYSIS,
                 "returns watch or listen absolute numbers per each time slice 0 to 3",

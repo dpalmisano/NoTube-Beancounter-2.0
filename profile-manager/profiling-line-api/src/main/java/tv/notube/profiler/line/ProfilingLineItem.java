@@ -1,5 +1,8 @@
 package tv.notube.profiler.line;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This class represents a generic {@link ProfilingLine} item
  * able to manipulate an object.
@@ -14,11 +17,25 @@ public abstract class ProfilingLineItem {
 
     private String description;
 
+    private Map<String, String> parameters = new HashMap<String, String>();;
+
     protected ProfilingLineItem next;
 
-    protected ProfilingLineItem(String name, String description) {
+    protected ProfilingLineItem(
+            String name,
+            String description
+    ) {
         this.name = name;
         this.description = description;
+    }
+
+    protected ProfilingLineItem(
+            String name,
+            String description,
+            Map<String,String> parameters
+    ) {
+        this(name, description);
+        this.parameters = parameters;
     }
 
     public String getName() {
@@ -35,6 +52,10 @@ public abstract class ProfilingLineItem {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getParameter(String name) {
+        return parameters.get(name);
     }
 
     public void setNextProfilingLineItem(ProfilingLineItem profilingLineItem) {
@@ -65,8 +86,10 @@ public abstract class ProfilingLineItem {
     @Override
     public String toString() {
         return "ProfilingLineItem{" +
-                "name=" + name +
+                "name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", parameters=" + parameters +
+                ", next=" + next +
                 '}';
     }
 

@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
  */
 public class ConfigurationManagerTestCase {
 
-    private final static String CONFIG_FILE = "src/test/resources/tv/notube/usermanager/configuration/user-manager-configuration.xml";
+    private final static String CONFIG_FILE = "tv/notube/usermanager/configuration/user-manager-configuration.xml";
 
     private ConfigurationManager configurationManager;
 
@@ -29,6 +29,13 @@ public class ConfigurationManagerTestCase {
         UserManagerConfiguration userManagerConfiguration =
                 configurationManager.getUserManagerConfiguration();
         Assert.assertNotNull(userManagerConfiguration);
+        Assert.assertEquals(
+                userManagerConfiguration
+                        .getServiceAuthorizationManagerConfiguration()
+                        .getServices()
+                        .size(),
+                3
+        );
     }
 
 }

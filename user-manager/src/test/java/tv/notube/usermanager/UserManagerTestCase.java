@@ -11,7 +11,6 @@ import tv.notube.commons.model.User;
 import tv.notube.commons.model.activity.*;
 import tv.notube.usermanager.configuration.ConfigurationManager;
 import tv.notube.usermanager.configuration.UserManagerConfiguration;
-import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -61,8 +60,7 @@ public class UserManagerTestCase {
         user.setProfiledAt(new DateTime());
         user.setUsername("lmiller");
 
-        Service service = new Service();
-        service.setName("facebook");
+        Service service = new Service("facebook");
         user.addService(
                 service.getName(),
                 new SimpleAuth("fake-session","lmiller")
@@ -88,8 +86,7 @@ public class UserManagerTestCase {
         user.setProfiledAt(new DateTime());
         user.setUsername("lmiller");
 
-        Service service = new Service();
-        service.setName("facebook");
+        Service service = new Service("facebook");
         user.addService(
                 service.getName(),
                 new SimpleAuth("fake-session","lmiller")
