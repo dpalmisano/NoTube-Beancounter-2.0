@@ -1,8 +1,6 @@
 package tv.notube.commons.configuration.profiler;
 
 
-import tv.notube.usermanager.configuration.UserManagerConfiguration;
-
 import java.util.*;
 
 /**
@@ -13,12 +11,6 @@ public class DataManagerConfiguration {
     private Map<String, List<String>> registeredKeys = new HashMap<String, List<String>>();
 
     private Map<String, Class> registeredDataSources = new HashMap<String, Class>();
-
-    private UserManagerConfiguration userManagerConfiguration;
-
-    public DataManagerConfiguration(UserManagerConfiguration umc) {
-        userManagerConfiguration = umc;
-    }
 
     public Map<String, List<String>> getRegisteredKeys() {
         return registeredKeys;
@@ -57,10 +49,6 @@ public class DataManagerConfiguration {
 
     private Class getDataSourceClass(String dataSourceClassName) throws ClassNotFoundException {
         return Class.forName(dataSourceClassName);
-    }
-
-    public UserManagerConfiguration getUserManagerConfiguration() {
-        return userManagerConfiguration;
     }
 
 }

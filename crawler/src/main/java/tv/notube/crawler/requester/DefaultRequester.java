@@ -1,8 +1,7 @@
 package tv.notube.crawler.requester;
 
 import org.apache.log4j.Logger;
-import tv.notube.commons.model.Auth;
-import tv.notube.commons.model.SimpleAuth;
+import tv.notube.commons.model.auth.Auth;
 import tv.notube.commons.model.Service;
 import tv.notube.commons.model.activity.Activity;
 

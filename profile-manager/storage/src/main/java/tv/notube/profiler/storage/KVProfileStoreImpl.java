@@ -7,6 +7,8 @@ import tv.notube.commons.storage.kvs.KVStoreException;
 import tv.notube.commons.storage.model.fields.StringField;
 
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -17,6 +19,8 @@ public class KVProfileStoreImpl implements ProfileStore {
     private static final Logger logger = Logger.getLogger(KVProfileStoreImpl.class);
 
     private final String TABLE = "profiles";
+
+    private Map<String, String> namespaces = new HashMap<String, String>();
 
     private KVStore kvs;
 
@@ -69,6 +73,15 @@ public class KVProfileStoreImpl implements ProfileStore {
     public void export(UUID userId, OutputStream outputStream, Format format)
             throws ProfileStoreException {
         throw new UnsupportedOperationException("NIY");
+    }
+
+    @Override
+    public void setNamespaces(Map<String, String> namespaces) {
+        this.namespaces = namespaces;
+    }
+
+    public Map<String, String> getNamespaces() {
+        return namespaces;
     }
 
 }

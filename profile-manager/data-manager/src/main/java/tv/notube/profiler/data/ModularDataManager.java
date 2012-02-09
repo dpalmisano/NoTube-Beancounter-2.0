@@ -1,8 +1,7 @@
 package tv.notube.profiler.data;
 
-import tv.notube.usermanager.DefaultUserManagerFactory;
+import tv.notube.commons.configuration.profiler.DataManagerConfiguration;
 import tv.notube.usermanager.UserManager;
-import tv.notube.usermanager.UserManagerFactoryException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -16,9 +15,14 @@ public class ModularDataManager extends AbstractDataManager {
 
     private Map<String, DataSource> datasources = new HashMap<String, DataSource>();
 
-    public ModularDataManager(DataManagerConfiguration dataManagerConfiguration)
-            throws DataManagerException {
+    private UserManager userManager;
+
+    public ModularDataManager(
+            UserManager userManager,
+            DataManagerConfiguration dataManagerConfiguration
+    ) throws DataManagerException {
         super(dataManagerConfiguration);
+        this.userManager = userManager;
         for (String key : dataManagerConfiguration.getRegisteredDataSources().keySet()) {
             Class dataSourceClassName = dataManagerConfiguration.getDataSource(key);
             DataSource dataSource;
@@ -27,14 +31,6 @@ public class ModularDataManager extends AbstractDataManager {
                 dsc = dataSourceClassName.getConstructor(UserManager.class);
             } catch (NoSuchMethodException e) {
                 throw new DataManagerException("Error while looking up the proper constructor", e);
-            }
-            UserManager userManager;
-            try {
-                userManager = DefaultUserManagerFactory.getInstance(
-                        dataManagerConfiguration.getUserManagerConfiguration()
-                ).build();
-            } catch (UserManagerFactoryException e) {
-                throw new DataManagerException("Error while loading the User Manager", e);
             }
             try {
                 dataSource = (DataSource) dsc.newInstance(userManager);

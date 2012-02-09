@@ -2,6 +2,8 @@ package tv.notube.commons.configuration.storage;
 
 import tv.notube.commons.configuration.Configuration;
 
+import java.util.Properties;
+
 /**
  * put class description here
  *
@@ -9,22 +11,31 @@ import tv.notube.commons.configuration.Configuration;
  */
 public class StorageConfiguration extends Configuration {
 
-    private long profilingRate;
+    private Properties activityLogProperties;
+
+    private Properties kvsProperties;
 
     public StorageConfiguration(
-            long profilingRate
+            Properties activityLogProperties,
+            Properties kvsProperties
     ) {
-        this.profilingRate = profilingRate;
+        this.activityLogProperties = activityLogProperties;
+        this.kvsProperties = kvsProperties;
     }
 
-    public long getProfilingRate() {
-        return profilingRate;
+    public Properties getActivityLogProperties() {
+        return activityLogProperties;
+    }
+
+    public Properties getKvsProperties() {
+        return kvsProperties;
     }
 
     @Override
     public String toString() {
-        return "UserManagerConfiguration{" +
-                "profilingRate=" + profilingRate +
+        return "StorageConfiguration{" +
+                "activityLogProperties=" + activityLogProperties +
+                ", kvsProperties=" + kvsProperties +
                 "} " + super.toString();
     }
 }

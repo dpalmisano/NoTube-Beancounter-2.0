@@ -3,11 +3,11 @@ package tv.notube.platform;
 import com.sun.jersey.api.core.InjectParam;
 import tv.notube.analytics.Analyzer;
 import tv.notube.analytics.AnalyzerException;
-import tv.notube.analytics.analysis.AnalysisDescription;
 import tv.notube.analytics.analysis.AnalysisResult;
-import tv.notube.analytics.analysis.MethodDescription;
 import tv.notube.applications.ApplicationsManager;
 import tv.notube.applications.ApplicationsManagerException;
+import tv.notube.commons.configuration.analytics.AnalysisDescription;
+import tv.notube.commons.configuration.analytics.MethodDescription;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;

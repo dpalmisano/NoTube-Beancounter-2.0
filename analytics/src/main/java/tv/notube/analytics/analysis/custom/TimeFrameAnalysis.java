@@ -2,6 +2,8 @@ package tv.notube.analytics.analysis.custom;
 
 import org.joda.time.DateTime;
 import tv.notube.analytics.analysis.*;
+import tv.notube.commons.configuration.analytics.AnalysisDescription;
+import tv.notube.commons.configuration.analytics.MethodDescription;
 import tv.notube.commons.storage.model.Activity;
 import tv.notube.commons.storage.model.ActivityLog;
 import tv.notube.commons.storage.model.ActivityLogException;

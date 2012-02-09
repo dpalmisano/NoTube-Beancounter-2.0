@@ -5,6 +5,9 @@ import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import tv.notube.commons.configuration.Configurations;
+import tv.notube.commons.configuration.ConfigurationsException;
+import tv.notube.commons.configuration.storage.StorageConfiguration;
 import tv.notube.commons.model.Interest;
 import tv.notube.commons.model.Type;
 import tv.notube.commons.model.UserProfile;
@@ -32,15 +35,17 @@ import java.util.UUID;
  */
 public class KVProfileStoreImplTestCase {
 
-    private static final String FILEPATH = "src/test/resources/kvs-configuration.xml";
-
     private ProfileStore profileStore;
 
+    private static final String STORAGE_CONF = "storage-configuration.xml";
+
     @BeforeTest
-    public void setUp() {
-        Properties properties = ConfigurationManager.getInstance(FILEPATH)
-                .getKVStoreConfiguration()
-                .getProperties();
+    public void setUp() throws ConfigurationsException {
+        StorageConfiguration storageConfiguration = Configurations.getConfiguration(
+                STORAGE_CONF,
+                StorageConfiguration.class
+        );
+        Properties properties = storageConfiguration.getKvsProperties();
         KVStore kVStore = new MyBatisKVStore(properties, new SerializationManager());
         profileStore = new KVProfileStoreImpl(kVStore);
     }

@@ -1,7 +1,6 @@
 package tv.notube.commons.configuration.profiler;
 
-import tv.notube.profiler.data.DataManagerConfiguration;
-import tv.notube.profiler.storage.ProfileStoreConfiguration;
+import tv.notube.commons.configuration.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.List;
 /**
  * @author Davide Palmisano (dpalmisano@gmail.com)
  */
-public class ProfilerConfiguration {
+public class ProfilerConfiguration extends Configuration {
 
     private DataManagerConfiguration dataManagerConfiguration;
 

@@ -2,7 +2,6 @@ package tv.notube.profiler;
 
 import org.apache.log4j.Logger;
 import tv.notube.commons.model.UserProfile;
-import tv.notube.profiler.configuration.ProfilerConfiguration;
 import tv.notube.profiler.container.ProfilingLineContainer;
 import tv.notube.profiler.container.ProfilingLineContainerException;
 import tv.notube.profiler.data.DataManager;
@@ -13,7 +12,6 @@ import tv.notube.profiler.line.ProfilingResult;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreException;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -32,18 +30,14 @@ public class Profiler {
 
     private ProfileStore profileStore;
 
-    private ProfilerConfiguration profilerConfiguration;
-
     public Profiler(
             DataManager dataManager,
             ProfilingLineContainer profilingLineContainer,
-            ProfileStore profileStore,
-            ProfilerConfiguration profilerConfiguration
+            ProfileStore profileStore
     ) {
         this.dataManager = dataManager;
         this.profilingLineContainer = profilingLineContainer;
         this.profileStore = profileStore;
-        this.profilerConfiguration = profilerConfiguration;
     }
 
     public void run() throws ProfilerException {
@@ -86,11 +80,10 @@ public class Profiler {
                     }
                     UserProfile profileToStore = (UserProfile) profilingResult.getValue();
                     try {
-                        String table = profilerConfiguration
-                                .getProfileStoreConfiguration()
-                                .getNameSpacesConfiguration()
+                        String table = profileStore
+                                .getNamespaces()
                                 .get(key);
-                        logger.debug("Going to write graphs using table: " + table.toString());
+                        logger.debug("Going to write stuff using table: " + table.toString());
                         profileStore.deleteUserProfile(profileToStore.getUsername());
                         profileStore.storeUserProfile(profileToStore);
                     } catch (ProfileStoreException e) {

@@ -1,5 +1,6 @@
 package tv.notube.analytics.analysis;
 
+import tv.notube.commons.configuration.analytics.AnalysisDescription;
 import tv.notube.commons.storage.model.Query;
 
 /**

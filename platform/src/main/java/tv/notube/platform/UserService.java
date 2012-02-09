@@ -5,6 +5,7 @@ import tv.notube.applications.Application;
 import tv.notube.applications.ApplicationsManager;
 import tv.notube.applications.ApplicationsManagerException;
 import tv.notube.applications.Permission;
+import tv.notube.commons.model.OAuthToken;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.UserProfile;
 import tv.notube.commons.model.activity.Activity;
@@ -12,7 +13,6 @@ import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreException;
 import tv.notube.usermanager.UserManager;
 import tv.notube.usermanager.UserManagerException;
-import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

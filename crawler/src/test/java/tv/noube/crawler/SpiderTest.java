@@ -5,8 +5,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import tv.notube.commons.model.OAuthAuth;
-import tv.notube.commons.model.SimpleAuth;
+import tv.notube.commons.model.auth.OAuthAuth;
 import tv.notube.commons.model.Service;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.activity.Activity;
@@ -16,8 +15,6 @@ import tv.notube.usermanager.DefaultUserManagerFactory;
 import tv.notube.usermanager.UserManager;
 import tv.notube.usermanager.UserManagerException;
 import tv.notube.usermanager.UserManagerFactoryException;
-import tv.notube.usermanager.configuration.ConfigurationManager;
-import tv.notube.usermanager.configuration.UserManagerConfiguration;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,8 +26,6 @@ import java.util.UUID;
  */
 public class SpiderTest {
 
-    private static final String CONFIG_FILE = "tv/notube/crawler/configuration/usermanager-configuration.xml";
-
     private UserManager um;
 
     private static final String USERID = "9550da4c-42c2-4ad7-9a94-962b8e4ac3e3";
@@ -41,10 +36,7 @@ public class SpiderTest {
     public void setUp()
             throws UserManagerFactoryException, UserManagerException,
             URISyntaxException, SpiderException {
-        UserManagerConfiguration umc = ConfigurationManager
-                .getInstance(CONFIG_FILE)
-                .getUserManagerConfiguration();
-        um = DefaultUserManagerFactory.getInstance(umc).build();
+        um = DefaultUserManagerFactory.getInstance().build();
         if (!initiCheck(um, USERID)) {
             initUserManager(um);
         }
@@ -54,7 +46,6 @@ public class SpiderTest {
                 UUID.fromString(USERID)
         );
     }
-
 
     private boolean initiCheck(UserManager um, String userid) throws UserManagerException {
         User user = um.getUser(UUID.fromString(userid));

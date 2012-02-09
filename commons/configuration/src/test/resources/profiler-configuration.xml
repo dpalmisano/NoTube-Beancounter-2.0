@@ -1,27 +1,42 @@
-<services>
-    <service name="lastfm"
-             handler="tv.notube.commons.configuration.FakeAuthHandler">
-        <description>Provides access to Lastfm user data</description>
-        <apikey>9f57b916d7ab90a7bf562b9e6f2385f0</apikey>
-        <secret>c57210237463dc19277b840727b7f11d</secret>
-        <session>http://ws.audioscrobbler.com/2.0/?</session>
-        <endpoint>http://ws.audioscrobbler.com/2.0/?</endpoint>
-    </service>
-    <service name="twitter"
-             handler="tv.notube.commons.configuration.FakeAuthHandler">
-        <description>Provides access to Twitter user data</description>
-        <apikey>Vs9UkC1ZhE3pT9P4JwbA</apikey>
-        <secret>BRDzw6MFJB3whzmm1rWlzjsD5LoXJmlmYT40lhravRs</secret>
-        <session>https://api.twitter.com/oauth/request_token</session>
-        <endpoint>https://api.twitter.com/1/statuses/user_timeline.json
-        </endpoint>
-    </service>
-    <service name="facebook"
-             handler="tv.notube.commons.configuration.FakeAuthHandler">
-        <description>Provides access to Facebook user data</description>
-        <apikey>313412168683100</apikey>
-        <secret>cc040c3b120491bcec98498dd81fc2a5</secret>
-        <session></session>
-        <endpoint>https://graph.facebook.com/me/likes</endpoint>
-    </service>
-</services>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<profiler-configuration>
+    <data-manager>
+        <keys>
+            <key name="user" class="tv.notube.commons.configuration.FakeUserDataSource">
+                <lines>
+                    <line>fake-test-profilingline</line>
+                </lines>
+            </key>
+        </keys>
+    </data-manager>
+    <profile-store>
+        <tables>
+            <table name="user">profiles</table>
+        </tables>
+    </profile-store>
+    <profiling-lines>
+        <profiling-line>
+            <name>fake-test-profilingline</name>
+            <description>just a simple test profiling line</description>
+            <class>tv.notube.profiler.configuration.FakeProfilingLine</class>
+            <profiling-line-items>
+                <profiling-line-item>
+                    <name>first</name>
+                    <description>just the first profiling line item</description>
+                    <class>tv.notube.profiler.configuration.FirstSimpleProfilingLineItem</class>
+                    <parameters>
+                        <parameter>
+                            <name>apikey</name>
+                            <value>111222333444555</value>
+                        </parameter>
+                    </parameters>
+                </profiling-line-item>
+                <profiling-line-item>
+                    <name>second</name>
+                    <description>just the second profiling line item</description>
+                    <class>tv.notube.profiler.configuration.SecondSimpleProfilingLineItem</class>
+                </profiling-line-item>
+            </profiling-line-items>
+        </profiling-line>
+    </profiling-lines>
+</profiler-configuration>

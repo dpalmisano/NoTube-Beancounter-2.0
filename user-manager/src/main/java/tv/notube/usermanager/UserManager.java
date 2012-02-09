@@ -1,9 +1,9 @@
 package tv.notube.usermanager;
 
+import tv.notube.commons.model.OAuthToken;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.activity.Activity;
 import tv.notube.usermanager.services.auth.ServiceAuthorizationManager;
-import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
 import java.net.URL;
 import java.util.List;

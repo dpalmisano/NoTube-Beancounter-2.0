@@ -19,6 +19,7 @@
         <module>alchemyapi</module>
     	<module>storage</module>
         <module>skos</module>
+        <module>configuration</module>
   </modules>
 
 </project>

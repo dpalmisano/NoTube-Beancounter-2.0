@@ -5,12 +5,11 @@ import org.scribe.builder.api.FacebookApi;
 import org.scribe.model.Token;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
-import tv.notube.commons.model.OAuthAuth;
-import tv.notube.commons.model.Service;
-import tv.notube.commons.model.User;
-import tv.notube.usermanager.services.auth.AuthHandlerException;
-import tv.notube.usermanager.services.auth.DefaultAuthHandler;
-import tv.notube.usermanager.services.auth.oauth.OAuthToken;
+import tv.notube.commons.model.*;
+import tv.notube.commons.model.auth.DefaultAuthHandler;
+import tv.notube.commons.model.OAuthToken;
+import tv.notube.commons.model.auth.AuthHandlerException;
+import tv.notube.commons.model.auth.OAuthAuth;
 
 import java.net.MalformedURLException;
 import java.net.URL;

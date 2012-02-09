@@ -1,10 +1,8 @@
 package tv.notube.crawler;
 
-import tv.notube.crawler.configuration.CrawlerConfiguration;
 import tv.notube.usermanager.DefaultUserManagerFactory;
 import tv.notube.usermanager.UserManager;
 import tv.notube.usermanager.UserManagerFactoryException;
-import tv.notube.usermanager.configuration.UserManagerConfiguration;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
@@ -13,23 +11,22 @@ public class DefaultCrawlerFactory implements CrawlerFactory {
 
         private static CrawlerFactory instance;
 
-    public static synchronized CrawlerFactory getInstance(
-            CrawlerConfiguration configuration
-    ) {
+    public static synchronized CrawlerFactory getInstance() {
         if(instance == null) {
-            instance = new DefaultCrawlerFactory(configuration);
+            instance = new DefaultCrawlerFactory();
         }
         return instance;
     }
 
-    private DefaultCrawlerFactory(CrawlerConfiguration configuration) {
+    private DefaultCrawlerFactory() {
+        UserManager um;
         try {
-            UserManagerConfiguration umc = configuration.getUserManagerConfiguration();
-            UserManager userManager = DefaultUserManagerFactory.getInstance(umc).build();
-            crawler = new ParallelCrawlerImpl(userManager);
+            um = DefaultUserManagerFactory.getInstance().build();
         } catch (UserManagerFactoryException e) {
-            throw new RuntimeException("Error while building UserManager", e);
+            final String errMsg = "Error while build user manager";
+            throw new RuntimeException(errMsg, e);
         }
+        crawler = new ParallelCrawlerImpl(um);
     }
 
     private Crawler crawler;

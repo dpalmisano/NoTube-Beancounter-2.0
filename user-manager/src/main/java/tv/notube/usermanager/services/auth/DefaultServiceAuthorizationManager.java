@@ -1,5 +1,7 @@
 package tv.notube.usermanager.services.auth;
 
+import tv.notube.commons.model.auth.AuthHandler;
+import tv.notube.commons.model.auth.AuthHandlerException;
 import tv.notube.commons.model.User;
 
 /**

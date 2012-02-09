@@ -2,7 +2,7 @@ package tv.notube.crawler.requester.request;
 
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import tv.notube.commons.model.SimpleAuth;
+import tv.notube.commons.model.auth.SimpleAuth;
 import tv.notube.crawler.requester.DefaultRequest;
 import tv.notube.crawler.requester.RequestException;
 import tv.notube.crawler.requester.ServiceResponse;

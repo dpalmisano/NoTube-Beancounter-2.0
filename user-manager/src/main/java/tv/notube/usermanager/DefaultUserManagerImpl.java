@@ -2,21 +2,20 @@ package tv.notube.usermanager;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import tv.notube.commons.model.auth.AuthHandler;
+import tv.notube.commons.model.auth.AuthHandlerException;
+import tv.notube.commons.model.OAuthToken;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.activity.Activity;
-import tv.notube.commons.storage.alog.DefaultActivityLogImpl;
 import tv.notube.commons.storage.kvs.KVStore;
 import tv.notube.commons.storage.kvs.KVStoreException;
-import tv.notube.commons.storage.kvs.mybatis.MyBatisKVStore;
 import tv.notube.commons.storage.model.ActivityLog;
 import tv.notube.commons.storage.model.ActivityLogException;
 import tv.notube.commons.storage.model.Query;
 import tv.notube.commons.storage.model.fields.*;
 import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
 import tv.notube.commons.storage.model.fields.serialization.SerializationManagerException;
-import tv.notube.usermanager.configuration.UserManagerConfiguration;
 import tv.notube.usermanager.services.auth.*;
-import tv.notube.usermanager.services.auth.oauth.OAuthToken;
 
 import java.net.URL;
 import java.util.*;
@@ -26,7 +25,7 @@ import java.util.*;
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-public class DefaultUserManagerImpl extends ConfigurableUserManager {
+public class DefaultUserManagerImpl extends StorageUserManager {
 
     private static Logger logger = Logger.getLogger(DefaultUserManagerImpl.class);
 
@@ -36,21 +35,13 @@ public class DefaultUserManagerImpl extends ConfigurableUserManager {
 
     private Map<String, URL> redirects = new HashMap<String, URL>();
 
-    private KVStore kvs;
-
-    private ActivityLog alog;
-
-    private ServiceAuthorizationManager sam;
-
-    public DefaultUserManagerImpl(UserManagerConfiguration configuration) {
-        super(configuration);
-        Properties prop = configuration.getKvStoreConfiguration().getProperties();
-        kvs = new MyBatisKVStore(prop, new SerializationManager());
-        Properties alogProperties = configuration.getActivityLogProperties();
-        alog = new DefaultActivityLogImpl(alogProperties);
-        ServiceAuthorizationManagerConfiguration samc = configuration
-                .getServiceAuthorizationManagerConfiguration();
-        sam = ServiceAuthorizationManagerFactory.getInstance(samc).build();
+    public DefaultUserManagerImpl(
+            KVStore kvStore,
+            ActivityLog activityLog,
+            ServiceAuthorizationManager sam,
+            long rate
+    ) {
+        super(kvStore, activityLog, sam, rate);
     }
 
     public void storeUser(User user) throws UserManagerException {

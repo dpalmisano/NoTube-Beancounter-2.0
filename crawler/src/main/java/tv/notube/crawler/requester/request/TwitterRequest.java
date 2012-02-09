@@ -9,7 +9,7 @@ import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
-import tv.notube.commons.model.OAuthAuth;
+import tv.notube.commons.model.auth.OAuthAuth;
 import tv.notube.crawler.requester.DefaultRequest;
 import tv.notube.crawler.requester.RequestException;
 import tv.notube.crawler.requester.ServiceResponse;

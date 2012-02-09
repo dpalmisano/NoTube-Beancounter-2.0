@@ -31,6 +31,12 @@
             <groupId>tv.notube</groupId>
             <artifactId>user-manager</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>tv.notube.commons</groupId>
+                    <artifactId>model</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>tv.notube.profiler</groupId>
@@ -46,6 +52,16 @@
             <groupId>tv.notube</groupId>
             <artifactId>applications</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>tv.notube.commons</groupId>
+                    <artifactId>model</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>tv.notube.commons.storage</groupId>
+                    <artifactId>model</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -106,9 +122,9 @@
                     <configuration>
                         <type>runtime</type>
                         <properties>
-                            <cargo.tomcat.manager.url>http://moth.notube.tv:9090/manager</cargo.tomcat.manager.url>
-                            <cargo.remote.username>davide</cargo.remote.username>
-                            <cargo.remote.password>alchemyindex</cargo.remote.password>
+                            <cargo.tomcat.manager.url>http://localhost:9090/manager</cargo.tomcat.manager.url>
+                            <cargo.remote.username>tomcat</cargo.remote.username>
+                            <cargo.remote.password>tomcat</cargo.remote.password>
                         </properties>
                     </configuration>
                 </configuration>

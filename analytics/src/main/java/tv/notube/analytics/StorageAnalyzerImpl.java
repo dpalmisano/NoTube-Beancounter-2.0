@@ -1,6 +1,6 @@
 package tv.notube.analytics;
 
-import tv.notube.analytics.analysis.AnalysisDescription;
+import tv.notube.commons.configuration.analytics.AnalysisDescription;
 import tv.notube.commons.storage.kvs.KVStore;
 import tv.notube.commons.storage.model.ActivityLog;
 

@@ -42,8 +42,11 @@ public class Query implements Serializable {
             String query,
             Query queryObj
     ) throws QueryException {
-        // space*{string, integer, datetime, url}.<field-name>space*{=, <,
-        // >}space*<value>space*{AND, OR}
+        // space*{string, integer, datetime, url}.<field-name>space*{=, <,>}space*<value>space*{AND, OR}
+        // eg: string.verb = TWEET OR string.verb = LISTEN OR string.verb = WATCHED
+        if(query == null) {
+            throw new IllegalArgumentException("query parameter cannot be null");
+        }
         String q = query;
         if(q.length() == 0) {
             return;

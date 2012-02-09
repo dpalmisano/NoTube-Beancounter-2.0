@@ -6,13 +6,12 @@ import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.FacebookApi;
 import org.scribe.model.*;
 import org.scribe.oauth.OAuthService;
-import tv.notube.commons.model.OAuthAuth;
+import tv.notube.commons.model.auth.OAuthAuth;
 import tv.notube.crawler.requester.DefaultRequest;
 import tv.notube.crawler.requester.RequestException;
 import tv.notube.crawler.requester.ServiceResponse;
 import tv.notube.crawler.requester.request.facebook.FacebookResponse;
 import tv.notube.crawler.requester.request.facebook.FacebookResponseAdapter;
-import tv.notube.crawler.requester.request.twitter.TwitterResponse;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

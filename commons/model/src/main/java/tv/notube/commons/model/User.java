@@ -2,6 +2,7 @@ package tv.notube.commons.model;
 
 import com.google.gson.annotations.Expose;
 import org.joda.time.DateTime;
+import tv.notube.commons.model.auth.Auth;
 
 import java.io.Serializable;
 import java.util.ArrayList;

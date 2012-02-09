@@ -1,14 +1,11 @@
 package tv.notube.usermanager.services.auth;
 
+import tv.notube.commons.configuration.auth.ServiceAuthorizationManagerConfiguration;
+import tv.notube.commons.model.auth.AuthHandler;
 import tv.notube.commons.model.Service;
-import tv.notube.usermanager.services.auth.facebook.FacebookAuthHandler;
-import tv.notube.usermanager.services.auth.lastfm.LastFmAuthHandler;
-import tv.notube.usermanager.services.auth.twitter.TwitterAuthHandler;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )

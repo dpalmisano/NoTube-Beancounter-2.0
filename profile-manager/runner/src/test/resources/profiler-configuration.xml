@@ -2,7 +2,7 @@
 <profiler-configuration>
     <data-manager>
         <keys>
-            <key name="user" class="tv.notube.commons.configuration.FakeUserDataSource">
+            <key name="user" class="tv.notube.profiler.data.datasources.UserDataSource">
                 <lines>
                     <line>fake-test-profilingline</line>
                 </lines>
@@ -18,12 +18,12 @@
         <profiling-line>
             <name>fake-test-profilingline</name>
             <description>just a simple test profiling line</description>
-            <class>tv.notube.profiler.configuration.FakeProfilingLine</class>
+            <class>tv.notube.profiler.FakeProfilingLine</class>
             <profiling-line-items>
                 <profiling-line-item>
                     <name>first</name>
                     <description>just the first profiling line item</description>
-                    <class>tv.notube.profiler.configuration.FirstSimpleProfilingLineItem</class>
+                    <class>tv.notube.profiler.FakeProfilingLineItem</class>
                     <parameters>
                         <parameter>
                             <name>apikey</name>
@@ -34,7 +34,7 @@
                 <profiling-line-item>
                     <name>second</name>
                     <description>just the second profiling line item</description>
-                    <class>tv.notube.profiler.configuration.SecondSimpleProfilingLineItem</class>
+                    <class>tv.notube.profiler.FakeProfilingLineItem</class>
                 </profiling-line-item>
             </profiling-line-items>
         </profiling-line>

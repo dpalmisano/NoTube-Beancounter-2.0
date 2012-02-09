@@ -36,7 +36,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>1.7.1</version>
+            <version>1.7.2</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -51,7 +51,6 @@
             <version>3.1</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -85,12 +84,10 @@
                         <type>runtime</type>
                         <properties>
                             <cargo.tomcat.manager.url>
-                                http://gaia.cybion.eu:8080/manager
+                                http://localhost:8080/manager
                             </cargo.tomcat.manager.url>
-                            <cargo.remote.username>tomcat
-                            </cargo.remote.username>
-                            <cargo.remote.password>cybion012011
-                            </cargo.remote.password>
+                            <cargo.remote.username>tomcat</cargo.remote.username>
+                            <cargo.remote.password>tomcat</cargo.remote.password>
                         </properties>
                     </configuration>
                 </configuration>

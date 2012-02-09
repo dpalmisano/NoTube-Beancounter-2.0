@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<usermanager>
-    <profiling-rate>10</profiling-rate>
-</usermanager>
+<storage>
+    <kvs>
+        <host>localhost</host>
+        <port>3306</port>
+        <db>kvs</db>
+        <user>kvs</user>
+        <password>kvs</password>
+    </kvs>
+    <alog>
+        <host>localhost</host>
+        <port>3306</port>
+        <db>alog</db>
+        <user>alog</user>
+        <password>alog</password>
+    </alog>
+</storage>

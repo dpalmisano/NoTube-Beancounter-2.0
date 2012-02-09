@@ -119,8 +119,6 @@ public class TwitterResponse  implements ServiceResponse<List<Activity>> {
                 try {
                     programmeId = bbc.getProgrammeId(url);
                 } catch (BBCException e) {
-                    // just skip but log
-                    // TODO add log
                     continue;
                 }
                 URL programmeUrl;

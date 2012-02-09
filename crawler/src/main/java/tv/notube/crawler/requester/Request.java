@@ -1,6 +1,6 @@
 package tv.notube.crawler.requester;
 
-import tv.notube.commons.model.Auth;
+import tv.notube.commons.model.auth.Auth;
 import tv.notube.commons.model.Service;
 
 /**

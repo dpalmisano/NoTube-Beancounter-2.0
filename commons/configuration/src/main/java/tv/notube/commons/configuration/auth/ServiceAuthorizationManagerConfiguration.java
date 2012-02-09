@@ -1,7 +1,7 @@
 package tv.notube.commons.configuration.auth;
 
 import tv.notube.commons.configuration.Configuration;
-import tv.notube.commons.model.AuthHandler;
+import tv.notube.commons.model.auth.AuthHandler;
 import tv.notube.commons.model.Service;
 
 import java.util.HashMap;

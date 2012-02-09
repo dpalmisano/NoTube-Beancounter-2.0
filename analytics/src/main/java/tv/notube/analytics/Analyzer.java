@@ -1,7 +1,7 @@
 package tv.notube.analytics;
 
-import tv.notube.analytics.analysis.AnalysisDescription;
 import tv.notube.analytics.analysis.AnalysisResult;
+import tv.notube.commons.configuration.analytics.AnalysisDescription;
 
 /**
  * put class description here

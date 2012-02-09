@@ -1,5 +1,7 @@
 package tv.notube.profiler.data;
 
+import tv.notube.commons.configuration.profiler.DataManagerConfiguration;
+
 import java.util.List;
 import java.util.Map;
 

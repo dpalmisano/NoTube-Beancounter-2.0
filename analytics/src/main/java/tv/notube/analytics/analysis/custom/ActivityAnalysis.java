@@ -2,10 +2,11 @@ package tv.notube.analytics.analysis.custom;
 
 import org.joda.time.DateTime;
 import tv.notube.analytics.analysis.*;
+import tv.notube.commons.configuration.analytics.AnalysisDescription;
+import tv.notube.commons.configuration.analytics.MethodDescription;
 import tv.notube.commons.storage.model.Activity;
 import tv.notube.commons.storage.model.ActivityLog;
 import tv.notube.commons.storage.model.ActivityLogException;
-import tv.notube.commons.storage.model.fields.BytesField;
 import tv.notube.commons.storage.model.fields.Field;
 import tv.notube.commons.storage.model.fields.StringField;
 import tv.notube.commons.storage.model.fields.URLField;

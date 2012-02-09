@@ -3,6 +3,7 @@ package tv.notube.profiler.storage;
 import tv.notube.commons.model.UserProfile;
 
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -38,5 +39,9 @@ public interface ProfileStore {
             OutputStream outputStream,
             Format format
     ) throws ProfileStoreException;
+
+    public void setNamespaces(Map<String, String> nameSpacesConfiguration);
+
+    public Map<String, String> getNamespaces();
 
 }

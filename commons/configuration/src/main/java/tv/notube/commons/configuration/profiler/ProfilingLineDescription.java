@@ -1,7 +1,5 @@
 package tv.notube.commons.configuration.profiler;
 
-import tv.notube.profiler.line.ProfilingLine;
-
 import java.util.List;
 
 /**

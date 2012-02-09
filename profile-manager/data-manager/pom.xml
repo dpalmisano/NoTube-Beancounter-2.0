@@ -21,6 +21,12 @@
             <groupId>tv.notube</groupId>
             <artifactId>user-manager</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>tv.notube.commons</groupId>
+                    <artifactId>model</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
