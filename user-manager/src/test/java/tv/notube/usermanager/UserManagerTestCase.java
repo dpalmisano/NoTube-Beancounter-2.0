@@ -5,12 +5,10 @@ import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import tv.notube.commons.model.SimpleAuth;
+import tv.notube.commons.model.auth.SimpleAuth;
 import tv.notube.commons.model.Service;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.activity.*;
-import tv.notube.usermanager.configuration.ConfigurationManager;
-import tv.notube.usermanager.configuration.UserManagerConfiguration;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -27,19 +25,13 @@ import java.util.UUID;
  */
 public class UserManagerTestCase {
 
-    private final static String CONFIG_FILE = "tv/notube/usermanager/configuration/user-manager-configuration.xml";
-
     private UserManager userManager;
 
     private UUID userId;
 
     @BeforeTest
-    public void setUp() {
-         UserManagerConfiguration configuration
-                 = ConfigurationManager
-                 .getInstance(CONFIG_FILE)
-                 .getUserManagerConfiguration();
-        userManager = new DefaultUserManagerImpl(configuration);
+    public void setUp() throws UserManagerFactoryException {
+        userManager = DefaultUserManagerFactory.getInstance().build();
         userId = UUID.randomUUID();
     }
 
