@@ -16,6 +16,7 @@
 
 	<modules>
         <module>model</module>
+        <module>regexapi</module>
         <module>alchemyapi</module>
     	<module>storage</module>
         <module>skos</module>
