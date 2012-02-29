@@ -1,6 +1,6 @@
 package tv.notube.extension.profilingline;
 
-import tv.notube.commons.alchemyapi.*;
+import tv.notube.commons.regexapi.*;
 import tv.notube.commons.model.activity.Activity;
 import tv.notube.commons.model.activity.Tweet;
 import tv.notube.extension.profilingline.tagdef.TagDef;
@@ -22,7 +22,7 @@ public class TwitterLinkerProfilingLineItem extends ProfilingLineItem {
 
     private static String TWITTER = "http://twitter.com";
 
-    private AlchemyAPI alchemyAPI;
+    private RegexAPI regexAPI;
 
     public TwitterLinkerProfilingLineItem(
             String name,
@@ -30,7 +30,7 @@ public class TwitterLinkerProfilingLineItem extends ProfilingLineItem {
             Map<String, String> parameters
     ) {
         super(name, description, parameters);
-        alchemyAPI = new AlchemyAPI(parameters.get("apikey"));
+        regexAPI = new RegexAPI(parameters.get("apikey"));
     }
 
     @Override
@@ -51,9 +51,9 @@ public class TwitterLinkerProfilingLineItem extends ProfilingLineItem {
                     // get resources from tweet text
                     try {
                         resources = getResources(tweet.getText());
-                    } catch (AlchemyAPIException e) {
+                    } catch (RegexAPIException e) {
                         throw new ProfilingLineItemException("Error while " +
-                                "calling AlchemyAPI", e);
+                                "calling RegexAPI", e);
                     }
                     // get resources from tweet eventual urls
                     for(URL url : tweet.getUrls()) {
@@ -90,22 +90,22 @@ public class TwitterLinkerProfilingLineItem extends ProfilingLineItem {
         }
         List<URI> resources = new ArrayList<URI>();
         for (String def : defs) {
-            AlchemyAPIResponse alchemyAPIResponse;
+            RegexAPIResponse regexAPIResponse;
             try {
-                alchemyAPIResponse = alchemyAPI.getNamedEntities(def);
-            } catch (AlchemyAPIException e) {
+                regexAPIResponse = regexAPI.getNamedEntities(def);
+            } catch (RegexAPIException e) {
                 throw new ProfilingLineItemException("", e);
             }
-            for (Identified identified : alchemyAPIResponse.getIdentified()) {
+            for (Identified identified : regexAPIResponse.getIdentified()) {
                 NamedEntity namedEntity = (NamedEntity) identified;
                 resources.add(namedEntity.getIdentifier());
             }
             try {
-                alchemyAPIResponse = alchemyAPI.getRankedConcept(def);
-            } catch (AlchemyAPIException e) {
+                regexAPIResponse = regexAPI.getRankedConcept(def);
+            } catch (RegexAPIException e) {
                 throw new ProfilingLineItemException("", e);
             }
-            for (Identified identified : alchemyAPIResponse.getIdentified()) {
+            for (Identified identified : regexAPIResponse.getIdentified()) {
                 Concept concept = (Concept) identified;
                 resources.add(concept.getIdentifier());
             }
@@ -114,40 +114,40 @@ public class TwitterLinkerProfilingLineItem extends ProfilingLineItem {
     }
 
     private List<URI> getResources(URL url) throws ProfilingLineItemException {
-        AlchemyAPIResponse alchemyAPIResponse;
+        RegexAPIResponse regexAPIResponse;
         List<URI> resources = new ArrayList<URI>();
         try {
-            alchemyAPIResponse = alchemyAPI.getNamedEntities(url);
-        } catch (AlchemyAPIException e) {
+            regexAPIResponse = regexAPI.getNamedEntities(url);
+        } catch (RegexAPIException e) {
             throw new ProfilingLineItemException("", e);
         }
-        for(Identified identified : alchemyAPIResponse.getIdentified()) {
+        for(Identified identified : regexAPIResponse.getIdentified()) {
             NamedEntity namedEntity = (NamedEntity) identified;
             resources.add(namedEntity.getIdentifier());
         }
         try {
-            alchemyAPIResponse = alchemyAPI.getRankedConcept(url);
-        } catch (AlchemyAPIException e) {
+            regexAPIResponse = regexAPI.getRankedConcept(url);
+        } catch (RegexAPIException e) {
             throw new ProfilingLineItemException("", e);
         }
-        for(Identified identified : alchemyAPIResponse.getIdentified()) {
+        for(Identified identified : regexAPIResponse.getIdentified()) {
             Concept concept = (Concept) identified;
             resources.add(concept.getIdentifier());
         }
         return resources;
     }
 
-    private List<URI> getResources(String text) throws AlchemyAPIException {
+    private List<URI> getResources(String text) throws RegexAPIException {
         List<URI> result = new ArrayList<URI>();
-        AlchemyAPIResponse alchemyAPIResponse;
-        alchemyAPIResponse = alchemyAPI.getNamedEntities(text);
-        List<Identified> identifieds = alchemyAPIResponse.getIdentified();
+        RegexAPIResponse regexAPIResponse;
+        regexAPIResponse = regexAPI.getNamedEntities(text);
+        List<Identified> identifieds = regexAPIResponse.getIdentified();
         for (Identified identified : identifieds) {
             NamedEntity namedEntity = (NamedEntity) identified;
             result.add(namedEntity.getIdentifier());
         }
-        alchemyAPIResponse = alchemyAPI.getRankedConcept(text);
-        identifieds = alchemyAPIResponse.getIdentified();
+        regexAPIResponse = regexAPI.getRankedConcept(text);
+        identifieds = regexAPIResponse.getIdentified();
         for (Identified identified : identifieds) {
             Concept concept = (Concept) identified;
             result.add(concept.getIdentifier());

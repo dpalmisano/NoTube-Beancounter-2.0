@@ -32,7 +32,7 @@ public class TagDef {
         try {
              tagDefResponse = httpClient.execute(method, trrh);
         } catch (IOException e) {
-            final String errMsg = "Error while calling AlchemyAPI";
+            final String errMsg = "Error while calling RegexAPI";
             throw new TagDefException(errMsg, e);
         } finally {
             httpClient.getConnectionManager().closeExpiredConnections();
