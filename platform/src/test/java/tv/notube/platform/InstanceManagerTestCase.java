@@ -9,7 +9,6 @@ import tv.notube.analytics.Analyzer;
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
 public class InstanceManagerTestCase {
-
     @Test
     public void test() {
         Analyzer analyzer = LoaderInstanceManager.getInstance().getAnalyzer();

@@ -30,6 +30,8 @@ import java.util.Set;
  */
 public class StorageAnalyzerImplTestCase {
 
+/*libby - not working for me
+java.lang.AssertionError: expected object to not be null
     private static final String TIMEFRAME_ANALYSIS = "timeframe-analysis";
 
     private static final String ACTIVITY_ANALYSIS = "activity-analysis";
@@ -143,8 +145,10 @@ public class StorageAnalyzerImplTestCase {
                         ACTIVITY_ANALYSIS,
                         "user-manager-8c33b0e6-d3cf-4909-b04c-df93056e64a8"
                 );
+
         Assert.assertNotNull(tfActual);
         Assert.assertNotNull(aaActual);
+
         analyzer.flush(
                 ACTIVITY_ANALYSIS,
                 "user-manager-8c33b0e6-d3cf-4909-b04c-df93056e64a8"

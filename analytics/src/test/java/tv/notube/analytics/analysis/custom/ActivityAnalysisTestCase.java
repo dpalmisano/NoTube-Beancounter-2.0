@@ -19,7 +19,6 @@ import java.util.Properties;
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
 public class ActivityAnalysisTestCase {
-
     private ActivityAnalysis activityAnalysis;
 
     @BeforeTest
