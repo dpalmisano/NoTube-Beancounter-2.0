@@ -39,6 +39,8 @@ public class RegexAPI {
 
     private String apikey;
 
+    private Boolean stanbol = false;
+
     public RegexAPI(String apikey) {
         httpClient = new DefaultHttpClient();
         this.apikey = apikey;
@@ -59,6 +61,13 @@ public class RegexAPI {
                 "text",
                 text)
         );
+//remove for the pure 'regex' version
+        if(stanbol){
+          nameValuePairs.add(new BasicNameValuePair(
+                "stanbol",
+                "true")
+          );
+        }
         try {
             method.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e) {
@@ -93,6 +102,13 @@ public class RegexAPI {
                 "type",
                 "entity")
         );
+//remove for the pure 'regex' version
+        if(stanbol){
+          nameValuePairs.add(new BasicNameValuePair(
+                "stanbol",
+                "true")
+          );
+        }
         try {
             method.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e) {
@@ -124,6 +140,13 @@ public class RegexAPI {
                 "url",
                 url.toString())
         );
+//remove for the pure 'regex' version
+        if(stanbol){
+          nameValuePairs.add(new BasicNameValuePair(
+                "stanbol",
+                "true")
+          );
+        }
         try {
             method.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e) {
@@ -159,6 +182,13 @@ public class RegexAPI {
                 "type",
                 "entity")
         );
+//remove for the pure 'regex' version
+        if(stanbol){
+          nameValuePairs.add(new BasicNameValuePair(
+                "stanbol",
+                "true")
+          );
+        }
         try {
             method.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e) {
