@@ -63,7 +63,11 @@ public class TwitterRequest extends DefaultRequest {
         Response response = request.send();
         InputStreamReader reader = new InputStreamReader(response.getStream());
         try {
-            return gson.fromJson(reader, TwitterResponse.class);
+            ServiceResponse g = gson.fromJson(reader, TwitterResponse.class);
+            return g;
+        }catch(Exception ex){
+            System.err.println("ERROR - failed to parse json "+ex);
+            return null;
         } finally {
             try {
                 reader.close();
