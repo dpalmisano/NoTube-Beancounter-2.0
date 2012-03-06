@@ -24,22 +24,18 @@ import java.util.List;
 public class RegexAPI {
 
     private final static String CONCEPTS = "http://dev.notu.be/2012/02/enricher_dev/lookup?type=concept";
-//http://access.Regexapi.com/calls/text/TextGetRankedConcepts?apikey=%s&outputMode=json";
 
     private final static String ENTITIES = "http://dev.notu.be/2012/02/enricher_dev/lookup?type=entity";
-//http://access.Regexapi.com/calls/text/TextGetRankedNamedEntities?apikey=%s&outputMode=json";
 
     private final static String WEB_CONCEPTS = "http://dev.notu.be/2012/02/enricher_dev/lookup?useurl=true&type=concept";
-//http://access.Regexapi.com/calls/url/URLGetRankedConcepts?apikey=%s&outputMode=json";
 
     private final static String WEB_ENTITIES = "http://dev.notu.be/2012/02/enricher_dev/lookup?type=entity";
-//http://access.Regexapi.com/calls/url/URLGetRankedNamedEntities?apikey=%s&outputMode=json";
 
     private HttpClient httpClient;
 
     private String apikey;
 
-    private Boolean stanbol = false;
+    private Boolean stanbol = false;//true to use stanbol
 
     public RegexAPI(String apikey) {
         httpClient = new DefaultHttpClient();
@@ -61,7 +57,6 @@ public class RegexAPI {
                 "text",
                 text)
         );
-//remove for the pure 'regex' version
         if(stanbol){
           nameValuePairs.add(new BasicNameValuePair(
                 "stanbol",
@@ -102,7 +97,6 @@ public class RegexAPI {
                 "type",
                 "entity")
         );
-//remove for the pure 'regex' version
         if(stanbol){
           nameValuePairs.add(new BasicNameValuePair(
                 "stanbol",
@@ -140,7 +134,6 @@ public class RegexAPI {
                 "url",
                 url.toString())
         );
-//remove for the pure 'regex' version
         if(stanbol){
           nameValuePairs.add(new BasicNameValuePair(
                 "stanbol",
@@ -182,7 +175,6 @@ public class RegexAPI {
                 "type",
                 "entity")
         );
-//remove for the pure 'regex' version
         if(stanbol){
           nameValuePairs.add(new BasicNameValuePair(
                 "stanbol",
