@@ -64,7 +64,7 @@ public class TwitterResponseAdapter implements JsonDeserializer<TwitterResponse>
             } catch (MalformedURLException e) {
                 // leave it null
             }
-
+/* libby - this silently fails for some twitter accounts
             JsonArray urlsArray = tweetElement
                     .getAsJsonObject()
                     .get("entities")
@@ -83,6 +83,7 @@ public class TwitterResponseAdapter implements JsonDeserializer<TwitterResponse>
                     // just skip
                 }
             }
+*/
             JsonArray hashTagsArray = tweetElement
                     .getAsJsonObject()
                     .get("entities")
