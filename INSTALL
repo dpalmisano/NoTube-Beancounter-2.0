@@ -1,0 +1,34 @@
+#as sql root:
+
+CREATE USER 'alog'@'localhost' IDENTIFIED BY 'passwordhere';
+GRANT ALL PRIVILEGES ON *.* TO 'alog'@'localhost';
+
+CREATE USER 'kvs'@'localhost' IDENTIFIED BY 'passwordhere';
+GRANT ALL PRIVILEGES ON *.* TO 'kvs'@'localhost';
+
+CREATE USER 'notube'@'localhost' IDENTIFIED BY 'passwordhere';
+GRANT ALL PRIVILEGES ON *.* TO 'notube'@'localhost';
+
+drop database kvs;
+drop database alog;
+drop database beancounter;
+
+create database kvs;
+create database alog;
+create database beancounter;
+
+use kvs;
+create table data (kvskey varchar(100),object longblob, kvstable varchar(100));
+create table stringfield (kvstable varchar(100),kvskey varchar(100),name varchar(100),value  varchar(500));
+
+use alog;
+create table activities(id       varchar(36) primary key,  date        bigint(20),owner       varchar(100), description varchar(300));
+create table datetimefield(id    varchar(36) primary key, name  varchar(100),  value bigint(20));
+create table integerfield( id    varchar(36) primary key, name  varchar(100), value  int(11));
+create table serializedfield(id     varchar(36) primary key,name   varchar(100),value  blob);
+create table stringfield(id     varchar(36) primary key, name   varchar(100),value  varchar(300));
+create table urlfield( id     varchar(36) primary key,name   varchar(100),value  varchar(150));
+
+use beancounter;
+create table skos_relations_2(skos varchar(100), entity varchar(100));
+
