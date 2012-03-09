@@ -16,8 +16,10 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>model</module>
         <module>core</module>
         <module>service</module>
+        <module>client</module>
     </modules>
 
 </project>

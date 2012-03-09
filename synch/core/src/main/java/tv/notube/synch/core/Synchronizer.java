@@ -1,5 +1,7 @@
 package tv.notube.synch.core;
 
+import tv.notube.synch.model.Status;
+
 import java.util.UUID;
 
 /**

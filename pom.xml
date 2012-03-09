@@ -57,7 +57,7 @@
         <module>extensions</module>
         <module>analytics</module>
         <module>applications</module>
-    <module>synch</module>
+        <module>synch</module>
   </modules>
 
     <distributionManagement>

@@ -1,4 +1,4 @@
-package tv.notube.synch.core.logger;
+package tv.notube.synch.model.logger;
 
 import org.joda.time.DateTime;
 

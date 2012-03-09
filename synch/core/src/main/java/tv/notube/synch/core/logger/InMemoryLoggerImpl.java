@@ -1,6 +1,9 @@
 package tv.notube.synch.core.logger;
 
 import org.joda.time.DateTime;
+import tv.notube.synch.model.logger.Action;
+import tv.notube.synch.model.logger.Lock;
+import tv.notube.synch.model.logger.Release;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +45,9 @@ public class InMemoryLoggerImpl implements Logger {
     }
 
     public Action getLatest() throws LoggerException {
+        if(activities.size() == 0) {
+            return null;
+        }
         return activities.get(activities.size() - 1);
     }
 

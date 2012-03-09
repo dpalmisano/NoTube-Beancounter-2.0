@@ -5,6 +5,9 @@ import tv.notube.synch.core.logger.Logger;
 import tv.notube.synch.core.logger.LoggerException;
 import tv.notube.synch.core.priority.PriorityManager;
 import tv.notube.synch.core.priority.PriorityManagerException;
+import tv.notube.synch.model.Locked;
+import tv.notube.synch.model.Released;
+import tv.notube.synch.model.Status;
 
 import java.util.*;
 
@@ -21,7 +24,10 @@ public class InMemorySynchronizerImpl extends LoggableSynchronizer {
 
     private Status status = new Released(NAME);
 
-    protected InMemorySynchronizerImpl(Logger logger, PriorityManager priorityManager) {
+    public InMemorySynchronizerImpl(
+            Logger logger,
+            PriorityManager priorityManager
+    ) {
         super(logger);
         this.priorityManager = priorityManager;
     }
@@ -40,7 +46,7 @@ public class InMemorySynchronizerImpl extends LoggableSynchronizer {
         if(!status.status().equals("released")) {
             final String errMsg = "Already locked by [" + status.getWho() +
                     "] at [" + status.getWhen() + "]";
-            throw new SynchronizerException(errMsg);
+            throw new AlreadyLockedSynchronizerException(errMsg);
         }
         UUID candidate;
         try {
@@ -51,13 +57,13 @@ public class InMemorySynchronizerImpl extends LoggableSynchronizer {
         }
         if(candidate == null || !candidate.equals(token)) {
             final String errMsg = "It's not the turn of process [" + process + "]";
-            throw new SynchronizerException(errMsg);
+            throw new WrongTurnSynchronizerException(errMsg);
         }
         try {
             priorityManager.revokeToken(process);
         } catch (PriorityManagerException e) {
             final String errMsg = "It's not the turn of process [" + process + "]";
-            throw new SynchronizerException(errMsg);
+            throw new WrongTurnSynchronizerException(errMsg);
         }
         status = new Locked(process);
         try {
@@ -72,18 +78,18 @@ public class InMemorySynchronizerImpl extends LoggableSynchronizer {
         if(!status.status().equals("locked") && !status.status().equals(NAME)) {
             final String errMsg = "Already released by [" + status.getWho() +
                     "] at [" + status.getWhen() + "]";
-            throw new SynchronizerException(errMsg);
+            throw new AlreadyLockedSynchronizerException(errMsg);
         }
         if(!status.getWho().equals(process)) {
             final String errMsg = "Process [" + status.getWho() + "] does not" +
                     " have rights to release it";
-            throw new SynchronizerException(errMsg);
+            throw new ReleaseNotPermittedSynchronizerException(errMsg);
         }
         try {
             priorityManager.revokeToken(process);
         } catch (PriorityManagerException e) {
             final String errMsg = "It's not the turn of process [" + process + "]";
-            throw new SynchronizerException(errMsg);
+            throw new WrongTurnSynchronizerException(errMsg);
         }
         status = new Released(process);
         try {

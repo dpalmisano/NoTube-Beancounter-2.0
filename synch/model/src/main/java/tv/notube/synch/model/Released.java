@@ -1,4 +1,4 @@
-package tv.notube.synch.core.logger;
+package tv.notube.synch.model;
 
 import org.joda.time.DateTime;
 
@@ -7,21 +7,21 @@ import org.joda.time.DateTime;
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
-public final class Lock extends Action {
+public final class Released extends Status {
 
-    public Lock(String process) {
+    public Released(String process) {
         super(process);
         super.when = new DateTime();
     }
 
-    public Lock(String process, DateTime when) {
+    public Released(String process, DateTime when) {
         super(process);
         super.when = when;
     }
 
     @Override
-    public String action() {
-        return "lock";
+    public String status() {
+        return "released";
     }
 
 }

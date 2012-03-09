@@ -1,4 +1,4 @@
-package tv.notube.synch.core;
+package tv.notube.synch.model;
 
 import org.joda.time.DateTime;
 
@@ -17,12 +17,16 @@ public abstract class Status {
         this.who = process;
     }
 
-    public DateTime getWhen() {
-        return when;
+    public long getWhen() {
+        return when.getMillis();
     }
 
     public void setWhen(DateTime when) {
         this.when = when;
+    }
+
+    public void setWhen(long when) {
+        this.when = new DateTime(when);
     }
 
     public String getWho() {
