@@ -40,6 +40,14 @@ public class SynchronizerClientTestCase {
         Assert.assertNotNull(response);
         Assert.assertEquals(response.getStatus(), Response.Status.OK);
 
+        final String ANOTHER = "another-process";
+
+        UUID anotherToken = client.getToken(ANOTHER);
+        Assert.assertNotNull(anotherToken);
+
+        Response anotherResponse = client.lock(ANOTHER, anotherToken);
+        Assert.assertEquals(anotherResponse.getStatus(), Response.Status.LOCKED);
+
         status = client.getStatus();
         Assert.assertNotNull(status);
         Assert.assertTrue(status instanceof Locked);

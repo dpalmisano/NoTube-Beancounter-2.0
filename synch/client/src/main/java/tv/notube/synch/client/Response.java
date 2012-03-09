@@ -11,7 +11,9 @@ public class Response {
         WAIT,
         TOKEN,
         ERROR,
-        RELEASED, OK, LOCKED
+        RELEASED,
+        OK,
+        LOCKED
     }
 
     private Status status;

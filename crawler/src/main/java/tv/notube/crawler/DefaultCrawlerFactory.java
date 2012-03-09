@@ -9,10 +9,10 @@ import tv.notube.usermanager.UserManagerFactoryException;
  */
 public class DefaultCrawlerFactory implements CrawlerFactory {
 
-        private static CrawlerFactory instance;
+    private static CrawlerFactory instance;
 
     public static synchronized CrawlerFactory getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new DefaultCrawlerFactory();
         }
         return instance;

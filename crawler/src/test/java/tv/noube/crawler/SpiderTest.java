@@ -28,7 +28,7 @@ public class SpiderTest {
 
     private UserManager um;
 
-    private static final String USERID = "9550da4c-42c2-4ad7-9a94-962b8e4ac3e3";
+    private static final String USERID = "9a26d5a2-bdd0-426f-997b-9100a6c3aac3";
 
     private Spider spider;
 
@@ -77,8 +77,8 @@ public class SpiderTest {
 
         Service twitter = new Service("twitter");
         user.addService(twitter.getName(), new OAuthAuth(
-                "14656799-yAIIzOoFT8ILah3AaDLX4eG3DEPUNhP9d8tqafys",
-                "em5rrY6IzNwmauUlecsf7zbdaUXZaDdLj4jNRq6TI50")
+                "40990622-aLrWXlNkA28UKsnncaEut0E762QqFYspF0fmNqWw8",
+                "I4MUk5ynlDXV5x4Pl02eG7GjGHjR5x3NqqgmZwpFGSA")
         );
         /**
         Service facebook = new Service();

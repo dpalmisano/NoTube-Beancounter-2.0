@@ -64,7 +64,7 @@ public class TwitterResponseAdapter implements JsonDeserializer<TwitterResponse>
             } catch (MalformedURLException e) {
                 // leave it null
             }
-/* libby - this silently fails for some twitter accounts
+            // libby
             JsonArray urlsArray = tweetElement
                     .getAsJsonObject()
                     .get("entities")
@@ -73,24 +73,23 @@ public class TwitterResponseAdapter implements JsonDeserializer<TwitterResponse>
                     .getAsJsonArray();
             for(JsonElement jsonUrl : urlsArray) {
                 try {
-                    tweet.addUrl(new URL(
-                            jsonUrl.getAsJsonObject()
-                                    .get("expanded_url")
-                                    .getAsString())
-                    );
+                    JsonElement expandedUrlObj = jsonUrl.getAsJsonObject()
+                            .get("expanded_url");
+                    if(expandedUrlObj instanceof JsonNull) {
+                        continue;
+                        // sometimes Twitter returns null in these fields
+                        // so just skip
+                    }
+                    URL url = new URL(expandedUrlObj.getAsString());
+                    tweet.addUrl(url);
                 } catch (MalformedURLException e) {
                     // could happen that a url is not well formed
                     // just skip
                 }
             }
-*/
-            JsonArray hashTagsArray = tweetElement
-                    .getAsJsonObject()
-                    .get("entities")
-                    .getAsJsonObject()
-                    .get("hashtags")
-                    .getAsJsonArray();
-            for(JsonElement jsonHt : hashTagsArray) {
+            JsonElement entitiesJson = tweetElement.getAsJsonObject().get("entities");
+            JsonArray hashTagsJson = entitiesJson.getAsJsonObject().get("hashtags").getAsJsonArray();
+            for(JsonElement jsonHt : hashTagsJson) {
                     tweet.addHashTag(
                             jsonHt.getAsJsonObject()
                                     .get("text")
