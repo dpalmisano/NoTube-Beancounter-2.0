@@ -2,6 +2,7 @@ package tv.notube.platform;
 
 import tv.notube.analytics.Analyzer;
 import tv.notube.applications.ApplicationsManager;
+import tv.notube.crawler.Crawler;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.usermanager.UserManager;
 
@@ -22,12 +23,15 @@ public class InstanceManager {
 
     private ApplicationsManager applicationsManager;
 
+    private Crawler crawler;
+
     public InstanceManager() {
         userManager = LoaderInstanceManager.getInstance().getUserManager();
         profileStore = LoaderInstanceManager.getInstance().getProfileStore();
         analyzer = LoaderInstanceManager.getInstance().getAnalyzer();
         recommender = LoaderInstanceManager.getInstance().getRecommender();
         applicationsManager = LoaderInstanceManager.getInstance().getApplicationsManager();
+        crawler = LoaderInstanceManager.getInstance().getCrawler();
     }
 
     UserManager getUserManager() {
@@ -48,5 +52,9 @@ public class InstanceManager {
 
     public ApplicationsManager getApplicationManager() {
         return applicationsManager;
+    }
+
+    public Crawler getCrawler() {
+        return crawler;
     }
 }

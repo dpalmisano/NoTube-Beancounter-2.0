@@ -1,14 +1,19 @@
 package tv.notube.crawler;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
 public class Report {
 
+    @Expose
     private int submittedProcesses;
 
+    @Expose
     private long startedAt;
 
+    @Expose
     private long endedAt;
 
     public Report(int submittedProcesses, long startedAt, long endedAt) {

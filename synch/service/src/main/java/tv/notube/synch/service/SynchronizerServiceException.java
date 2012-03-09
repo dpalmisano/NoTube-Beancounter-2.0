@@ -1,7 +1,5 @@
 package tv.notube.synch.service;
 
-import tv.notube.synch.core.SynchronizerException;
-
 /**
  * put class description here
  *

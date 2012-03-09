@@ -9,6 +9,9 @@ import tv.notube.commons.model.OAuthToken;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.UserProfile;
 import tv.notube.commons.model.activity.Activity;
+import tv.notube.crawler.Crawler;
+import tv.notube.crawler.CrawlerException;
+import tv.notube.crawler.Report;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreException;
 import tv.notube.usermanager.UserManager;
@@ -623,6 +626,61 @@ public class UserService extends JsonService {
                 PlatformResponse.Status.OK,
                 "profile for user '" + username + "' found",
                 up
+        )
+        );
+        return rb.build();
+    }
+
+    @GET
+    @Path("activities/update/{username}")
+    public Response forceUserCrawl(
+            @PathParam("username") String username,
+            @QueryParam("apikey") String apiKey
+    ) {
+        try {
+            check(
+                    this.getClass(),
+                    "getUser",
+                    username,
+                    apiKey
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters");
+        }
+        UserManager um = instanceManager.getUserManager();
+        ApplicationsManager am = instanceManager.getApplicationManager();
+        boolean isAuth;
+        try {
+            isAuth = am.isAuthorized(apiKey);
+        } catch (ApplicationsManagerException e) {
+            return error(e, "Error while authenticating your application");
+        }
+        if (!isAuth) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Sorry. You're not allowed to do that.")
+            );
+            return rb.build();
+        }
+        User user;
+        try {
+            user = um.getUser(username);
+        } catch (UserManagerException e) {
+            return error(e, "Error while getting user with username [" + username + "]");
+        }
+        Crawler crawler = instanceManager.getCrawler();
+        Report report;
+        try {
+            report = crawler.crawl(user.getId());
+        } catch (CrawlerException e) {
+            return error(e, "Error while getting activities for user [" + username + "]");
+        }
+        Response.ResponseBuilder rb = Response.ok();
+        rb.entity(new PlatformResponse(
+                PlatformResponse.Status.OK,
+                "activities updated for [" + username + "]",
+                report
         )
         );
         return rb.build();

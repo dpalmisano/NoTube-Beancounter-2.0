@@ -168,7 +168,20 @@
 
         GET http://moth.notube.tv:9090/notube-platform/rest/user/activities/dpalmisano?apikey=your-api-key<br>
 
-        <h3>5) Delete a user</h3>
+        <h3>5) Force user activities update</h3>
+
+        Path: /user/activities/update/{username}<br>
+        Method: GET<br>
+        Parameters: <br>
+        - {username} the Beancounter username<br>
+        - apikey <br>
+        Description: It forces the Beancounter to crawl all the user
+        actitivies from the sources he is registered to.<br>
+        Example:<br><br>
+
+        GET http://moth.notube.tv:9090/notube-platform/rest/user/activities/update/dpalmisano?apikey=your-api-key<br>
+
+        <h3>6) Delete a user</h3>
 
         Path: /user/{username}<br>
         Method: DELETE<br>
@@ -180,7 +193,7 @@
 
         curl -X DELETE http://moth.notube.tv:9090/notube-platform/rest/user/merlin?apikey=your-api-key
 
-        <h3>6) Authenticate a user</h3>
+        <h3>7) Authenticate a user</h3>
 
         Path: /user/authenticate/{username}<br>
         Method: POST<br>
@@ -193,7 +206,7 @@
 
         curl -d "password=abracadabra" http://moth.notube.tv:9090/notube-platform/rest/user/authenticate/dpalmisano?apikey=your-api-key
 
-        <h3>7) Get a user profile</h3>
+        <h3>8) Get a user profile</h3>
 
         Path: /user/profile/{username}<br>
         Method: GET<br>
@@ -248,8 +261,7 @@
 
         to see 'lastfm' or 'twitter' as a service added on the user services list.
 
-        <h3>9) Remove a source (lastfm, gomiso.com, twitter, facebook,
-        n-screen) to a user</h3>
+        <h3>10) Remove a source (lastfm, gomiso.com, twitter, facebook, n-screen) to a user</h3>
 
         Path: /user/source/{username}/{service}<br>
         Method: DELETE<br>

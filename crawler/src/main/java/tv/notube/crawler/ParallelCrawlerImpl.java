@@ -54,4 +54,24 @@ public class ParallelCrawlerImpl extends AbstractCrawler {
         long end = System.currentTimeMillis();
         return new Report(count, start, end);
     }
+
+    public Report crawl(UUID userId) throws CrawlerException {
+        Spider spider;
+        try {
+            spider = new Spider(
+                    "spider-single-" + userId.toString(),
+                    getUserManager(),
+                    userId
+            );
+        } catch (SpiderException e) {
+            throw new CrawlerException(
+                    "Error while crawling data for [" + userId.toString() + "]",
+                    e
+            );
+        }
+        long start = System.currentTimeMillis();
+        spider.run();
+        long end = System.currentTimeMillis();
+        return new Report(1, start, end);
+    }
 }

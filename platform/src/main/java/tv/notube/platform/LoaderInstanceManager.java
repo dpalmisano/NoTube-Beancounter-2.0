@@ -11,6 +11,9 @@ import tv.notube.commons.configuration.storage.StorageConfiguration;
 import tv.notube.commons.storage.kvs.KVStore;
 import tv.notube.commons.storage.kvs.mybatis.MyBatisKVStore;
 import tv.notube.commons.storage.model.fields.serialization.SerializationManager;
+import tv.notube.crawler.Crawler;
+import tv.notube.crawler.CrawlerFactoryException;
+import tv.notube.crawler.DefaultCrawlerFactory;
 import tv.notube.profiler.storage.KVProfileStoreImpl;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.usermanager.DefaultUserManagerFactory;
@@ -39,6 +42,8 @@ public class LoaderInstanceManager {
 
     private ApplicationsManager applicationsManager;
 
+    private Crawler crawler;
+
     public static LoaderInstanceManager getInstance() {
         if (instance == null)
             instance = new LoaderInstanceManager();
@@ -51,7 +56,7 @@ public class LoaderInstanceManager {
             userManager = DefaultUserManagerFactory.getInstance().build();
         } catch (UserManagerFactoryException e) {
             final String errMsg = "Error while building user manager";
-            logger.error(errMsg, e);
+            logger.fatal(errMsg, e);
             throw new RuntimeException(errMsg, e);
         }
         KVStore kvs;
@@ -66,6 +71,13 @@ public class LoaderInstanceManager {
         analyzer = DefaultAnalyzerFactoryImpl.getInstance(false).build();
         recommender = new Random(125811727);
         applicationsManager = new DefaultApplicationsManagerImpl(kvs);
+        try {
+            crawler = DefaultCrawlerFactory.getInstance().build();
+        } catch (CrawlerFactoryException e) {
+            final String errMsg = "Something went wrong while instantiating the crawler";
+            logger.fatal(errMsg, e);
+            throw new RuntimeException(errMsg, e);
+        }
     }
 
     private KVStore getKVS() throws ConfigurationsException {
@@ -95,5 +107,9 @@ public class LoaderInstanceManager {
 
     public ApplicationsManager getApplicationsManager() {
         return applicationsManager;
+    }
+
+    public Crawler getCrawler() {
+        return crawler;
     }
 }
