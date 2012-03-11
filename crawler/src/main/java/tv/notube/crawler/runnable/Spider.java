@@ -41,8 +41,7 @@ public class Spider implements Runnable {
         try {
             this.user = getUser(id);
         } catch (UserManagerException e) {
-            final String errMsg = "Error while getting user with id '" + id +
-                    "'";
+            final String errMsg = "Error while getting user with id '" + id + "'";
             logger.error(errMsg, e);
             throw new SpiderException(errMsg, e);
         }

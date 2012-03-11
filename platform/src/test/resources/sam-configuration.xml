@@ -13,7 +13,8 @@
         <apikey>YOUR_API_KEY</apikey>
         <secret>YOUR_API_SECRET</secret>
         <session>https://api.twitter.com/oauth/request_token</session>
-        <endpoint>https://api.twitter.com/1/statuses/user_timeline.json</endpoint>
+        <endpoint>https://api.twitter.com/1/statuses/user_timeline.json
+        </endpoint>
     </service>
     <service name="facebook"
              handler="tv.notube.usermanager.services.auth.facebook.FacebookAuthHandler">

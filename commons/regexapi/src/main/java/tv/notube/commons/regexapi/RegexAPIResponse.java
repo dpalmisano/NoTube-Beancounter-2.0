@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class models an <a href="http://Regexapi.com"></a>
- * responses.
+ * This class models an <a href="http://Regexapi.com"></a> responses.
  *
  * @see {@link RegexAPI}
  *

@@ -5,6 +5,7 @@ import tv.notube.applications.Application;
 import tv.notube.applications.ApplicationsManager;
 import tv.notube.applications.ApplicationsManagerException;
 import tv.notube.applications.Permission;
+import tv.notube.commons.configuration.profiler.ProfilerConfiguration;
 import tv.notube.commons.model.OAuthToken;
 import tv.notube.commons.model.User;
 import tv.notube.commons.model.UserProfile;
@@ -12,6 +13,8 @@ import tv.notube.commons.model.activity.Activity;
 import tv.notube.crawler.Crawler;
 import tv.notube.crawler.CrawlerException;
 import tv.notube.crawler.Report;
+import tv.notube.profiler.Profiler;
+import tv.notube.profiler.ProfilerException;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreException;
 import tv.notube.usermanager.UserManager;
@@ -640,7 +643,7 @@ public class UserService extends JsonService {
         try {
             check(
                     this.getClass(),
-                    "getUser",
+                    "forceUserCrawl",
                     username,
                     apiKey
             );
@@ -682,6 +685,126 @@ public class UserService extends JsonService {
                 "activities updated for [" + username + "]",
                 report
         )
+        );
+        return rb.build();
+    }
+
+    @GET
+    @Path("profile/update/{username}")
+    public Response forceUserProfiling(
+            @PathParam("username") String username,
+            @QueryParam("apikey") String apiKey
+    ) {
+        try {
+            check(
+                    this.getClass(),
+                    "forceUserProfiling",
+                    username,
+                    apiKey
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters");
+        }
+        UserManager um = instanceManager.getUserManager();
+        ApplicationsManager am = instanceManager.getApplicationManager();
+        boolean isAuth;
+        try {
+            isAuth = am.isAuthorized(apiKey);
+        } catch (ApplicationsManagerException e) {
+            return error(e, "Error while authenticating your application");
+        }
+        if (!isAuth) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Sorry. You're not allowed to do that.")
+            );
+            return rb.build();
+        }
+        User user;
+        try {
+            user = um.getUser(username);
+        } catch (UserManagerException e) {
+            return error(e, "Error while getting user with username [" + username + "]");
+        }
+        if(user == null) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Sorry. User [" + username + "] has not been found")
+            );
+            return rb.build();
+        }
+        Profiler profiler = instanceManager.getProfiler();
+        try {
+            profiler.run(user.getId());
+        } catch (ProfilerException e) {
+            return error(e, "Error while forcing profiling for [" + username + "]");
+        }
+        Response.ResponseBuilder rb = Response.ok();
+        rb.entity(
+                new PlatformResponse(
+                        PlatformResponse.Status.OK,
+                        "profile updated for [" + username + "]"
+                )
+        );
+        return rb.build();
+    }
+
+    @GET
+    @Path("profile/status/{username}")
+    public Response getProfilingStatus(
+            @PathParam("username") String username,
+            @QueryParam("apikey") String apiKey
+    ) {
+        try {
+            check(
+                    this.getClass(),
+                    "getProfilingStatus",
+                    username,
+                    apiKey
+            );
+        } catch (ServiceException e) {
+            return error(e, "Error while checking parameters");
+        }
+        UserManager um = instanceManager.getUserManager();
+        ApplicationsManager am = instanceManager.getApplicationManager();
+        boolean isAuth;
+        try {
+            isAuth = am.isAuthorized(apiKey);
+        } catch (ApplicationsManagerException e) {
+            return error(e, "Error while authenticating your application");
+        }
+        if (!isAuth) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Sorry. You're not allowed to do that.")
+            );
+            return rb.build();
+        }
+        User user;
+        try {
+            user = um.getUser(username);
+        } catch (UserManagerException e) {
+            return error(e, "Error while getting user with username [" + username + "]");
+        }
+        if(user == null) {
+            Response.ResponseBuilder rb = Response.serverError();
+            rb.entity(new PlatformResponse(
+                    PlatformResponse.Status.NOK,
+                    "Sorry. User [" + username + "] has not been found")
+            );
+            return rb.build();
+        }
+        Profiler profiler = instanceManager.getProfiler();
+        String status = profiler.profilingStatus(user.getId());
+        Response.ResponseBuilder rb = Response.ok();
+        rb.entity(
+                new PlatformResponse(
+                        PlatformResponse.Status.OK,
+                        "[" + username + "] " + status
+                )
         );
         return rb.build();
     }

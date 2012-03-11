@@ -119,20 +119,25 @@ public class TwitterLinkerProfilingLineItem extends ProfilingLineItem {
         try {
             regexAPIResponse = regexAPI.getNamedEntities(url);
         } catch (RegexAPIException e) {
-            throw new ProfilingLineItemException("", e);
+            final String errMsg = "Error while calling the enricher";
+            throw new ProfilingLineItemException(errMsg, e);
         }
-        for(Identified identified : regexAPIResponse.getIdentified()) {
-            NamedEntity namedEntity = (NamedEntity) identified;
-            resources.add(namedEntity.getIdentifier());
+        if (regexAPIResponse != null) {
+            for (Identified identified : regexAPIResponse.getIdentified()) {
+                NamedEntity namedEntity = (NamedEntity) identified;
+                resources.add(namedEntity.getIdentifier());
+            }
         }
         try {
             regexAPIResponse = regexAPI.getRankedConcept(url);
         } catch (RegexAPIException e) {
             throw new ProfilingLineItemException("", e);
         }
-        for(Identified identified : regexAPIResponse.getIdentified()) {
-            Concept concept = (Concept) identified;
-            resources.add(concept.getIdentifier());
+        if (regexAPIResponse != null) {
+            for (Identified identified : regexAPIResponse.getIdentified()) {
+                Concept concept = (Concept) identified;
+                resources.add(concept.getIdentifier());
+            }
         }
         return resources;
     }

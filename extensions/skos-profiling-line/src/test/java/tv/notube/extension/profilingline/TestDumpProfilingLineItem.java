@@ -22,6 +22,5 @@ public class TestDumpProfilingLineItem extends ProfilingLineItem {
         for (Type type : up.getTypes()) {
             logger.info("Type: " + type.toString());
         }
-
     }
 }

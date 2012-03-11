@@ -14,6 +14,8 @@ import tv.notube.commons.storage.model.fields.serialization.SerializationManager
 import tv.notube.crawler.Crawler;
 import tv.notube.crawler.CrawlerFactoryException;
 import tv.notube.crawler.DefaultCrawlerFactory;
+import tv.notube.profiler.DefaultProfilerFactory;
+import tv.notube.profiler.Profiler;
 import tv.notube.profiler.storage.KVProfileStoreImpl;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.usermanager.DefaultUserManagerFactory;
@@ -43,6 +45,8 @@ public class LoaderInstanceManager {
     private ApplicationsManager applicationsManager;
 
     private Crawler crawler;
+
+    private Profiler profiler;
 
     public static LoaderInstanceManager getInstance() {
         if (instance == null)
@@ -78,6 +82,7 @@ public class LoaderInstanceManager {
             logger.fatal(errMsg, e);
             throw new RuntimeException(errMsg, e);
         }
+        profiler = DefaultProfilerFactory.getInstance().build();
     }
 
     private KVStore getKVS() throws ConfigurationsException {
@@ -111,5 +116,9 @@ public class LoaderInstanceManager {
 
     public Crawler getCrawler() {
         return crawler;
+    }
+
+    public Profiler getProfiler() {
+        return profiler;
     }
 }

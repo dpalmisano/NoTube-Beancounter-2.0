@@ -9,7 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Main reference class for {@link RegexAPI}.
+ * Main reference test class for {@link RegexAPI}.
  *
  * @author Davide Palmisano ( dpalmisano@gmail.com )
  */
@@ -29,7 +29,8 @@ public class RegexAPITestCase {
 
     @Test
     public void testGetRankedConcept() throws RegexAPIException {
-        final String text = "a sentence about Franz Ferdinand, which is the name of a band and some old dead guy. Sausages. iPhone. RDF";
+        final String text = "a sentence about Franz Ferdinand, which is " +
+                "the name of a band and some old dead guy. Sausages. iPhone. RDF";
         RegexAPIResponse RegexAPIResponse = RegexAPI.getRankedConcept(
                 text
         );
@@ -39,13 +40,12 @@ public class RegexAPITestCase {
 
     @Test
     public void testGetNamedEntities() throws RegexAPIException {
-        final String text = "Samuel Palmisano is the CEO of IBM inc. and he " +
-                "lives in New York";
+        final String text = "Samuel Palmisano is the CEO of IBM inc. and he lives in New York";
         RegexAPIResponse RegexAPIResponse = RegexAPI.getNamedEntities(
                 text
         );
         Assert.assertNotNull(RegexAPIResponse);
-        Assert.assertEquals(RegexAPIResponse.getIdentified().size(), 3);
+        Assert.assertEquals(RegexAPIResponse.getIdentified().size(), 1);
     }
 
     @Test

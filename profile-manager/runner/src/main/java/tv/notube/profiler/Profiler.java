@@ -12,8 +12,12 @@ import tv.notube.profiler.line.ProfilingResult;
 import tv.notube.profiler.storage.ProfileStore;
 import tv.notube.profiler.storage.ProfileStoreException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Main class orchestrating all the profiling process.
@@ -30,6 +34,10 @@ public class Profiler {
 
     private ProfileStore profileStore;
 
+    private Map<UUID, String> statuses;
+
+    private ExecutorService executor;
+
     public Profiler(
             DataManager dataManager,
             ProfilingLineContainer profilingLineContainer,
@@ -38,11 +46,11 @@ public class Profiler {
         this.dataManager = dataManager;
         this.profilingLineContainer = profilingLineContainer;
         this.profileStore = profileStore;
+        this.statuses = new HashMap<UUID, String>();
+        this.executor = Executors.newCachedThreadPool();
     }
 
     public void run() throws ProfilerException {
-        logger.info("profiling process started");
-
         Map<String, List<String>> registeredDataKeys;
         try {
             registeredDataKeys = dataManager.getRegisteredKeys();
@@ -51,10 +59,8 @@ public class Profiler {
             logger.error(errMsg, e);
             throw new ProfilerException("Error while accessing to the registered keys", e);
         }
-
         for (String key : registeredDataKeys.keySet()) {
             RawDataSet rawDataSet;
-            logger.debug("processing key: " + key);
             try {
                 rawDataSet = dataManager.getRawData(key);
             } catch (DataManagerException e) {
@@ -65,7 +71,6 @@ public class Profiler {
             while (rawDataSet.hasNext()) {
                 Object objectToProfile = rawDataSet.getNext();
                 for (String profilingLine : registeredDataKeys.get(key)) {
-                    logger.info("Sending data marked with key: '" + key + "' towards '" + profilingLine + "'.");
                     ProfilingResult profilingResult;
                     try {
                         profilingResult = profilingLineContainer.profile(
@@ -80,10 +85,6 @@ public class Profiler {
                     }
                     UserProfile profileToStore = (UserProfile) profilingResult.getValue();
                     try {
-                        String table = profileStore
-                                .getNamespaces()
-                                .get(key);
-                        logger.debug("Going to write stuff using table: " + table.toString());
                         profileStore.deleteUserProfile(profileToStore.getUsername());
                         profileStore.storeUserProfile(profileToStore);
                     } catch (ProfileStoreException e) {
@@ -93,6 +94,83 @@ public class Profiler {
                     }
                 }
             }
+        }
+    }
+
+    private void launch(
+            UUID userId,
+            Object objectToProfile,
+            String profilingLine,
+            ProfileStore profileStore,
+            Profiler profiler) {
+        executor.execute(
+                new ProfilerRunnable(
+                        userId,
+                        objectToProfile,
+                        profilingLine,
+                        profilingLineContainer,
+                        profileStore,
+                        profiler
+                )
+        );
+    }
+
+    public void run(UUID userId) throws ProfilerException {
+        RawDataSet rawDataSet;
+        try {
+            rawDataSet = dataManager.getRawData("user", userId);
+        } catch (DataManagerException e) {
+            final String errMsg = "Error while accessing raw data for key: [user]";
+            logger.error(errMsg, e);
+            throw new ProfilerException(errMsg, e);
+        }
+        Map<String, List<String>> registeredDataKeys;
+        try {
+            registeredDataKeys = dataManager.getRegisteredKeys();
+        } catch (DataManagerException e) {
+            final String errMsg = "Error while accessing to the registered keys";
+            logger.error(errMsg, e);
+            throw new ProfilerException("Error while accessing to the registered keys", e);
+        }
+        while (rawDataSet.hasNext()) {
+            Object objectToProfile = rawDataSet.getNext();
+            for (String profilingLine : registeredDataKeys.get("user")) {
+                launch(
+                        userId,
+                        objectToProfile,
+                        profilingLine,
+                        profileStore,
+                        this
+                );
+            }
+        }
+    }
+
+    public String profilingStatus(UUID userId) {
+        String status = statuses.get(userId);
+        if(status == null) {
+            return "not profiled";
+        }
+        return status;
+    }
+
+    protected synchronized void profilingStarted(UUID userId) {
+        final String STATUS = "under profiling";
+        if(statuses.containsKey(userId)) {
+            statuses.remove(userId);
+            statuses.put(userId, STATUS);
+        } else {
+            statuses.put(userId, STATUS);
+        }
+    }
+
+    protected synchronized void profilingEnded(UUID userId) {
+        final String STATUS = "profiled";
+        if(statuses.containsKey(userId)) {
+            statuses.remove(userId);
+            statuses.put(userId, STATUS);
+        } else {
+            statuses.put(userId, STATUS);
         }
     }
 }

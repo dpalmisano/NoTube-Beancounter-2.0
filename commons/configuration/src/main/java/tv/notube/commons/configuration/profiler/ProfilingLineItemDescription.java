@@ -60,6 +60,10 @@ public class ProfilingLineItemDescription {
         this.clazz = clazz;
     }
 
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
     @Override
     public String toString() {
         return "ProfilingLineItemDescription{" +

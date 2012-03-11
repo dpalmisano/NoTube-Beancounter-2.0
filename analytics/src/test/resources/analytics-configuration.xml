@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <analyzer>
     <alog>
-        <host>moth.notube.tv</host>
+        <host>localhost</host>
         <port>3306</port>
         <db>alog</db>
         <username>alog</username>
         <password>alog</password>
     </alog>
     <kvs>
-        <host>moth.notube.tv</host>
+        <host>localhost</host>
         <port>3306</port>
         <db>alog</db>
         <username>alog</username>
@@ -29,7 +29,6 @@
                     </parameterTypes>
                 </method>
             </methods>
-
         </analysis>
     </analyses>
 

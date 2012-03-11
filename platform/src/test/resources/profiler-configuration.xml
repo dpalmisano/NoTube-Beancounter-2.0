@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <profiler-configuration>
-<processes>10</processes>
     <data-manager>
         <keys>
             <key name="user" class="tv.notube.profiler.data.datasources.UserDataSource">
@@ -9,26 +8,12 @@
                 </lines>
             </key>
         </keys>
-        <kvs>
-            <host>moth.notube.tv</host>
-            <port>3306</port>
-            <db>kvs</db>
-            <username>kvs</username>
-            <password>kvs</password>
-        </kvs>
     </data-manager>
     <profile-store>
         <tables>
             <table name="user">profiles</table>
         </tables>
-        <kvs>
-            <host>moth.notube.tv</host>
-            <port>3306</port>
-            <username>kvs</username>
-            <password>kvs</password>
-        </kvs>
     </profile-store>
-
     <profiling-lines>
         <profiling-line>
             <name>profiling-line</name>
@@ -47,7 +32,7 @@
                     <parameters>
                         <parameter>
                             <name>apikey</name>
-                            <value>682289043b579238db5b7cb0aa25b88be3e2ef0e</value>
+                            <value>YOUR_API_KEY</value>
                         </parameter>
                     </parameters>
                 </profiling-line-item>

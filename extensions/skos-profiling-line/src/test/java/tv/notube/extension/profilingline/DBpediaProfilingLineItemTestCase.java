@@ -22,7 +22,9 @@ public class DBpediaProfilingLineItemTestCase {
 
     // private static final String API_KEY = "04490000a72fe7ec5cb3497f14e77f338c86f2fe";
 
-    private static final String API_KEY = "682289043b579238db5b7cb0aa25b88be3e2ef0e";
+    // private static final String API_KEY = "682289043b579238db5b7cb0aa25b88be3e2ef0e";
+
+    private static final String API_KEY =  "04490000a72fe7ec5cb3497f14e77f338c86f2fe";
 
     private ProfilingLineItem initItem;
 
@@ -38,19 +40,25 @@ public class DBpediaProfilingLineItemTestCase {
     @BeforeTest
     public void setUp() {
         initItem = new InitProfilingLineItem("init", "prepares the objects");
+
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("apikey", API_KEY);
         textItem = new TwitterLinkerProfilingLineItem(
                 "twitter-linker",
                 "it provides dbpedia URLs from Tweets",
                 parameters);
+
         mbItem = new MusicBrainzLinkerProfilingLineItem(
                 "music-brainz", "links to dbpedia resolving mbrainz ids"
         );
+
         weight = new WeightingProfilingLineItem("weight", "weighting interests");
 
-        building = new ProfileBuildingProfilingLineItem("build",
-                "it builds the profile");
+        building = new ProfileBuildingProfilingLineItem(
+                "build",
+                "it builds the profile"
+        );
+
         building.setNextProfilingLineItem(new TestDumpProfilingLineItem(
                 "test",
                 "this just dumps")
@@ -126,10 +134,8 @@ public class DBpediaProfilingLineItemTestCase {
     public void testRichTweet() throws MalformedURLException, ProfilingLineItemException {
         Tweet tweet = new Tweet();
         tweet.addHashTag("raiperunanotte");
-        tweet.addUrl(new URL("http://www.axessjournalism" +
-                ".com/blog/2010/3/27/on-rai-per-una-notte"));
-        tweet.setText("just watched an amazing #raiperunanotte episode. " +
-                "Berlusconi go home!");
+        tweet.addUrl(new URL("http://www.axessjournalism.com/blog/2010/3/27/on-rai-per-una-notte"));
+        tweet.setText("just watched an amazing #raiperunanotte episode. Berlusconi go home!");
 
         Activity a = new Activity();
         a.setVerb(Verb.TWEET);

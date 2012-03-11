@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Davide Palmisano ( dpalmisano@gmail.com )
@@ -57,6 +58,14 @@ public class ModularDataManager extends AbstractDataManager {
     public RawDataSet getRawData(String key) throws DataManagerException {
         try {
             return datasources.get(key).getRawData();
+        } catch (DataSourceException e) {
+            throw new DataManagerException("Error while getting raw data for key: '" + key + "'");
+        }
+    }
+
+    public RawDataSet getRawData(String key, UUID userId) throws DataManagerException {
+        try {
+            return datasources.get(key).getRawData(userId);
         } catch (DataSourceException e) {
             throw new DataManagerException("Error while getting raw data for key: '" + key + "'");
         }

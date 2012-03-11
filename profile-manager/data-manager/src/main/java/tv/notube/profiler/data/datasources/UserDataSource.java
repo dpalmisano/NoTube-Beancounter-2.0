@@ -65,4 +65,29 @@ public class UserDataSource implements DataSource {
         return new RawDataSet<UserActivities>(usersToProfile);
     }
 
+    public RawDataSet getRawData(UUID userId) throws DataSourceException {
+        User user;
+        try {
+            user = userManager.getUser(userId);
+        } catch (UserManagerException e) {
+            final String errMsg = "Error while getting user with ID '" + userId + "'";
+            logger.error(errMsg, e);
+            throw new DataSourceException(errMsg, e);
+        }
+        List<Activity> activities;
+        try {
+            activities = userManager.getUserActivities(userId);
+        } catch (UserManagerException e) {
+            final String errMsg = "Error while getting user " +
+                    "activities with ID '" + userId + "'";
+            logger.error(errMsg, e);
+            throw new DataSourceException(errMsg, e);
+        }
+        List<UserActivities> usersToProfile = new ArrayList<UserActivities>();
+        usersToProfile.add(
+                new UserActivities(user.getUsername(), activities)
+        );
+        return new RawDataSet<UserActivities>(usersToProfile);
+    }
+
 }

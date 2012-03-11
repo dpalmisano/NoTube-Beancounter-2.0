@@ -56,7 +56,6 @@ public class SynchronizerParser {
                     e
             );
         } finally {
-
             try {
                 br.close();
             } catch (IOException e) {

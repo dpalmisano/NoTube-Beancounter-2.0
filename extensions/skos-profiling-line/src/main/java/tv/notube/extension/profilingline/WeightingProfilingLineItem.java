@@ -71,11 +71,11 @@ public class WeightingProfilingLineItem extends ProfilingLineItem {
     private Set<Interest> normalize(Set<Interest> wInterests) {
         // a = avarage
         // took only the ones over the avarage
-        float a = 0.0f;
+        double a = 0.0f;
         for(Interest i : wInterests) {
             a += i.getWeight();
         }
-        a = a / wInterests.size();
+        a = a / (double ) wInterests.size();
         Set<Interest> overs = new HashSet<Interest>();
         int activitiesNumber = 0;
         for (Interest i : wInterests) {

@@ -2,16 +2,16 @@
     <service name="lastfm"
              handler="tv.notube.commons.configuration.FakeAuthHandler">
         <description>Provides access to Lastfm user data</description>
-        <apikey>9f57b916d7ab90a7bf562b9e6f2385f0</apikey>
-        <secret>c57210237463dc19277b840727b7f11d</secret>
+        <apikey>YOUR_API_KEY</apikey>
+        <secret>YOUR_API_SECRET</secret>
         <session>http://ws.audioscrobbler.com/2.0/?</session>
         <endpoint>http://ws.audioscrobbler.com/2.0/?</endpoint>
     </service>
     <service name="twitter"
              handler="tv.notube.commons.configuration.FakeAuthHandler">
         <description>Provides access to Twitter user data</description>
-        <apikey>Vs9UkC1ZhE3pT9P4JwbA</apikey>
-        <secret>BRDzw6MFJB3whzmm1rWlzjsD5LoXJmlmYT40lhravRs</secret>
+        <apikey>YOUR_API_KEY</apikey>
+        <secret>YOUR_API_SECRET</secret>
         <session>https://api.twitter.com/oauth/request_token</session>
         <endpoint>https://api.twitter.com/1/statuses/user_timeline.json
         </endpoint>
@@ -19,8 +19,8 @@
     <service name="facebook"
              handler="tv.notube.commons.configuration.FakeAuthHandler">
         <description>Provides access to Facebook user data</description>
-        <apikey>313412168683100</apikey>
-        <secret>cc040c3b120491bcec98498dd81fc2a5</secret>
+        <apikey>YOUR_API_KEY</apikey>
+        <secret>YOUR_API_SECRET</secret>
         <session></session>
         <endpoint>https://graph.facebook.com/me/likes</endpoint>
     </service>

@@ -24,6 +24,7 @@ import tv.notube.usermanager.UserManagerFactoryException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -96,7 +97,7 @@ public class DefaultProfilerFactory {
 
     private ProfilingLineContainer getProfilingLineContainer(List<ProfilingLineDescription> plDescriptions) {
         ProfilingLineContainer plc = new DefaultProfilingLineContainer();
-        for(ProfilingLineDescription profilingLineDescription : plDescriptions) {
+        for (ProfilingLineDescription profilingLineDescription : plDescriptions) {
             String plName = profilingLineDescription.getName();
             String plDescription = profilingLineDescription.getDescription();
             Class<? extends ProfilingLine> clazz;
@@ -111,7 +112,7 @@ public class DefaultProfilerFactory {
             try {
                 c = clazz.getConstructor(String.class, String.class);
             } catch (NoSuchMethodException e) {
-                final String errMsg = "Constructor for class [" + clazz.getName()  +
+                final String errMsg = "Constructor for class [" + clazz.getName() +
                         "] not found";
                 throw new RuntimeException(errMsg, e);
             }
@@ -120,7 +121,7 @@ public class DefaultProfilerFactory {
                 profilingLine = (ProfilingLine) c.newInstance(plName, plDescription);
             } catch (InstantiationException e) {
                 throw new RuntimeException(
-                        "Error while instantiating profiling line [" + plName +  "]",
+                        "Error while instantiating profiling line [" + plName + "]",
                         e
                 );
             } catch (IllegalAccessException e) {
@@ -148,32 +149,39 @@ public class DefaultProfilerFactory {
                     );
                 }
                 Constructor pliC;
-                try {
-                     pliC = pliClazz.getConstructor(String.class, String.class);
-                } catch (NoSuchMethodException e) {
-                    throw new RuntimeException("Constructor not found", e);
+                if (profilingLineItemDescription.getParameters().size() == 0) {
+                    try {
+                        pliC = pliClazz.getConstructor(String.class, String.class);
+                    } catch (NoSuchMethodException e) {
+                        throw new RuntimeException("Constructor not found", e);
+                    }
+                    profilingLine.enqueueProfilingLineItem(
+                            getPLI(
+                                    pliName,
+                                    pliDescr,
+                                    pliC
+                            )
+                    );
+                } else {
+                    try {
+                        pliC = pliClazz.getConstructor(
+                                String.class,
+                                String.class,
+                                Map.class
+                        );
+                        profilingLine.enqueueProfilingLineItem(
+                                getPLI(
+                                        pliName,
+                                        pliDescr,
+                                        pliC,
+                                        profilingLineItemDescription.getParameters()
+                                )
+                        );
+                    } catch (NoSuchMethodException e) {
+                        throw new RuntimeException("Constructor not found", e);
+                    }
                 }
-                ProfilingLineItem profilingLineItem;
-                try {
-                    profilingLineItem = (ProfilingLineItem)
-                            pliC.newInstance(pliName, pliDescr);
-                } catch (InstantiationException e) {
-                    throw new RuntimeException(
-                            "Instantiation error for [" + pliName + "]",
-                            e
-                    );
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(
-                            "Instantiation error for [" + pliName + "]",
-                            e
-                    );
-                } catch (InvocationTargetException e) {
-                    throw new RuntimeException(
-                            "Instantiation error for [" + pliName + "]",
-                            e
-                    );
-                }
-                profilingLine.enqueueProfilingLineItem(profilingLineItem);
+
             }
             try {
                 plc.addProfilingLine(profilingLine);
@@ -183,6 +191,59 @@ public class DefaultProfilerFactory {
             }
         }
         return plc;
+    }
+
+    private ProfilingLineItem getPLI(
+            String pliName,
+            String pliDescr,
+            Constructor pliC,
+            Map<String, String> parameters
+    ) {
+        ProfilingLineItem profilingLineItem;
+        try {
+            profilingLineItem = (ProfilingLineItem)
+                    pliC.newInstance(pliName, pliDescr, parameters);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(
+                    "Instantiation error for [" + pliName + "]",
+                    e
+            );
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(
+                    "Instantiation error for [" + pliName + "]",
+                    e
+            );
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(
+                    "Instantiation error for [" + pliName + "]",
+                    e
+            );
+        }
+        return profilingLineItem;
+    }
+
+    private ProfilingLineItem getPLI(String pliName, String pliDescr, Constructor pliC) {
+        ProfilingLineItem profilingLineItem;
+        try {
+            profilingLineItem = (ProfilingLineItem)
+                    pliC.newInstance(pliName, pliDescr);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(
+                    "Instantiation error for [" + pliName + "]",
+                    e
+            );
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(
+                    "Instantiation error for [" + pliName + "]",
+                    e
+            );
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(
+                    "Instantiation error for [" + pliName + "]",
+                    e
+            );
+        }
+        return profilingLineItem;
     }
 
 
