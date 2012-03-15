@@ -7,12 +7,14 @@
 
     <insert id="insertObject" parameterType="map">
         INSERT INTO data (kvstable, kvskey, object)
-        VALUES(#{kvstable}, #{key}, #{object, javaType=byte[], jdbcType=BLOB, typeHandler=org.apache.ibatis.type.ByteArrayTypeHandler})
+        VALUES(#{kvstable}, #{key},      #{object, javaType=byte[], jdbcType=BLOB, typeHandler=org.apache.ibatis.type.ByteArrayTypeHandler})
+        ON DUPLICATE KEY UPDATE object = #{object, javaType=byte[], jdbcType=BLOB, typeHandler=org.apache.ibatis.type.ByteArrayTypeHandler}
     </insert>
 
     <insert id="insertField" parameterType="map">
         INSERT INTO stringfield (kvstable, kvskey, name, value)
         VALUES (#{kvstable}, #{key}, #{name}, #{value})
+        ON DUPLICATE KEY UPDATE value = #{value}
     </insert>
 
     <select id="selectByKey" parameterType="map" resultMap="bytesRM">

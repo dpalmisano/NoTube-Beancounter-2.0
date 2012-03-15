@@ -48,7 +48,7 @@ public class MyBatisKVStoreTestCase {
         expected.setString("a test string");
         expected.setUrl(new URL("http://google.com"));
 
-        StringField f1 = new StringField("name", "test-object");
+        StringField f1 = new StringField("field-name", "test-field-value");
         kVStore.setValue(TABLE, KEY, expected, f1);
 
         TestClass actual = (TestClass) kVStore.getValue(TABLE, KEY);
@@ -62,6 +62,23 @@ public class MyBatisKVStoreTestCase {
         Assert.assertEquals(1, fields.length);
 
         Assert.assertEquals(f1, fields[0]);
+
+        //update object and fields
+        expected.setString("an updated test string");
+        expected.setBool(!expected.isBool());
+        expected.setUrl(new URL("http://yahoo.com"));
+        f1 = new StringField("field-name", "updated-test-field-value");
+
+        kVStore.setValue(TABLE, KEY, expected, f1);
+
+        StringField updatedFields[] = kVStore.getFields(TABLE, KEY);
+        Assert.assertEquals(1, updatedFields.length);
+        Assert.assertEquals(f1, fields[0]);
+
+        TestClass retrievedTest = (TestClass) kVStore.getValue(TABLE, KEY);
+        Assert.assertEquals(retrievedTest.getString(), expected.getString());
+        Assert.assertEquals(retrievedTest.isBool(), expected.isBool());
+        Assert.assertEquals(retrievedTest.getUrl(), expected.getUrl());
 
         kVStore.deleteValue(TABLE, KEY);
         actual = (TestClass) kVStore.getValue(TABLE, KEY);
